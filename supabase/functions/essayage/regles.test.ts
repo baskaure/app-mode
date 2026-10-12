@@ -2,7 +2,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { CATEGORIES_AUTORISEES, CATEGORIES_REFUSEES, decider, MESSAGES, SCHEMA } from './regles.ts';
+import {
+  CATEGORIES_AUTORISEES,
+  CATEGORIES_REFUSEES,
+  decider,
+  deciderResultat,
+  MESSAGES,
+  SCHEMA,
+  SCHEMA_RESULTAT,
+} from './regles.ts';
 
 const ok = { vetement_categorie: 'haut', vetement_autorise: true, personne_autorisee: true } as const;
 
@@ -44,4 +52,27 @@ test('le schéma JSON liste exactement les catégories du code', () => {
 test('un booléen mal formé (texte "true") ne vaut pas un feu vert', () => {
   assert.equal(decider({ ...ok, vetement_autorise: 'true' as never }).autorise, false);
   assert.equal(decider({ ...ok, personne_autorisee: 1 as never }).autorise, false);
+});
+
+const propre = { personne_habillee: true, nudite_ou_sous_vetements: false, zone_floutee_sur_le_corps: false };
+
+test('image produite : une personne habillée normalement passe', () => {
+  assert.equal(deciderResultat(propre), true);
+});
+
+test('image produite : nudité, sous-vêtements ou zone floutée (cas Kling du 12 oct.) bloquent', () => {
+  assert.equal(deciderResultat({ ...propre, nudite_ou_sous_vetements: true }), false);
+  assert.equal(deciderResultat({ ...propre, zone_floutee_sur_le_corps: true }), false);
+  assert.equal(deciderResultat({ ...propre, personne_habillee: false }), false);
+});
+
+test('image produite : réponse absente ou mal formée bloque', () => {
+  assert.equal(deciderResultat(null), false);
+  assert.equal(deciderResultat({ ...propre, nudite_ou_sous_vetements: 'false' as never }), false);
+  assert.equal(deciderResultat({ ...propre, personne_habillee: 1 as never }), false);
+});
+
+test('schéma de l’image produite : strict', () => {
+  assert.equal(SCHEMA_RESULTAT.additionalProperties, false);
+  assert.deepEqual(SCHEMA_RESULTAT.required, Object.keys(propre));
 });

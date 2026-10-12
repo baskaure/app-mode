@@ -3,7 +3,17 @@
 // Règle : en cas de doute ou de panne, on bloque (Kling n'est jamais appelé sans feu vert).
 import Anthropic from 'npm:@anthropic-ai/sdk@0.133.0';
 
-import { CONSIGNE, decider, SCHEMA, type Decision, type Verdict } from './regles.ts';
+import {
+  CONSIGNE,
+  CONSIGNE_RESULTAT,
+  decider,
+  deciderResultat,
+  SCHEMA,
+  SCHEMA_RESULTAT,
+  type Decision,
+  type Verdict,
+  type VerdictResultat,
+} from './regles.ts';
 
 const MODELE = 'claude-haiku-5-5';
 
@@ -56,5 +66,43 @@ export async function verifierImages(vetement: Image, personne: Image): Promise<
     return decider(JSON.parse(texte.text) as Verdict);
   } catch {
     return decider(null);
+  }
+}
+
+// Vérifie l'image produite par le fournisseur d'essayage. true = affichable. Mêmes erreurs que verifierImages.
+export async function verifierResultat(resultat: Image): Promise<boolean> {
+  const cle = Deno.env.get('ANTHROPIC_API_KEY');
+  if (!cle) throw new Error('moderation_cle_absente');
+  const client = new Anthropic({ apiKey: cle, timeout: 30_000, maxRetries: 2 });
+
+  let reponse: Anthropic.Message;
+  try {
+    reponse = await client.messages.create({
+      model: MODELE,
+      max_tokens: 200,
+      thinking: { type: 'disabled' },
+      output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA_RESULTAT } },
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: resultat.type, data: enBase64(resultat.octets) } },
+            { type: 'text', text: CONSIGNE_RESULTAT },
+          ],
+        },
+      ],
+    });
+  } catch (e) {
+    if (e instanceof Anthropic.APIError) throw new Error(`moderation:${e.status ?? 'réseau'}`);
+    throw new Error('moderation:réseau');
+  }
+
+  if (reponse.stop_reason === 'refusal') return false;
+  const texte = reponse.content.find((b) => b.type === 'text');
+  if (!texte || texte.type !== 'text') return false;
+  try {
+    return deciderResultat(JSON.parse(texte.text) as VerdictResultat);
+  } catch {
+    return false;
   }
 }

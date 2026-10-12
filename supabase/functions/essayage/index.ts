@@ -3,13 +3,15 @@
 //   POST { action: 'lancer', essai_id } → crée la tâche Kling, l'essai passe « en_cours ».
 //   POST { action: 'suivre', essai_id } → interroge Kling ; si c'est fini, copie l'image dans le bucket `essayages`.
 // Avant Kling, moderation.ts refuse lingerie, maillots, transparence et nudité (statut « refuse »).
+// Après Kling, l'image produite est vérifiée à son tour : refusée, elle n'est ni enregistrée ni affichée.
 // Les clés KLING_API_KEY et ANTHROPIC_API_KEY sont des secrets Supabase : elles ne quittent jamais le serveur.
 // Lectures avec le JWT de l'utilisateur (RLS) ; écritures des colonnes serveur avec service_role (migration 000005).
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
-import { type Image, verifierImages } from './moderation.ts';
+import { type Image, verifierImages, verifierResultat } from './moderation.ts';
 import { imageDeSortie, lireTache } from './kling-suivi.ts';
+import { MESSAGE_RESULTAT_REFUSE } from './regles.ts';
 import { droitActif, type Quota, verifierQuota } from './quota.ts';
 
 const KLING = 'https://api-singapore.klingai.com';
@@ -283,14 +285,20 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     return reponse(200, { statut: 'erreur', message: 'Pas d’image en sortie.' });
   }
 
-  // Kling efface ses images au bout de 30 jours : on copie le résultat chez nous.
+  // Kling efface ses images au bout de 30 jours : on copie le résultat chez nous, après vérification.
   const image = await fetch(urlSortie, { signal: AbortSignal.timeout(20000) });
-  const type = (image.headers.get('content-type') ?? 'image/jpeg').split(';')[0].trim();
+  const type = (image.headers.get('content-type') ?? 'image/jpeg').split(';')[0].trim() as Image['type'];
+  const octets = new Uint8Array(await image.arrayBuffer());
+  // Format inattendu ou image refusée : rien n'est enregistré ni montré. L'essayage reste décompté
+  // (Kling l'a facturé) : sinon, provoquer des refus ferait générer des images à nos frais.
+  if (!TYPES_IMAGE.includes(type) || !(await verifierResultat({ octets, type }))) {
+    await nettoyerFiges(admin, uid, essai.id);
+    await admin.from('essais').update({ statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE }).eq('id', essai.id);
+    return reponse(200, { statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE });
+  }
   const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
   const chemin = `${uid}/${essai.id}.${extension}`;
-  const envoi = await admin.storage
-    .from('essayages')
-    .upload(chemin, new Uint8Array(await image.arrayBuffer()), { contentType: type, upsert: true });
+  const envoi = await admin.storage.from('essayages').upload(chemin, octets, { contentType: type, upsert: true });
   if (envoi.error) throw new Error(`Copie du résultat impossible : ${envoi.error.message}`);
 
   await nettoyerFiges(admin, uid, essai.id);

@@ -63,3 +63,44 @@ vetement_autorise = false si la catégorie est lingerie_sous_vetement, maillot_d
 Pour l'image 2 : personne_autorisee = false si la personne est nue, seulement en sous-vêtements ou en maillot, dans une pose sexualisée, ou semble être un enfant. Des vêtements près du corps (legging, t-shirt moulant) sont normaux et autorisés.
 
 En cas de doute, réponds false.`;
+
+// --- Vérification de l'image PRODUITE (après Kling, avant de l'enregistrer et de l'afficher) ---
+// Le 12 oct. 2026, Kling a retiré une robe et rendu un buste nu flouté : le filtre d'entrée ne suffit pas.
+
+export type VerdictResultat = {
+  personne_habillee: boolean;
+  nudite_ou_sous_vetements: boolean;
+  zone_floutee_sur_le_corps: boolean;
+};
+
+export const MESSAGE_RESULTAT_REFUSE =
+  'L’image produite n’a pas passé notre vérification, elle ne sera pas affichée. Réessaie avec une photo de toi en haut et bas séparés.';
+
+// Les trois signaux doivent être nets ; un booléen mal formé ou une réponse absente bloque.
+export function deciderResultat(verdict: VerdictResultat | null): boolean {
+  if (!verdict) return false;
+  return (
+    verdict.personne_habillee === true &&
+    verdict.nudite_ou_sous_vetements === false &&
+    verdict.zone_floutee_sur_le_corps === false
+  );
+}
+
+export const SCHEMA_RESULTAT = {
+  type: 'object',
+  properties: {
+    personne_habillee: { type: 'boolean' },
+    nudite_ou_sous_vetements: { type: 'boolean' },
+    zone_floutee_sur_le_corps: { type: 'boolean' },
+  },
+  required: ['personne_habillee', 'nudite_ou_sous_vetements', 'zone_floutee_sur_le_corps'],
+  additionalProperties: false,
+};
+
+export const CONSIGNE_RESULTAT = `Tu contrôles une image créée par une IA d'essayage virtuel, avant de la montrer à l'utilisateur.
+
+- personne_habillee = true seulement si la personne porte une tenue ordinaire complète (haut ET bas, ou une robe).
+- nudite_ou_sous_vetements = true si on voit un torse ou une poitrine nus, des fesses, des parties intimes, ou une personne seulement en sous-vêtements ou en maillot.
+- zone_floutee_sur_le_corps = true si une partie du corps est floutée, pixelisée ou masquée (signe qu'une nudité a été censurée), même si le reste paraît normal.
+
+En cas de doute, réponds dans le sens de la prudence (personne_habillee = false, ou l'un des deux autres à true).`;
