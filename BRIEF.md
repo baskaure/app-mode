@@ -40,6 +40,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - **Essayage** : une API spécialisée (FASHN, ou une autre à comparer) appelée **uniquement depuis une fonction serveur** (Supabase Edge Function). Clé d'API jamais dans l'app. **À tester sur 20 vraies photos avant de coder l'écran**, pour vérifier la fidélité au corps.
 - **Lien d'article → image** : Edge Function `extraire-vetement` qui lit l'image de partage (og:image) de la page. **Test du 12 oct. 2026 : la plupart des sites de mode bloquent la lecture automatique** (403 chez Kiabi, Celio, Lacoste, La Redoute, Decathlon, Uniqlo ; Zara sans image de partage ; Vinted OK). On ne contourne pas ces protections. La capture d'écran reste la voie fiable ; le lien est un bonus.
 - **Catalogue d'inspirations** : les flux produits des réseaux d'affiliation (Awin, Effiliation…), et non le scraping de Google Shopping, qui n'a pas d'API publique.
+- **Prix de l'essayage (page officielle https://kling.ai/dev/pricing, lue le 12 oct. 2026)** : Kling « Virtual Try-On » = 32 unités = **0,112 $ par image** (1K). Offre d'essai : 2,45 $ pour 1 000 unités (environ 31 essais) ou 24,50 $ pour 10 000 unités (environ 312 essais), 30 jours, -30 % au 1er achat. Pack standard : 350 $ pour 100 000 unités (environ 3 125 essais), 180 jours. Comparaison : FASHN environ 0,075 $ par image (à confirmer). **Point RGPD à trancher avant tout usage réel** : Kling appartient à Kuaishou (Chine) ; envoyer des photos de personnes hors de l'UE demande une base légale (clauses contractuelles types…), lieu de traitement à confirmer.
 - **Concurrent à surveiller** : Google fait déjà l'essayage sur sa propre photo aux États-Unis (Search, Shopping, app Doppl, depuis juillet 2025). Arrivée en France : à confirmer.
 
 ## Garde-fous (non négociables)
@@ -61,3 +62,10 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 6. Paywall RevenueCat.
 7. Build de test (EAS) sur ton téléphone.
 8. V2 : inspirations par catalogue d'affiliation, dressing, bonne taille.
+
+## À faire avant tout lancement public (bloquant)
+- [ ] **Filtre lingerie / maillots / transparence** sur l'image du vêtement, côté serveur, avant l'appel à Kling (pas encore codé).
+- [ ] **Avis juridique RGPD** : transfert des photos vers Kling (serveurs à Singapour, société Kuaishou), base légale, mention dans la politique de confidentialité.
+- [ ] **CAPTCHA** sur la création des comptes anonymes, et réglage « Allow manual linking » pour passer un compte anonyme en compte e-mail.
+- [ ] **Projet Supabase** passé en formule payante, sinon il se met en pause après 1 semaine sans activité.
+- [ ] Plafond d'essayages (`ESSAIS_MAX_PAR_MOIS`, 30 par défaut) relié à l'abonnement RevenueCat.

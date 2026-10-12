@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +10,7 @@ import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { choisirPhoto, type Photo, type Source } from '@/lib/photos';
 import { enregistrerSilhouette, verifierCadrage } from '@/lib/silhouette';
+import { fermer } from '@/lib/navigation';
 
 const CONSEILS = [
   'De la tête aux pieds, de face, bras légèrement écartés.',
@@ -48,7 +48,7 @@ export default function PhotoSoi() {
     setErreur(null);
     try {
       await enregistrerSilhouette(photo);
-      router.back();
+      fermer();
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -94,8 +94,9 @@ export default function PhotoSoi() {
                 ]}
               />
               <ThemedText type="small" style={styles.texteConsentement}>
-                C’est bien moi sur la photo, et j’ai plus de 15 ans. Ma photo reste privée, sert uniquement à
-                mes essayages, et je peux la supprimer quand je veux.
+                C’est bien moi sur la photo, et j’ai plus de 15 ans. Ma photo reste privée et sert uniquement à mes
+                essayages. Pour chaque essayage, elle est envoyée à notre prestataire d’IA (Kling, serveurs à
+                Singapour, hors de l’Union européenne). Je peux la supprimer quand je veux.
               </ThemedText>
             </Pressable>
           )}

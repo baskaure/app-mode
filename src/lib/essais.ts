@@ -73,3 +73,38 @@ export async function lireEssai(id: string): Promise<Essai> {
   const lien = await supabase.storage.from(data.vetement_bucket).createSignedUrl(data.vetement_path, DUREE_LIEN_S);
   return { ...(data as Omit<Essai, 'url'>), url: lien.data?.signedUrl ?? null };
 }
+
+type ReponseEssayage = { statut: Essai['statut']; resultat_path?: string | null; message?: string | null };
+
+async function appelerEssayage(action: 'lancer' | 'suivre', essaiId: string): Promise<ReponseEssayage> {
+  const { data, error } = await supabase.functions.invoke<ReponseEssayage>('essayage', {
+    body: { action, essai_id: essaiId },
+  });
+  if (error) {
+    if (error instanceof FunctionsHttpError) {
+      const corps = await error.context.json().catch(() => null);
+      throw new Error(corps?.erreur ?? 'L’essayage n’a pas pu démarrer.');
+    }
+    throw new Error('Impossible de joindre le serveur. Vérifie ta connexion.');
+  }
+  if (!data) throw new Error('Réponse inattendue du serveur.');
+  return data;
+}
+
+// Lance l'essayage puis interroge le serveur toutes les 3 s, au plus 3 minutes. Renvoie le lien de l'image.
+export async function essayer(essaiId: string, onEtape?: (etape: string) => void): Promise<string> {
+  onEtape?.('Envoi au service d’essayage…');
+  let etat = await appelerEssayage('lancer', essaiId);
+  const fin = Date.now() + 3 * 60 * 1000;
+  while (etat.statut === 'en_cours' && Date.now() < fin) {
+    onEtape?.('L’IA t’habille… (20 à 60 secondes)');
+    await new Promise((r) => setTimeout(r, 3000));
+    etat = await appelerEssayage('suivre', essaiId);
+  }
+  if (etat.statut === 'erreur' || etat.statut === 'refuse') throw new Error(etat.message ?? 'L’essayage a échoué.');
+  if (etat.statut !== 'fait' || !etat.resultat_path) throw new Error('L’essayage prend trop de temps. Réessaie plus tard.');
+
+  const lien = await supabase.storage.from('essayages').createSignedUrl(etat.resultat_path, DUREE_LIEN_S);
+  if (!lien.data) throw new Error('Image du résultat introuvable.');
+  return lien.data.signedUrl;
+}

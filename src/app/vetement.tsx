@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,8 +9,11 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { listerPieces, type Piece } from '@/lib/dressing';
-import { essaiDepuisLien, essaiDepuisPhoto, essaiDepuisPiece, lireEssai, type Essai } from '@/lib/essais';
+import { essaiDepuisLien, essaiDepuisPhoto, essaiDepuisPiece, essayer, lireEssai, type Essai } from '@/lib/essais';
+import { conseilPour } from '@/lib/morphologie';
+import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
+import { fermer } from '@/lib/navigation';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
 // Le partage direct depuis une autre app (Zara, Vinted…) viendra avec le build natif.
@@ -22,6 +24,10 @@ export default function Vetement() {
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [essai, setEssai] = useState<Essai | null>(null);
+  const [etape, setEtape] = useState<string | null>(null);
+  const [resultat, setResultat] = useState<string | null>(null);
+  const { profil } = useProfil();
+  const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
 
   useEffect(() => {
     let annule = false;
@@ -57,17 +63,63 @@ export default function Vetement() {
     }
   };
 
+  const lancerEssayage = async (id: string) => {
+    setErreur(null);
+    setOccupe(true);
+    try {
+      setResultat(await essayer(id, setEtape));
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e));
+    } finally {
+      setEtape(null);
+      setOccupe(false);
+    }
+  };
+
+  if (resultat) {
+    return (
+      <Ecran>
+        <ThemedText type="subtitle">Sur toi</ThemedText>
+        <Image source={{ uri: resultat }} style={styles.apercu} contentFit="contain" />
+        <ThemedText type="small" themeColor="textSecondary">
+          Image créée par IA à partir de ta photo.
+        </ThemedText>
+        {conseil && (
+          <ThemedText>
+            {conseil.nom} : {conseil.objectif}
+          </ThemedText>
+        )}
+        <Bouton
+          label="Essayer un autre vêtement"
+          onPress={() => {
+            setResultat(null);
+            setEssai(null);
+          }}
+        />
+        <Bouton label="Fermer" onPress={() => fermer()} />
+      </Ecran>
+    );
+  }
+
   if (essai) {
     return (
       <Ecran>
         <ThemedText type="subtitle">Vêtement prêt</ThemedText>
         {essai.url && <Image source={{ uri: essai.url }} style={styles.apercu} contentFit="contain" />}
-        <Bouton label="M’essayer ce vêtement" desactive onPress={() => {}} />
-        <ThemedText type="small" themeColor="textSecondary">
-          Bientôt : l’IA t’habille avec ce vêtement sur ta photo.
-        </ThemedText>
-        <Bouton label="Choisir un autre vêtement" onPress={() => setEssai(null)} />
-        <Bouton label="Fermer" onPress={() => router.back()} />
+        <Bouton label="M’essayer ce vêtement" desactive={occupe} onPress={() => void lancerEssayage(essai.id)} />
+        {etape && (
+          <View style={styles.ligne}>
+            <ActivityIndicator />
+            <ThemedText type="small">{etape}</ThemedText>
+          </View>
+        )}
+        {erreur && (
+          <ThemedText type="small" style={styles.erreur}>
+            {erreur}
+          </ThemedText>
+        )}
+        <Bouton label="Choisir un autre vêtement" desactive={occupe} onPress={() => setEssai(null)} />
+        <Bouton label="Fermer" onPress={() => fermer()} />
       </Ecran>
     );
   }
@@ -153,4 +205,5 @@ const styles = StyleSheet.create({
   vignette: { width: 96, height: 128, borderRadius: 10 },
   apercu: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
   erreur: { color: '#D93025' },
+  ligne: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
 });
