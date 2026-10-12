@@ -58,8 +58,9 @@ Deno.serve(async (req) => {
             { type: 'product_image', url: await lien(corps.vetement) },
             { type: 'person_image', url: await lien(corps.personne) },
           ],
-          settings: { keep_face: true, keep_pose: true, keep_background: true },
-          options: { external_task_id: `banc-${corps.personne}-${corps.vetement}-${Date.now()}`, watermark: { enabled: false } },
+          // Réglage testable : keep_pose=false laisse peut-être la coupe suivre le vêtement (test du 13 oct.).
+          settings: { keep_face: true, keep_pose: corps.keep_pose !== false, keep_background: true },
+          options: { external_task_id: `banc-${corps.personne}-${corps.vetement}-${corps.keep_pose === false ? 'libre' : 'pose'}-${Date.now()}`, watermark: { enabled: false } },
         }),
       });
       return reponse(200, { task_id: (tache.data as { task_id?: string } | undefined)?.task_id ?? null });
