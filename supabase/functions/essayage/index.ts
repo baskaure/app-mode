@@ -1,28 +1,42 @@
-// Edge Function : essayage d'un vêtement sur la photo de soi, par l'API Kling « Virtual Try-on ».
-// Doc : https://kling.ai/document-api/api/ecommerce-replication/virtual-try-on (lue le 12 oct. 2026).
-//   POST { action: 'lancer', essai_id } → crée la tâche Kling, l'essai passe « en_cours ».
-//   POST { action: 'suivre', essai_id } → interroge Kling ; si c'est fini, copie l'image dans le bucket `essayages`.
-// Avant Kling, moderation.ts refuse lingerie, maillots, transparence et nudité (statut « refuse »).
-// Après Kling, l'image produite est vérifiée à son tour : refusée, elle n'est ni enregistrée ni affichée.
-// Les clés KLING_API_KEY et ANTHROPIC_API_KEY sont des secrets Supabase : elles ne quittent jamais le serveur.
+// Edge Function : essayage d'un vêtement sur la photo de soi, par OpenAI (gpt-image-2.5-sunburst, choisi le 12 oct. 2026).
+//   POST { action: 'lancer', essai_id } → vérifie, réserve le quota, puis génère l'image en tâche de fond
+//     (EdgeRuntime.waitUntil : une image peut prendre jusqu'à 2 minutes) ; l'essai passe « en_cours ».
+//   POST { action: 'suivre', essai_id } → lit l'état de l'essai (l'app interroge toutes les 3 s).
+// Avant la génération, moderation.ts refuse lingerie, maillots, transparence et nudité (statut « refuse »).
+// Après, l'image produite est vérifiée à son tour : refusée, elle n'est ni enregistrée ni affichée.
+// Les clés OPENAI_API_KEY et ANTHROPIC_API_KEY sont des secrets Supabase : elles ne quittent jamais le serveur.
 // Lectures avec le JWT de l'utilisateur (RLS) ; écritures des colonnes serveur avec service_role (migration 000005).
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
 import { type Image, verifierImages, verifierResultat } from './moderation.ts';
-import { imageDeSortie, lireTache } from './kling-suivi.ts';
+import {
+  CONSIGNE_ESSAYAGE,
+  depuisBase64,
+  essaiAbandonne,
+  estimerCoutUsd,
+  lireReponse,
+  MODELE_IMAGE,
+  type ResultatImage,
+  TAILLE_IMAGE,
+} from './openai-reponse.ts';
 import { MESSAGE_RESULTAT_REFUSE } from './regles.ts';
 import { droitActif, type Quota, verifierQuota } from './quota.ts';
 
-const KLING = 'https://api-singapore.klingai.com';
+// Tâches de fond des Edge Functions (https://supabase.com/docs/guides/functions/background-tasks).
+declare const EdgeRuntime: { waitUntil(tache: Promise<unknown>): void };
+
+const OPENAI_EDITS = 'https://api.openai.com/v1/images/edits';
+// Qualité de l'image (low, medium, high…) : elle fixe surtout le coût. Réglable sans redéployer.
+const QUALITE = Deno.env.get('ESSAI_QUALITE') ?? 'medium';
+// Au-delà, on abandonne : le worker gratuit s'arrête à 150 s (vérifications comprises).
+const DELAI_OPENAI_MS = 120_000;
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
-// Durée des liens signés donnés à Kling pour lire les deux images figées.
-const DUREE_LIEN_KLING_S = 15 * 60;
-// Plafond d'essayages par abonné et par mois (le coût Kling est d'environ 0,112 $ par image).
+// Plafond d'essayages par abonné et par mois (budget : environ 1 € de génération par abonné et par mois).
 const MAX_PAR_MOIS = Number(Deno.env.get('ESSAIS_MAX_PAR_MOIS') ?? '30');
 // Essayages offerts sans abonnement, au total (le « moment waouh » avant le paywall).
 const ESSAIS_GRATUITS = Number(Deno.env.get('ESSAIS_GRATUITS') ?? '1');
@@ -35,47 +49,40 @@ function reponse(statut: number, corps: Record<string, unknown>) {
   return new Response(JSON.stringify(corps), { status: statut, headers: { ...CORS, 'Content-Type': 'application/json' } });
 }
 
-async function kling(chemin: string, init: RequestInit): Promise<Record<string, unknown>> {
-  const cle = Deno.env.get('KLING_API_KEY');
+// Une seule requête : la personne (image 1) et le vêtement (image 2), tels qu'ils ont été vérifiés.
+async function genererImage(personne: Image, vetement: Image): Promise<ResultatImage> {
+  const cle = Deno.env.get('OPENAI_API_KEY');
   if (!cle) throw new Error('cle_absente');
-  const res = await fetch(`${KLING}${chemin}`, {
-    ...init,
-    signal: AbortSignal.timeout(20000),
-    headers: { Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' },
+  const formulaire = new FormData();
+  formulaire.append('model', MODELE_IMAGE);
+  formulaire.append('prompt', CONSIGNE_ESSAYAGE);
+  formulaire.append('image[]', new Blob([new Uint8Array(personne.octets)], { type: personne.type }), 'personne');
+  formulaire.append('image[]', new Blob([new Uint8Array(vetement.octets)], { type: vetement.type }), 'vetement');
+  formulaire.append('size', TAILLE_IMAGE);
+  formulaire.append('quality', QUALITE);
+  formulaire.append('output_format', 'jpeg');
+  formulaire.append('n', '1');
+  const res = await fetch(OPENAI_EDITS, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${cle}` },
+    body: formulaire,
+    signal: AbortSignal.timeout(DELAI_OPENAI_MS),
   });
-  const corps = await res.json().catch(() => ({}));
-  if (!res.ok || corps.code !== 0) {
-    throw new Error(`kling:${corps.message ?? res.status}`);
-  }
-  return corps;
+  const corps = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(`openai:${corps?.error?.message ?? res.status}`);
+  return lireReponse(corps);
 }
 
 const TYPES_IMAGE = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
-// Copie l'image de l'utilisateur dans `figes` (bucket sans accès utilisateur) : il ne peut plus la remplacer
-// entre la vérification et la lecture par Kling. La lecture se fait avec son JWT, donc seulement ses fichiers.
-async function figer(supabase: SupabaseClient, admin: SupabaseClient, bucket: string, chemin: string, cible: string) {
+// Lit l'image avec le JWT de l'utilisateur (donc seulement ses fichiers). Les mêmes octets, gardés en mémoire,
+// passent à la vérification puis à OpenAI : rien ne peut être remplacé entre les deux, et aucune copie n'est stockée.
+async function lireImage(supabase: SupabaseClient, bucket: string, chemin: string): Promise<Image> {
   const { data, error } = await supabase.storage.from(bucket).download(chemin);
   if (error || !data) throw new Error(`Image introuvable : ${error?.message}`);
   const type = (data.type || 'image/jpeg').split(';')[0].trim() as Image['type'];
   if (!TYPES_IMAGE.includes(type)) throw new Error('Format d’image non pris en charge.');
-  const octets = new Uint8Array(await data.arrayBuffer());
-  const envoi = await admin.storage.from('figes').upload(cible, octets, { contentType: type, upsert: true });
-  if (envoi.error) throw new Error(`Copie de l’image impossible : ${envoi.error.message}`);
-  const lien = await admin.storage.from('figes').createSignedUrl(cible, DUREE_LIEN_KLING_S);
-  if (lien.error || !lien.data) throw new Error(`Lien de l’image impossible : ${lien.error?.message}`);
-  return { image: { octets, type } satisfies Image, url: lien.data.signedUrl };
-}
-
-// Un dossier par essai, un nom unique par tentative : une relance ne réécrit jamais une image déjà donnée à Kling.
-function cheminsFiges(uid: string, essaiId: string) {
-  const tentative = `${Date.now()}-${crypto.randomUUID()}`;
-  return { vetement: `${uid}/${essaiId}/${tentative}-vetement`, personne: `${uid}/${essaiId}/${tentative}-personne` };
-}
-
-async function nettoyerFiges(admin: SupabaseClient, uid: string, essaiId: string) {
-  const { data } = await admin.storage.from('figes').list(`${uid}/${essaiId}`);
-  if (data?.length) await admin.storage.from('figes').remove(data.map((f) => `${uid}/${essaiId}/${f.name}`));
+  return { octets: new Uint8Array(await data.arrayBuffer()), type };
 }
 
 function debutDuJour() {
@@ -145,8 +152,8 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     .single();
   if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
   if (essai.statut === 'en_cours' || essai.statut === 'fait') return reponse(200, { statut: essai.statut });
-  // Sans clé Kling, inutile de payer la vérification.
-  if (!Deno.env.get('KLING_API_KEY')) throw new Error('cle_absente');
+  // Sans clé OpenAI, inutile de payer la vérification.
+  if (!Deno.env.get('OPENAI_API_KEY')) throw new Error('cle_absente');
 
   const { data: profil } = await supabase
     .from('profils')
@@ -173,7 +180,7 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   // Un essai refusé est revérifié : la personne a pu changer sa photo de soi entre-temps.
   const { data: reserve } = await admin
     .from('essais')
-    .update({ statut: 'en_cours', kling_task_id: null, message: null })
+    .update({ statut: 'en_cours', message: null, lance_at: new Date().toISOString() })
     .eq('id', essai.id)
     .eq('user_id', uid)
     .in('statut', ['a_faire', 'refuse', 'erreur'])
@@ -184,13 +191,11 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     admin.from('essais').update({ statut, message }).eq('id', essai.id);
 
   try {
-    const chemins = cheminsFiges(uid, essai.id);
-    const vetement = await figer(supabase, admin, essai.vetement_bucket, essai.vetement_path, chemins.vetement);
-    const personne = await figer(supabase, admin, 'silhouettes', profil.photo_soi_path, chemins.personne);
+    const vetement = await lireImage(supabase, essai.vetement_bucket, essai.vetement_path);
+    const personne = await lireImage(supabase, 'silhouettes', profil.photo_soi_path);
 
-    const decision = await verifierImages(vetement.image, personne.image);
+    const decision = await verifierImages(vetement, personne);
     if (!decision.autorise) {
-      await nettoyerFiges(admin, uid, essai.id);
       await remettre('refuse', decision.message);
       return reponse(200, { statut: 'refuse', message: decision.message });
     }
@@ -212,98 +217,96 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     });
     if (!quotaApres.ok) {
       await admin.from('essayages_journal').delete().eq('id', ligne.id);
-      await nettoyerFiges(admin, uid, essai.id);
       await remettre('a_faire', null);
       return refusQuota(quotaApres);
     }
 
-    let taskId: string | undefined;
-    try {
-      const tache = await kling('/solutions/virtual_try_on', {
-        method: 'POST',
-        body: JSON.stringify({
-          contents: [
-            { type: 'product_image', url: vetement.url },
-            { type: 'person_image', url: personne.url },
-          ],
-          // Fidélité maximale : même visage, même pose, même fond.
-          settings: { keep_face: true, keep_pose: true, keep_background: true },
-          // L'identifiant doit être unique sur le compte Kling, y compris quand on relance après une erreur.
-          options: { external_task_id: `${essai.id}-${Date.now()}`, watermark: { enabled: false } },
-        }),
-      });
-      taskId = (tache.data as { task_id?: string } | undefined)?.task_id;
-      if (!taskId) throw new Error('kling:réponse sans identifiant de tâche');
-    } catch (e) {
-      // Kling n'a rien pris en charge : l'essai ne compte pas dans le plafond.
-      await admin.from('essayages_journal').delete().eq('id', ligne.id);
-      throw e;
-    }
-
-    const maj = await admin
-      .from('essais')
-      .update({ kling_task_id: taskId, lance_at: new Date().toISOString() })
-      .eq('id', essai.id);
-    if (maj.error) throw new Error(`Enregistrement de la tâche impossible : ${maj.error.message}`);
+    // La génération continue après la réponse : l'app suit l'avancement avec « suivre ».
+    EdgeRuntime.waitUntil(generer(admin, uid, essai.id, ligne.id, personne, vetement));
     return reponse(200, { statut: 'en_cours' });
   } catch (e) {
-    // Les copies figées contiennent la photo de la personne : on ne les laisse pas traîner après un échec.
-    await nettoyerFiges(admin, uid, essai.id).catch(() => {});
     await remettre('erreur', 'L’essayage n’a pas pu démarrer.');
     throw e;
   }
 }
 
-async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: string, essaiId: string) {
+// Tâche de fond : génère, vérifie et enregistre l'image. Ne lève jamais : tout échec finit en statut d'essai.
+async function generer(
+  admin: SupabaseClient,
+  uid: string,
+  essaiId: string,
+  ligneJournal: string,
+  personne: Image,
+  vetement: Image,
+) {
+  const finir = (statut: string, champs: Record<string, unknown>) =>
+    admin.from('essais').update({ statut, ...champs }).eq('id', essaiId).eq('statut', 'en_cours');
+
+  let resultat: ResultatImage;
+  try {
+    resultat = await genererImage(personne, vetement);
+  } catch (e) {
+    // Pas d'image produite : l'essai ne compte pas dans le plafond.
+    const detail = e instanceof Error ? e.message : String(e);
+    console.error('essayage: génération échouée', detail);
+    await admin.from('essayages_journal').delete().eq('id', ligneJournal);
+    await finir('erreur', {
+      message: 'L’IA n’a pas pu créer l’image. Réessaie dans un instant.',
+      erreur_technique: detail.slice(0, 500),
+    });
+    return;
+  }
+
+  try {
+    // Coût réel de chaque image, pour vérifier le budget (environ 1 € par abonné et par mois).
+    await admin
+      .from('essayages_journal')
+      .update({ usage: resultat.usage ?? null, cout_usd: estimerCoutUsd(resultat.usage) })
+      .eq('id', ligneJournal);
+
+    // Image refusée : rien n'est enregistré ni montré. L'essayage reste décompté (OpenAI l'a facturé) :
+    // sinon, provoquer des refus ferait générer des images à nos frais.
+    const image: Image = { octets: depuisBase64(resultat.base64), type: 'image/jpeg' };
+    if (!(await verifierResultat(image))) {
+      await finir('refuse', { message: MESSAGE_RESULTAT_REFUSE });
+      return;
+    }
+    const chemin = `${uid}/${essaiId}.jpg`;
+    const envoi = await admin.storage
+      .from('essayages')
+      .upload(chemin, image.octets, { contentType: image.type, upsert: true });
+    if (envoi.error) throw new Error(`Copie du résultat impossible : ${envoi.error.message}`);
+    await finir('fait', { resultat_path: chemin, message: null, erreur_technique: null });
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    console.error('essayage: fin échouée', detail);
+    await finir('erreur', { message: 'L’essayage a échoué.', erreur_technique: detail.slice(0, 500) });
+  }
+}
+
+async function suivre(supabase: SupabaseClient, admin: SupabaseClient, essaiId: string) {
   const { data: essai, error } = await supabase
     .from('essais')
-    .select('id, statut, kling_task_id, resultat_path, message')
+    .select('id, statut, lance_at, resultat_path, message')
     .eq('id', essaiId)
     .single();
   if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
-  if (essai.statut !== 'en_cours' || !essai.kling_task_id) {
-    return reponse(200, { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message });
-  }
 
-  const suivi = await kling(`/solutions?task_ids=${encodeURIComponent(essai.kling_task_id)}`, { method: 'GET' });
-  const tache = lireTache(suivi.data, essai.kling_task_id);
-  if (!tache || tache.status === 'submitted' || tache.status === 'processing') {
-    return reponse(200, { statut: 'en_cours' });
-  }
-
-  if (tache.status === 'failed') {
-    const message = tache.message ?? 'L’essayage a échoué.';
-    await nettoyerFiges(admin, uid, essai.id);
-    await admin.from('essais').update({ statut: 'erreur', message }).eq('id', essai.id);
+  // Tâche de fond arrêtée en route (plafond de durée du worker) : on libère l'essai et on rend l'essayage.
+  if (essai.statut === 'en_cours' && essaiAbandonne(essai.lance_at, new Date())) {
+    const message = 'L’essayage a pris trop de temps. Réessaie.';
+    const { data: libere } = await admin
+      .from('essais')
+      .update({ statut: 'erreur', message })
+      .eq('id', essai.id)
+      .eq('statut', 'en_cours')
+      .select('id');
+    if (libere?.length) {
+      await admin.from('essayages_journal').delete().eq('essai_id', essai.id).gte('created_at', essai.lance_at);
+    }
     return reponse(200, { statut: 'erreur', message });
   }
-
-  const urlSortie = imageDeSortie(tache);
-  if (!urlSortie) {
-    await nettoyerFiges(admin, uid, essai.id);
-    await admin.from('essais').update({ statut: 'erreur', message: 'Pas d’image en sortie.' }).eq('id', essai.id);
-    return reponse(200, { statut: 'erreur', message: 'Pas d’image en sortie.' });
-  }
-
-  // Kling efface ses images au bout de 30 jours : on copie le résultat chez nous, après vérification.
-  const image = await fetch(urlSortie, { signal: AbortSignal.timeout(20000) });
-  const type = (image.headers.get('content-type') ?? 'image/jpeg').split(';')[0].trim() as Image['type'];
-  const octets = new Uint8Array(await image.arrayBuffer());
-  // Format inattendu ou image refusée : rien n'est enregistré ni montré. L'essayage reste décompté
-  // (Kling l'a facturé) : sinon, provoquer des refus ferait générer des images à nos frais.
-  if (!TYPES_IMAGE.includes(type) || !(await verifierResultat({ octets, type }))) {
-    await nettoyerFiges(admin, uid, essai.id);
-    await admin.from('essais').update({ statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE }).eq('id', essai.id);
-    return reponse(200, { statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE });
-  }
-  const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
-  const chemin = `${uid}/${essai.id}.${extension}`;
-  const envoi = await admin.storage.from('essayages').upload(chemin, octets, { contentType: type, upsert: true });
-  if (envoi.error) throw new Error(`Copie du résultat impossible : ${envoi.error.message}`);
-
-  await nettoyerFiges(admin, uid, essai.id);
-  await admin.from('essais').update({ statut: 'fait', resultat_path: chemin }).eq('id', essai.id);
-  return reponse(200, { statut: 'fait', resultat_path: chemin });
+  return reponse(200, { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message });
 }
 
 Deno.serve(async (req) => {
@@ -315,7 +318,7 @@ Deno.serve(async (req) => {
   });
   const { data: utilisateur } = await supabase.auth.getUser();
   if (!utilisateur.user) return reponse(401, { erreur: 'Session invalide.' });
-  // Client serveur : seul à pouvoir écrire statut, résultat, journal et images figées.
+  // Client serveur : seul à pouvoir écrire statut, résultat et journal.
   // Chaque lecture des données de l'utilisateur passe d'abord par `supabase` (son JWT, règles RLS).
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
     auth: { persistSession: false },
@@ -332,12 +335,12 @@ Deno.serve(async (req) => {
 
   try {
     if (action === 'lancer') return await lancer(supabase, admin, utilisateur.user.id, essaiId);
-    if (action === 'suivre') return await suivre(supabase, admin, utilisateur.user.id, essaiId);
+    if (action === 'suivre') return await suivre(supabase, admin, essaiId);
     return reponse(400, { erreur: 'Action inconnue.' });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     if (message === 'cle_absente') {
-      return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé Kling manquante).' });
+      return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé OpenAI manquante).' });
     }
     if (message === 'moderation_cle_absente') {
       return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé de vérification manquante).' });
@@ -347,9 +350,6 @@ Deno.serve(async (req) => {
     }
     if (message.startsWith('abonnement:')) {
       return reponse(502, { erreur: 'Vérification de l’abonnement impossible. Réessaie dans un instant.' });
-    }
-    if (message.startsWith('kling:')) {
-      return reponse(502, { erreur: `Le service d’essayage a refusé la demande : ${message.slice(6)}` });
     }
     return reponse(500, { erreur: message });
   }

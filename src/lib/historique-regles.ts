@@ -35,7 +35,7 @@ export function fichiersDeLEssai(e: LigneEssai): { bucket: 'vetements' | 'essaya
   return fichiers;
 }
 
-// Un essai en cours ne se supprime pas : Kling travaille encore dessus et déposerait un résultat orphelin.
+// Un essai en cours ne se supprime pas : l'IA travaille encore dessus et déposerait un résultat orphelin.
 export function supprimable(e: Pick<LigneEssai, 'statut'>): boolean {
   return e.statut !== 'en_cours';
 }

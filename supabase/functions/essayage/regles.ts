@@ -64,7 +64,7 @@ Pour l'image 2 : personne_autorisee = false si la personne est nue, seulement en
 
 En cas de doute, réponds false.`;
 
-// --- Vérification de l'image PRODUITE (après Kling, avant de l'enregistrer et de l'afficher) ---
+// --- Vérification de l'image PRODUITE (après la génération, avant de l'enregistrer et de l'afficher) ---
 // Le 12 oct. 2026, Kling a retiré une robe et rendu un buste nu flouté : le filtre d'entrée ne suffit pas.
 
 export type VerdictResultat = {

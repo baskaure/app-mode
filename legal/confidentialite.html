@@ -155,8 +155,8 @@
 <h3>Supabase : hébergement des données et des photos</h3>
 <p>Base de données et stockage des fichiers, sur des serveurs situés à Paris (France). Supabase est une société américaine.</p>
 
-<h3>Kling AI : création de l’image d’essayage</h3>
-<p>À chaque essayage, ta photo et la photo du vêtement sont envoyées à Kling AI (société Kuaishou), qui crée l’image. Nous utilisons son service situé à Singapour, hors de l’Union européenne <span class="trou">[À CONFIRMER : lieu exact de traitement et de stockage chez Kling]</span>. D’après sa documentation, les images créées sont effacées de ses serveurs au bout de 30 jours. Nous en gardons une copie chez notre hébergeur pour te les montrer. <span class="trou">[À CONFIRMER : durée de conservation, chez Kling, des photos reçues]</span></p>
+<h3>OpenAI : création de l’image d’essayage</h3>
+<p>À chaque essayage, ta photo et la photo du vêtement sont envoyées à OpenAI (États-Unis), qui crée l’image. D’après sa documentation, les données envoyées à son API ne servent pas à entraîner ses modèles, et sont gardées au plus 30 jours pour la détection des abus, sauf obligation légale. Nous gardons une copie de l’image créée chez notre hébergeur pour te la montrer. <span class="trou">[À CONFIRMER : contrat de traitement (DPA) signé avec OpenAI ; option de traitement en Europe ou sans conservation, sur demande à OpenAI]</span></p>
 
 <h3>Anthropic : vérification automatique des images</h3>
 <p>Avant chaque essayage, ta photo et celle du vêtement sont vérifiées automatiquement par une IA d’Anthropic (États-Unis). Elle refuse la lingerie, les maillots de bain, les vêtements transparents et la nudité. Après l’essayage, l’image créée est vérifiée de la même façon : si elle montre de la nudité, elle n’est ni enregistrée ni affichée. Anthropic indique effacer les données reçues par son API sous 30 jours. Une image signalée comme contraire à ses règles d’usage peut être gardée jusqu’à 2 ans. Si un vêtement est refusé à tort, écris-nous.</p>
@@ -171,7 +171,7 @@
 <p>Ils distribuent l’app et encaissent l’abonnement, selon leurs propres politiques de confidentialité.</p>
 
 <h2>5. Transferts hors de l’Union européenne</h2>
-<p>Certaines données vont à Singapour (Kling AI) et aux États-Unis (Anthropic, RevenueCat). Ces transferts sont encadrés par <span class="trou">[À CONFIRMER AVANT PUBLICATION : clauses contractuelles types de la Commission européenne, ou certification au cadre UE-États-Unis, pour chaque prestataire]</span>. Tu peux nous demander une copie de ces garanties.</p>
+<p>Certaines données vont aux États-Unis (OpenAI, Anthropic, RevenueCat). Ces transferts sont encadrés par <span class="trou">[À CONFIRMER AVANT PUBLICATION : clauses contractuelles types de la Commission européenne, ou certification au cadre UE-États-Unis, pour chaque prestataire]</span>. Tu peux nous demander une copie de ces garanties.</p>
 
 <h2>6. Tes droits</h2>
 <p>Tu peux à tout moment :</p>
@@ -184,7 +184,7 @@
   <li>donner des directives sur le sort de tes données après ton décès (loi Informatique et Libertés, article 85).</li>
 </ul>
 <p><strong>Attention :</strong> supprimer ta photo n’efface pas les images d’essayage déjà créées, qui te montrent pourtant. Pour les effacer aussi, utilise « Supprimer toutes mes données » (ci-dessous).</p>
-<p><strong>Dans l’app :</strong> l’onglet « Essayer » permet de supprimer ta photo, et l’onglet « Dressing » de supprimer chaque pièce. Le lien « Supprimer toutes mes données », en bas de l’onglet « Essayer », efface d’un coup ton compte, tes photos, tes images d’essayage, ton dressing, tes réponses et ton historique, de nos serveurs et de chez RevenueCat. Les images déjà envoyées à Kling AI et à Anthropic y sont effacées selon leurs délais (section 4). Cette suppression ne résilie pas un abonnement en cours : résilie-le dans les réglages de ton store.</p>
+<p><strong>Dans l’app :</strong> l’onglet « Essayer » permet de supprimer ta photo, et l’onglet « Dressing » de supprimer chaque pièce. Le lien « Supprimer toutes mes données », en bas de l’onglet « Essayer », efface d’un coup ton compte, tes photos, tes images d’essayage, ton dressing, tes réponses et ton historique, de nos serveurs et de chez RevenueCat. Les images déjà envoyées à OpenAI et à Anthropic y sont effacées selon leurs délais (section 4). Cette suppression ne résilie pas un abonnement en cours : résilie-le dans les réglages de ton store.</p>
 <p><strong>Pour tes autres droits</strong>, écris à <span class="trou">[E-MAIL DE CONTACT]</span>, en indiquant l’identifiant affiché sur l’écran « Supprimer toutes mes données » (ton compte est anonyme). Nous répondons sous un mois.</p>
 <p>Supprimer l’app de ton téléphone n’efface pas tes données chez nous : utilise d’abord « Supprimer toutes mes données ».</p>
 <p>Si tu estimes que tes droits ne sont pas respectés, tu peux saisir la CNIL : <a href="https://www.cnil.fr/fr/plaintes">www.cnil.fr/fr/plaintes</a>.</p>
@@ -195,8 +195,8 @@
 <h2>8. Sécurité</h2>
 <ul>
   <li>Tes photos sont stockées dans des espaces privés. Chaque compte n’accède qu’à ses propres données.</li>
-  <li>Kling AI reçoit les photos par des liens temporaires, valables 15 minutes. La vérification automatique reçoit les images directement, sans lien.</li>
-  <li>Les copies faites pour un essayage sont effacées à la fin de l’essayage, qu’il réussisse ou échoue. Si l’app est fermée pendant un essayage, elles restent jusqu’à la suppression de ton compte.</li>
+  <li>Les photos sont envoyées directement à la vérification automatique puis à OpenAI, sans lien public.</li>
+  <li>Pour un essayage, tes photos sont lues en mémoire sur notre serveur, sans copie supplémentaire stockée.</li>
   <li>Les échanges entre l’app et nos serveurs sont chiffrés.</li>
 </ul>
 

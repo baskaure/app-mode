@@ -125,7 +125,7 @@ export async function essayer(essaiId: string, onEtape?: (etape: string) => void
   let etat = await appelerEssayage('lancer', essaiId);
   const fin = Date.now() + 3 * 60 * 1000;
   while (etat.statut === 'en_cours' && Date.now() < fin) {
-    onEtape?.('L’IA t’habille… (20 à 60 secondes)');
+    onEtape?.('L’IA t’habille… (jusqu’à 2 minutes)');
     await new Promise((r) => setTimeout(r, 3000));
     etat = await appelerEssayage('suivre', essaiId);
   }

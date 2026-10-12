@@ -1,6 +1,6 @@
 // Qui a droit à un essayage. Sans dépendance : testé par quota.test.ts (npm test).
 //   - sans abonnement : ESSAIS_GRATUITS essayages offerts au total (1 par défaut, « moment waouh ») ;
-//   - abonné : MAX_PAR_MOIS essayages par mois civil (plafond de coût Kling) ;
+//   - abonné : MAX_PAR_MOIS essayages par mois civil (plafond de coût de génération) ;
 //   - tous comptes confondus : GRATUITS_JOUR essayages offerts par jour (un compte anonyme se recrée à volonté).
 
 // Droit d'accès tel que renvoyé par l'API RevenueCat v1 (GET /v1/subscribers/{id}, `subscriber.entitlements`).
