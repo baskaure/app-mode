@@ -9,6 +9,7 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
 import { type Image, verifierImages } from './moderation.ts';
+import { droitActif, type Quota, verifierQuota } from './quota.ts';
 
 const KLING = 'https://api-singapore.klingai.com';
 const CORS = {
@@ -18,8 +19,14 @@ const CORS = {
 };
 // Durée des liens signés donnés à Kling pour lire les deux images figées.
 const DUREE_LIEN_KLING_S = 15 * 60;
-// Plafond d'essayages par utilisateur et par mois (le coût Kling est d'environ 0,112 $ par image).
+// Plafond d'essayages par abonné et par mois (le coût Kling est d'environ 0,112 $ par image).
 const MAX_PAR_MOIS = Number(Deno.env.get('ESSAIS_MAX_PAR_MOIS') ?? '30');
+// Essayages offerts sans abonnement, au total (le « moment waouh » avant le paywall).
+const ESSAIS_GRATUITS = Number(Deno.env.get('ESSAIS_GRATUITS') ?? '1');
+// Essayages offerts par jour, tous comptes confondus : borne le coût si quelqu'un recrée des comptes anonymes.
+const ESSAIS_GRATUITS_JOUR = Number(Deno.env.get('ESSAIS_GRATUITS_JOUR') ?? '50');
+// Droit d'accès RevenueCat qui ouvre l'abonnement (identifiant de l'« entitlement » dans le tableau de bord).
+const DROIT_ABONNEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
 
 function reponse(statut: number, corps: Record<string, unknown>) {
   return new Response(JSON.stringify(corps), { status: statut, headers: { ...CORS, 'Content-Type': 'application/json' } });
@@ -68,6 +75,12 @@ async function nettoyerFiges(admin: SupabaseClient, uid: string, essaiId: string
   if (data?.length) await admin.storage.from('figes').remove(data.map((f) => `${uid}/${essaiId}/${f.name}`));
 }
 
+function debutDuJour() {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
 function debutDuMois() {
   const d = new Date();
   d.setUTCDate(1);
@@ -75,13 +88,50 @@ function debutDuMois() {
   return d.toISOString();
 }
 
-async function compterCeMois(admin: SupabaseClient, uid: string) {
-  const { count } = await admin
-    .from('essayages_journal')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', uid)
-    .gte('created_at', debutDuMois());
-  return count;
+// Compte les essayages du journal : les siens (ce mois-ci, au total) et les offerts du jour, tous comptes confondus.
+// Une lecture ratée compte comme « plafond atteint ».
+async function compterEssayages(admin: SupabaseClient, uid: string) {
+  const compter = async (filtre: { uid?: string; depuis?: string; gratuit?: boolean }) => {
+    let requete = admin.from('essayages_journal').select('id', { count: 'exact', head: true });
+    if (filtre.uid) requete = requete.eq('user_id', filtre.uid);
+    if (filtre.depuis) requete = requete.gte('created_at', filtre.depuis);
+    if (filtre.gratuit) requete = requete.eq('gratuit', true);
+    const { count, error } = await requete;
+    return error || count === null ? Number.POSITIVE_INFINITY : count;
+  };
+  const [ceMois, total, offertsAujourdhui] = await Promise.all([
+    compter({ uid, depuis: debutDuMois() }),
+    compter({ uid }),
+    compter({ depuis: debutDuJour(), gratuit: true }),
+  ]);
+  return { ceMois, total, offertsAujourdhui };
+}
+
+// L'app ne dit pas elle-même si on est abonné : on le demande à RevenueCat avec la clé secrète.
+// Sans clé (pas encore branché), personne n'est abonné : seuls les essayages offerts passent.
+async function estAbonne(uid: string): Promise<boolean> {
+  const cle = Deno.env.get('REVENUECAT_SECRET_KEY');
+  if (!cle) return false;
+  const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(uid)}`, {
+    headers: { Authorization: `Bearer ${cle}` },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) throw new Error(`abonnement:${res.status}`);
+  const corps = await res.json().catch(() => null);
+  return droitActif(corps?.subscriber?.entitlements?.[DROIT_ABONNEMENT], new Date());
+}
+
+function refusQuota(quota: Exclude<Quota, { ok: true }>) {
+  if (quota.code === 'abonnement') {
+    return reponse(402, { erreur: 'Ton essayage offert est utilisé. Abonne-toi pour continuer.', code: 'abonnement' });
+  }
+  if (quota.code === 'offerts_du_jour') {
+    return reponse(402, {
+      erreur: 'Les essayages offerts du jour sont tous partis. Reviens demain, ou abonne-toi pour essayer tout de suite.',
+      code: 'abonnement',
+    });
+  }
+  return reponse(429, { erreur: `Tu as atteint ${MAX_PAR_MOIS} essayages ce mois-ci.`, code: 'plafond' });
 }
 
 async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: string, essaiId: string) {
@@ -104,11 +154,17 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     return reponse(400, { erreur: 'Ajoute d’abord une photo de toi.' });
   }
 
-  // Plafond atteint : on s'arrête avant de payer la vérification.
-  const dejaCeMois = await compterCeMois(admin, uid);
-  if (dejaCeMois === null || dejaCeMois >= MAX_PAR_MOIS) {
-    return reponse(429, { erreur: `Tu as atteint ${MAX_PAR_MOIS} essayages ce mois-ci.` });
-  }
+  // Droit à un essayage (offert ou abonnement) : on s'arrête avant de payer la vérification.
+  const abonne = await estAbonne(uid);
+  const quotaAvant = verifierQuota({
+    abonne,
+    ...(await compterEssayages(admin, uid)),
+    maxParMois: MAX_PAR_MOIS,
+    gratuits: ESSAIS_GRATUITS,
+    maxOffertsJour: ESSAIS_GRATUITS_JOUR,
+    inclus: false,
+  });
+  if (!quotaAvant.ok) return refusQuota(quotaAvant);
 
   // Réservation atomique : deux appels simultanés ne lancent qu'un seul essayage.
   // Un essai refusé est revérifié : la personne a pu changer sa photo de soi entre-temps.
@@ -136,19 +192,26 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
       return reponse(200, { statut: 'refuse', message: decision.message });
     }
 
-    // Plafond mensuel : on réserve une ligne du journal, puis on compte (y compris les réservations en parallèle).
+    // Quota : on réserve une ligne du journal, puis on recompte (y compris les réservations en parallèle).
     const { data: ligne, error: erreurJournal } = await admin
       .from('essayages_journal')
-      .insert({ user_id: uid, essai_id: essai.id })
+      .insert({ user_id: uid, essai_id: essai.id, gratuit: !abonne })
       .select('id')
       .single();
     if (erreurJournal || !ligne) throw new Error(`Journal indisponible : ${erreurJournal?.message}`);
-    const count = await compterCeMois(admin, uid);
-    if (count === null || count > MAX_PAR_MOIS) {
+    const quotaApres = verifierQuota({
+      abonne,
+      ...(await compterEssayages(admin, uid)),
+      maxParMois: MAX_PAR_MOIS,
+      gratuits: ESSAIS_GRATUITS,
+      maxOffertsJour: ESSAIS_GRATUITS_JOUR,
+      inclus: true,
+    });
+    if (!quotaApres.ok) {
       await admin.from('essayages_journal').delete().eq('id', ligne.id);
       await nettoyerFiges(admin, uid, essai.id);
       await remettre('a_faire', null);
-      return reponse(429, { erreur: `Tu as atteint ${MAX_PAR_MOIS} essayages ce mois-ci.` });
+      return refusQuota(quotaApres);
     }
 
     let taskId: string | undefined;
@@ -270,6 +333,9 @@ Deno.serve(async (req) => {
     }
     if (message.startsWith('moderation:')) {
       return reponse(502, { erreur: 'La vérification du vêtement n’a pas pu se faire. Réessaie dans un instant.' });
+    }
+    if (message.startsWith('abonnement:')) {
+      return reponse(502, { erreur: 'Vérification de l’abonnement impossible. Réessaie dans un instant.' });
     }
     if (message.startsWith('kling:')) {
       return reponse(502, { erreur: `Le service d’essayage a refusé la demande : ${message.slice(6)}` });

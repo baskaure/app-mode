@@ -74,6 +74,9 @@ export async function lireEssai(id: string): Promise<Essai> {
   return { ...(data as Omit<Essai, 'url'>), url: lien.data?.signedUrl ?? null };
 }
 
+// L'essayage offert est utilisé : l'écran doit ouvrir le paywall (réponse 402 du serveur, code « abonnement »).
+export class AbonnementRequis extends Error {}
+
 type ReponseEssayage = { statut: Essai['statut']; resultat_path?: string | null; message?: string | null };
 
 async function appelerEssayage(action: 'lancer' | 'suivre', essaiId: string): Promise<ReponseEssayage> {
@@ -83,6 +86,7 @@ async function appelerEssayage(action: 'lancer' | 'suivre', essaiId: string): Pr
   if (error) {
     if (error instanceof FunctionsHttpError) {
       const corps = await error.context.json().catch(() => null);
+      if (corps?.code === 'abonnement') throw new AbonnementRequis(corps.erreur ?? 'Abonne-toi pour continuer.');
       throw new Error(corps?.erreur ?? 'L’essayage n’a pas pu démarrer.');
     }
     throw new Error('Impossible de joindre le serveur. Vérifie ta connexion.');

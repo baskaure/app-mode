@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,15 @@ import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { listerPieces, type Piece } from '@/lib/dressing';
-import { essaiDepuisLien, essaiDepuisPhoto, essaiDepuisPiece, essayer, lireEssai, type Essai } from '@/lib/essais';
+import {
+  AbonnementRequis,
+  essaiDepuisLien,
+  essaiDepuisPhoto,
+  essaiDepuisPiece,
+  essayer,
+  lireEssai,
+  type Essai,
+} from '@/lib/essais';
 import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
@@ -83,6 +91,8 @@ export default function Vetement() {
       setResultat(await essayer(id, setEtape));
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
+      // Essayage offert déjà utilisé : on montre l'offre ; au retour, le même bouton relance l'essai.
+      if (e instanceof AbonnementRequis) router.push('/paywall');
     } finally {
       setEtape(null);
       setOccupe(false);

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { configurerAchats } from '@/lib/abonnement';
 import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 import { supabase } from '@/lib/supabase';
 
@@ -68,6 +69,8 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     (async () => {
       try {
         const id = await utilisateurCourant();
+        // RevenueCat suit le même id que Supabase : le serveur vérifie l'abonnement avec cet id.
+        configurerAchats(id);
         const { data, error } = await supabase.from('profils').select('*').eq('id', id).maybeSingle<LigneProfil>();
         if (error) throw error;
         if (!annule && data) {

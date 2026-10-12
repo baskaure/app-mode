@@ -59,7 +59,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 3. **Test de qualité de l'essayage** : 20 photos, 3 fournisseurs, jugés sur la fidélité au corps et au vêtement. On choisit ensuite.
 4. Fonction serveur d'essayage + écran photo de soi + écran résultat avec « pourquoi ça te va ».
 5. Entrées « envoyer une photo » et « coller un lien », puis le partage depuis une autre app.
-6. Paywall RevenueCat.
+6. ~~Paywall RevenueCat~~ (codé le 12 oct. 2026 : `src/app/paywall.tsx`, `src/lib/abonnement.ts` ; le serveur vérifie l'abonnement auprès de RevenueCat, 1 essayage offert puis paywall).
 7. Build de test (EAS) sur ton téléphone.
 8. V2 : inspirations par catalogue d'affiliation, dressing, bonne taille.
 
@@ -70,4 +70,8 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - [ ] **Avis juridique RGPD** : transfert des photos vers Kling (serveurs à Singapour, société Kuaishou), base légale, mention dans la politique de confidentialité.
 - [ ] **CAPTCHA** sur la création des comptes anonymes, et réglage « Allow manual linking » pour passer un compte anonyme en compte e-mail.
 - [ ] **Projet Supabase** passé en formule payante, sinon il se met en pause après 1 semaine sans activité.
-- [ ] Plafond d'essayages (`ESSAIS_MAX_PAR_MOIS`, 30 par défaut) relié à l'abonnement RevenueCat.
+- [x] Plafond d'essayages relié à l'abonnement RevenueCat (12 oct. 2026, `quota.ts`, tests : `npm test`). Sans abonnement : `ESSAIS_GRATUITS` (1) au total ; abonné : `ESSAIS_MAX_PAR_MOIS` (30) par mois.
+- [ ] **Brancher RevenueCat** : créer le projet, l'« entitlement » `premium`, une offre avec un paquet mensuel (9,99 €) et un annuel (39,99 €) reliés aux produits App Store et Google Play. Clés publiques dans `.env.local` (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`) ; clé secrète `REVENUECAT_SECRET_KEY` dans les secrets Supabase. Sans elle, personne n'est abonné (seul l'essayage offert passe).
+- [x] Comptes anonymes recréés à volonté : les essayages offerts sont aussi plafonnés à `ESSAIS_GRATUITS_JOUR` (50) par jour, tous comptes confondus, soit environ 5,6 $ par jour au maximum. Le CAPTCHA reste nécessaire.
+- [ ] Le jour où un vrai compte (e-mail) remplace le compte anonyme : appeler `Purchases.logIn` avec le nouvel id, sinon l'abonnement reste rattaché à l'ancien.
+- [ ] Créer la page **politique de confidentialité** et la mettre dans `EXPO_PUBLIC_URL_CONFIDENTIALITE` (sur iOS, les CGU tombent par défaut sur le contrat standard d'Apple).
