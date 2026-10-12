@@ -6,13 +6,13 @@ import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { CONSEILS } from '@/lib/morphologie';
+import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
 
 // Étape 4 du BRIEF : 3 tenues à plat avec « pourquoi ça te va », puis le mur de paiement.
 export default function Tenues() {
   const { profil } = useProfil();
-  const conseil = profil.silhouette ? CONSEILS[profil.silhouette] : null;
+  const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
 
   return (
     <ThemedView style={styles.fond}>

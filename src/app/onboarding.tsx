@@ -7,7 +7,7 @@ import { Bouton, Choix } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { CONSEILS, type EpaulesHanches, type ReponsesMorpho, type Taille, type Ventre } from '@/lib/morphologie';
+import { conseilPour, type EpaulesHanches, type ReponsesMorpho, type Taille, type Ventre, type Vestiaire } from '@/lib/morphologie';
 import { useProfil, type Style } from '@/state/profil';
 
 type Etape = {
@@ -30,7 +30,16 @@ export default function Onboarding() {
     }
   };
 
+  const homme = profil.vestiaire === 'homme';
   const etapes: Etape[] = [
+    {
+      question: 'Tu cherches des tenues…',
+      options: [
+        { label: 'Femme', valeur: 'femme' },
+        { label: 'Homme', valeur: 'homme' },
+      ],
+      appliquer: (v) => majProfil({ vestiaire: v as Vestiaire }),
+    },
     {
       question: 'Quel âge as-tu ?',
       options: [
@@ -58,8 +67,8 @@ export default function Onboarding() {
         { label: 'Casual', valeur: 'casual' },
         { label: 'Chic', valeur: 'chic' },
         { label: 'Streetwear', valeur: 'streetwear' },
-        { label: 'Clean girl', valeur: 'clean_girl' },
-        { label: 'Bohème', valeur: 'boheme' },
+        homme ? { label: 'Minimaliste', valeur: 'minimaliste' } : { label: 'Clean girl', valeur: 'clean_girl' },
+        homme ? { label: 'Workwear', valeur: 'workwear' } : { label: 'Bohème', valeur: 'boheme' },
         { label: 'Alternatif', valeur: 'alternatif' },
       ],
       appliquer: (v) => majProfil({ style: v as Style }),
@@ -103,7 +112,7 @@ export default function Onboarding() {
   }
 
   if (index >= etapes.length && profil.silhouette) {
-    const conseil = CONSEILS[profil.silhouette];
+    const conseil = conseilPour(profil.silhouette, profil.vestiaire ?? 'femme');
     return (
       <Ecran>
         <ThemedText type="small" themeColor="textSecondary">

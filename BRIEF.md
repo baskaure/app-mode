@@ -14,10 +14,12 @@ Chaque matin, « je n'ai rien à me mettre » alors que le placard est plein. Le
 Source : 993 avis App Store d'Alta lus le 11 oct. 2026, 79 avis à 3★ ou moins.
 
 ## Pour qui
-Femmes de 18 à 40 ans en France qui regardent du contenu mode sur TikTok/Instagram, avec un vrai placard et un problème de morphologie (ventre, petite taille, rondeurs, hanches). Les commentaires FR reviennent sans cesse sur ces sujets (voir `Formats-video-app-mode.md`).
+**Femmes et hommes** de 18 à 40 ans en France (choix du 12 oct. 2026) qui regardent du contenu mode sur TikTok/Instagram, avec un vrai placard et un problème de morphologie (ventre, petite taille, rondeurs, hanches, épaules). Les commentaires FR reviennent sans cesse sur ces sujets (voir `Formats-video-app-mode.md`). Première question de l'onboarding : vestiaire femme ou homme. Côté hommes, la silhouette en X n'est pas utilisée (ramenée à H).
+
+Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Commencer les vidéos par le public qui réagit le mieux.
 
 ## Le parcours V1 (une seule boucle, rien d'autre)
-1. **Onboarding qui vend** (modèle BlowUp) : 5 à 6 questions (ce qui te gêne, ton style, ton âge, ta taille, ton occasion la plus fréquente).
+1. **Onboarding qui vend** (modèle BlowUp) : 7 questions (vestiaire femme ou homme, âge, ce qui te gêne, style, puis 3 questions de morphologie).
 2. **Morphologie** : silhouette (A, H, V, X, 8, O) déduite des réponses et, en option, de 3 mesures. **Aucune photo du corps obligatoire.**
 3. **Moment « waouh »** : l'utilisateur photographie **3 à 10 pièces** de son placard. L'IA les reconnaît (type, couleur, coupe, matière) et propose **3 tenues qui vont à sa morphologie, avec ses vêtements à lui**, chacune avec une phrase : *pourquoi ça te va*.
 4. **Mur de paiement** juste avant la 4e tenue et le dressing illimité.
@@ -30,7 +32,7 @@ Femmes de 18 à 40 ans en France qui regardent du contenu mode sur TikTok/Instag
 - Pas de réseau social ni de profils publics.
 
 ## Modèle
-- Abonnement via RevenueCat. Prix de départ à tester : **9,99 €/mois ou 39,99 €/an** (hypothèse, à tester comme Robin : monter le prix tant que la conversion tient).
+- Abonnement via RevenueCat. Prix de départ : **9,99 €/mois ou 39,99 €/an** (validé le 12 oct. 2026, à tester comme Robin : monter le prix tant que la conversion tient).
 - Pas d'essai gratuit long : 3 tenues offertes, puis paiement.
 
 ## Technique

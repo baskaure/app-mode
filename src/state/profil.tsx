@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
-import { deduireSilhouette, type ReponsesMorpho, type Silhouette } from '@/lib/morphologie';
+import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 
 // État en mémoire pour la V1 du squelette. Sera remplacé par Supabase (étape 2 du BRIEF).
 
-export type Style = 'casual' | 'chic' | 'streetwear' | 'clean_girl' | 'boheme' | 'alternatif';
+export type Style = 'casual' | 'chic' | 'streetwear' | 'clean_girl' | 'minimaliste' | 'boheme' | 'workwear' | 'alternatif';
 
 export type Profil = {
+  vestiaire: Vestiaire | null;
   age: number | null;
   style: Style | null;
   gene: string | null;
@@ -21,7 +22,7 @@ type ProfilCtx = {
   terminerOnboarding: () => void;
 };
 
-const vide: Profil = { age: null, style: null, gene: null, morpho: null, silhouette: null };
+const vide: Profil = { vestiaire: null, age: null, style: null, gene: null, morpho: null, silhouette: null };
 
 const Ctx = createContext<ProfilCtx | null>(null);
 
@@ -32,7 +33,9 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
   const majProfil = (maj: Partial<Profil>) =>
     setProfil((p) => {
       const suivant = { ...p, ...maj };
-      return suivant.morpho ? { ...suivant, silhouette: deduireSilhouette(suivant.morpho) } : suivant;
+      return suivant.morpho
+        ? { ...suivant, silhouette: deduireSilhouette(suivant.morpho, suivant.vestiaire ?? 'femme') }
+        : suivant;
     });
 
   return (
