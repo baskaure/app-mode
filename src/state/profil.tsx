@@ -1,5 +1,13 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useCaptcha, type DemanderJeton } from '@/components/captcha-contexte';
+import { Bouton } from '@/components/choix';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { changerUtilisateurAchats, configurerAchats } from '@/lib/abonnement';
 import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 import { supabase } from '@/lib/supabase';
@@ -51,25 +59,40 @@ function depuisLigne(l: LigneProfil): Profil {
 }
 
 // Un compte anonyme est créé au premier lancement : aucune adresse e-mail demandée avant le moment « waouh ».
-async function utilisateurCourant(): Promise<string> {
+// Sa création passe par un CAPTCHA (Turnstile) quand il est configuré : voir src/lib/captcha.ts.
+async function utilisateurCourant(demanderJeton: DemanderJeton): Promise<string> {
   const { data } = await supabase.auth.getSession();
   if (data.session) return data.session.user.id;
-  const { data: anonyme, error } = await supabase.auth.signInAnonymously();
+  const captchaToken = await demanderJeton();
+  const { data: anonyme, error } = await supabase.auth.signInAnonymously({ options: { captchaToken } });
   if (error || !anonyme.user) throw new Error(error?.message ?? 'Connexion anonyme impossible');
   return anonyme.user.id;
 }
 
 export function ProfilProvider({ children }: { children: ReactNode }) {
+  const demanderJeton = useCaptcha();
   const [profil, setProfil] = useState<Profil>(vide);
   const [onboardingFini, setOnboardingFini] = useState(false);
   const [pret, setPret] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
+  // Pas de compte (CAPTCHA raté, pas de réseau…) : rien ne peut marcher, on le dit au lieu de continuer à vide.
+  const [connexionRatee, setConnexionRatee] = useState<string | null>(null);
+  const [tentative, setTentative] = useState(0);
 
   useEffect(() => {
     let annule = false;
     (async () => {
+      let id: string;
       try {
-        const id = await utilisateurCourant();
+        id = await utilisateurCourant(demanderJeton);
+      } catch (e) {
+        if (!annule) {
+          setConnexionRatee(e instanceof Error ? e.message : String(e));
+          setPret(true);
+        }
+        return;
+      }
+      try {
         // RevenueCat suit le même id que Supabase : le serveur vérifie l'abonnement avec cet id.
         configurerAchats(id);
         const { data, error } = await supabase.from('profils').select('*').eq('id', id).maybeSingle<LigneProfil>();
@@ -87,7 +110,13 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     return () => {
       annule = true;
     };
-  }, []);
+  }, [demanderJeton, tentative]);
+
+  const reessayer = () => {
+    setConnexionRatee(null);
+    setPret(false);
+    setTentative((t) => t + 1);
+  };
 
   const majProfil = (maj: Partial<Profil>) =>
     setProfil((p) => {
@@ -100,7 +129,7 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
   const terminerOnboarding = async () => {
     setOnboardingFini(true);
     try {
-      const id = await utilisateurCourant();
+      const id = await utilisateurCourant(demanderJeton);
       const { error } = await supabase.from('profils').upsert({
         id,
         vestiaire: profil.vestiaire,
@@ -126,16 +155,48 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     setProfil(vide);
     setOnboardingFini(false);
     setErreur(null);
-    const id = await utilisateurCourant();
+    let id: string;
+    try {
+      id = await utilisateurCourant(demanderJeton);
+    } catch (e) {
+      // Les données sont déjà effacées : sans nouveau compte, on montre l'écran « Connexion impossible ».
+      setConnexionRatee(e instanceof Error ? e.message : String(e));
+      return;
+    }
     await changerUtilisateurAchats(id);
   };
 
   return (
     <Ctx.Provider value={{ profil, pret, onboardingFini, erreur, majProfil, terminerOnboarding, repartirDeZero }}>
-      {children}
+      {connexionRatee ? <ConnexionRatee message={connexionRatee} onReessayer={reessayer} /> : children}
     </Ctx.Provider>
   );
 }
+
+function ConnexionRatee({ message, onReessayer }: { message: string; onReessayer: () => void }) {
+  return (
+    <ThemedView style={styles.fond}>
+      <SafeAreaView style={styles.zone}>
+        <ThemedText type="subtitle">Connexion impossible</ThemedText>
+        <ThemedText>{message}</ThemedText>
+        <Bouton label="Réessayer" onPress={onReessayer} />
+      </SafeAreaView>
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  fond: { flex: 1 },
+  zone: {
+    flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+    alignSelf: 'center',
+    padding: Spacing.four,
+    gap: Spacing.three,
+    justifyContent: 'center',
+  },
+});
 
 export function useProfil() {
   const ctx = useContext(Ctx);
