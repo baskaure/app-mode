@@ -4,11 +4,12 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Bouton } from '@/components/choix';
+import { Bouton, Choix } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { filtrerParAvis, type Filtre } from '@/lib/avis';
 import { listerEssais, supprimerEssai, type EssaiHistorique } from '@/lib/historique';
 import { dateCourte, libelleStatut, supprimable } from '@/lib/historique-regles';
 
@@ -21,6 +22,7 @@ export default function Historique() {
   const [erreur, setErreur] = useState<string | null>(null);
   // Suppression en deux temps : un premier appui demande confirmation.
   const [aConfirmer, setAConfirmer] = useState<string | null>(null);
+  const [filtre, setFiltre] = useState<Filtre>('tous');
 
   // Relu à chaque retour sur l'onglet (un essayage vient peut-être de se terminer).
   useFocusEffect(
@@ -55,6 +57,7 @@ export default function Historique() {
   };
 
   const maintenant = new Date();
+  const affiches = filtrerParAvis(essais, filtre);
 
   return (
     <ThemedView style={styles.fond}>
@@ -77,44 +80,62 @@ export default function Historique() {
               <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
             </>
           ) : (
-            <View style={styles.grille}>
-              {essais.map((essai) => {
-                const image = essai.urlResultat ?? essai.urlVetement;
-                return (
-                  <View key={essai.id} style={[styles.carte, { backgroundColor: theme.backgroundElement }]}>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={`Ouvrir l’essayage : ${libelleStatut(essai.statut)}`}
-                      onPress={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}>
-                      {image ? (
-                        <Image source={{ uri: image }} style={styles.photo} contentFit="cover" />
-                      ) : (
-                        <View style={styles.photo} />
-                      )}
-                      <View style={styles.legende}>
-                        <ThemedText type="smallBold">{libelleStatut(essai.statut)}</ThemedText>
-                        <ThemedText type="small" themeColor="textSecondary">
-                          {dateCourte(essai.created_at, maintenant)}
-                        </ThemedText>
-                      </View>
-                    </Pressable>
-                    {supprimable(essai) && (
+            <>
+              <View style={styles.filtres}>
+                <View style={styles.filtre}>
+                  <Choix label="Tous" selectionne={filtre === 'tous'} onPress={() => setFiltre('tous')} />
+                </View>
+                <View style={styles.filtre}>
+                  <Choix label="J’aime" selectionne={filtre === 'aime'} onPress={() => setFiltre('aime')} />
+                </View>
+              </View>
+              {affiches.length === 0 && (
+                <ThemedText themeColor="textSecondary">
+                  Aucun essayage aimé pour l’instant. Touche « J’aime » sous un résultat.
+                </ThemedText>
+              )}
+              <View style={styles.grille}>
+                {affiches.map((essai) => {
+                  const image = essai.urlResultat ?? essai.urlVetement;
+                  return (
+                    <View key={essai.id} style={[styles.carte, { backgroundColor: theme.backgroundElement }]}>
                       <Pressable
                         accessibilityRole="button"
-                        accessibilityLabel="Supprimer cet essayage"
-                        onPress={() => void supprimer(essai)}
-                        style={styles.supprimer}>
-                        <ThemedText
-                          type={aConfirmer === essai.id ? 'smallBold' : 'small'}
-                          themeColor={aConfirmer === essai.id ? 'text' : 'textSecondary'}>
-                          {aConfirmer === essai.id ? 'Toucher encore pour supprimer' : 'Supprimer'}
-                        </ThemedText>
+                        accessibilityLabel={`Ouvrir l’essayage : ${libelleStatut(essai.statut)}`}
+                        onPress={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}>
+                        {image ? (
+                          <Image source={{ uri: image }} style={styles.photo} contentFit="cover" />
+                        ) : (
+                          <View style={styles.photo} />
+                        )}
+                        <View style={styles.legende}>
+                          <ThemedText type="smallBold">
+                            {libelleStatut(essai.statut)}
+                            {essai.avis === 'aime' ? ' · J’aime' : essai.avis === 'aime_pas' ? ' · J’aime pas' : ''}
+                          </ThemedText>
+                          <ThemedText type="small" themeColor="textSecondary">
+                            {dateCourte(essai.created_at, maintenant)}
+                          </ThemedText>
+                        </View>
                       </Pressable>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
+                      {supprimable(essai) && (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel="Supprimer cet essayage"
+                          onPress={() => void supprimer(essai)}
+                          style={styles.supprimer}>
+                          <ThemedText
+                            type={aConfirmer === essai.id ? 'smallBold' : 'small'}
+                            themeColor={aConfirmer === essai.id ? 'text' : 'textSecondary'}>
+                            {aConfirmer === essai.id ? 'Toucher encore pour supprimer' : 'Supprimer'}
+                          </ThemedText>
+                        </Pressable>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+            </>
           )}
         </ScrollView>
       </SafeAreaView>
@@ -127,6 +148,8 @@ const styles = StyleSheet.create({
   zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
   contenu: { padding: Spacing.four, gap: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
   erreur: { color: '#D93025' },
+  filtres: { flexDirection: 'row', gap: Spacing.two },
+  filtre: { flex: 1 },
   grille: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   carte: { width: '48%', borderRadius: 14, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },

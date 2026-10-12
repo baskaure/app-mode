@@ -11,6 +11,7 @@ const essai: LigneEssai = {
   vetement_path: 'u1/vetement.jpg',
   resultat_path: 'u1/e1.jpg',
   created_at: '2026-10-12T10:00:00Z',
+  avis: null,
 };
 
 test('supprimer un essai efface son résultat et la photo du vêtement', () => {

@@ -18,7 +18,7 @@ async function liens(bucket: string, chemins: string[]): Promise<Map<string, str
 export async function listerEssais(): Promise<EssaiHistorique[]> {
   const { data, error } = await supabase
     .from('essais')
-    .select('id, statut, vetement_bucket, vetement_path, resultat_path, created_at')
+    .select('id, statut, vetement_bucket, vetement_path, resultat_path, created_at, avis')
     .order('created_at', { ascending: false })
     .limit(LIMITE);
   if (error) throw new Error(error.message);

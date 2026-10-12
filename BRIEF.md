@@ -22,7 +22,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
    - **Une inspiration proposée** selon sa morphologie et son style, à partir d'un catalogue d'affiliation (voir Technique).
 4. **Moment « waouh »** : l'IA habille la photo avec le vêtement, et une phrase dit **pourquoi ça va (ou pas) à ta morphologie**, d'après les règles de `src/lib/morphologie.ts`.
 5. **Mur de paiement** après le 1er essayage offert. Chaque essayage coûte environ 0,075 $ (FASHN, à confirmer selon le fournisseur retenu).
-6. **Abonnés** : essayages illimités (avec un plafond raisonnable), historique (*codé le 12 oct. 2026 : onglet « Essayages », rouvrir ou supprimer un essai*), « j'aime / j'aime pas », lien d'achat (affiliation).
+6. **Abonnés** : essayages illimités (avec un plafond raisonnable), historique (*codé le 12 oct. 2026 : onglet « Essayages », rouvrir ou supprimer un essai*), « j'aime / j'aime pas » (*codé le 12 oct. 2026 : sous chaque résultat, filtre « J'aime » dans l'historique ; colonne `avis`, seule modifiable par l'app, date posée par la base, migrations 000007-000008*). ⚠️ Le jour où ces avis servent à recommander des vêtements, c'est du profilage : revoir la base légale et la politique de confidentialité, lien d'achat (affiliation).
 7. **Option dressing** : ajouter ses propres pièces pour les essayer ou les associer avec un nouvel achat (« ça va avec ton jean noir »).
 
 ## Ce qu'on ne fait PAS en V1

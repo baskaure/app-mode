@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Bouton } from '@/components/choix';
+import { Bouton, Choix } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
@@ -12,6 +12,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { listerPieces, type Piece } from '@/lib/dressing';
 import {
   AbonnementRequis,
+  donnerAvis,
   essaiDepuisLien,
   essaiDepuisPhoto,
   essaiDepuisPiece,
@@ -19,6 +20,7 @@ import {
   lireEssai,
   type Essai,
 } from '@/lib/essais';
+import { basculerAvis, type Avis } from '@/lib/avis';
 import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
@@ -37,6 +39,7 @@ export default function Vetement() {
   const [essai, setEssai] = useState<Essai | null>(null);
   const [etape, setEtape] = useState<string | null>(null);
   const [resultat, setResultat] = useState<string | null>(null);
+  const [avisEnCours, setAvisEnCours] = useState(false);
   const { profil } = useProfil();
   const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
 
@@ -46,8 +49,8 @@ export default function Vetement() {
     lireEssai(essaiPartage)
       .then((e) => {
         if (annule) return;
+        setEssai(e);
         if (e.statut === 'fait' && e.urlResultat) setResultat(e.urlResultat);
-        else setEssai(e);
       })
       .catch((e: unknown) => !annule && setErreur(e instanceof Error ? e.message : String(e)));
     return () => {
@@ -104,6 +107,24 @@ export default function Vetement() {
     }
   };
 
+  // Un avis à la fois : les boutons sont bloqués le temps de l'enregistrement (pas de requêtes dans le désordre).
+  const choisirAvis = async (touche: Avis) => {
+    if (!essai || avisEnCours) return;
+    const avant = essai.avis;
+    const apres = basculerAvis(avant, touche);
+    setEssai({ ...essai, avis: apres });
+    setAvisEnCours(true);
+    try {
+      await donnerAvis(essai.id, apres);
+      setErreur(null);
+    } catch (e) {
+      setEssai({ ...essai, avis: avant });
+      setErreur(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAvisEnCours(false);
+    }
+  };
+
   if (resultat) {
     return (
       <Ecran>
@@ -115,6 +136,29 @@ export default function Vetement() {
         {conseil && (
           <ThemedText>
             {conseil.nom} : {conseil.objectif}
+          </ThemedText>
+        )}
+        {essai && (
+          <View style={styles.avis}>
+            <View style={styles.choixAvis}>
+              <Choix
+                label={essai.avis === 'aime' ? 'J’aime ✓' : 'J’aime'}
+                selectionne={essai.avis === 'aime'}
+                onPress={() => void choisirAvis('aime')}
+              />
+            </View>
+            <View style={styles.choixAvis}>
+              <Choix
+                label={essai.avis === 'aime_pas' ? 'J’aime pas ✓' : 'J’aime pas'}
+                selectionne={essai.avis === 'aime_pas'}
+                onPress={() => void choisirAvis('aime_pas')}
+              />
+            </View>
+          </View>
+        )}
+        {erreur && (
+          <ThemedText type="small" style={styles.erreur}>
+            {erreur}
           </ThemedText>
         )}
         <Bouton
@@ -238,4 +282,6 @@ const styles = StyleSheet.create({
   apercu: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
   erreur: { color: '#D93025' },
   ligne: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  avis: { flexDirection: 'row', gap: Spacing.two },
+  choixAvis: { flex: 1 },
 });

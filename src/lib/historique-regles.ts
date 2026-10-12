@@ -9,6 +9,7 @@ export type LigneEssai = {
   vetement_path: string;
   resultat_path: string | null;
   created_at: string;
+  avis: 'aime' | 'aime_pas' | null;
 };
 
 export function libelleStatut(statut: Statut): string {
