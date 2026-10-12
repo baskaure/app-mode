@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "app-mode-web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-lc", "source ~/.bashrc >/dev/null 2>&1; cd /home/baskaure/Documents/sites/app-mode && npx expo start --web --port 8081 --clear"],
+      "port": 8081
+    }
+  ]
+}
