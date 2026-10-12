@@ -74,6 +74,45 @@ Deno.serve(async (req) => {
         url: tache ? imageDeSortie(tache) : null,
       });
     }
+    // FASHN (comparaison du 13 oct.) : https://docs.fashn.ai, modèle tryon-v1.6, 1 crédit par image.
+    if (corps.action === 'lancer_fashn' && nomValide(corps.personne) && nomValide(corps.vetement)) {
+      const lien = async (nom: string) => {
+        const { data, error } = await supabase.storage
+          .from('vetements')
+          .createSignedUrl(`${COMPTE_DE_TEST}/banc/${nom}`, 15 * 60);
+        if (error || !data) throw new Error(`image ${nom} : ${error?.message}`);
+        return data.signedUrl;
+      };
+      const categories = ['auto', 'tops', 'bottoms', 'one-pieces'];
+      const res = await fetch('https://api.fashn.ai/v1/run', {
+        method: 'POST',
+        signal: AbortSignal.timeout(20000),
+        headers: { Authorization: `Bearer ${Deno.env.get('FASHN_API_KEY')}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model_name: 'tryon-v1.6',
+          inputs: {
+            model_image: await lien(corps.personne),
+            garment_image: await lien(corps.vetement),
+            category: categories.includes(corps.categorie) ? corps.categorie : 'auto',
+            mode: corps.mode === 'quality' ? 'quality' : 'balanced',
+            // false = la tenue d'origine est retirée avant d'habiller (peut-être meilleur pour la coupe).
+            segmentation_free: corps.segmentation_free !== false,
+            moderation_level: 'conservative',
+          },
+        }),
+      });
+      const r = await res.json().catch(() => ({}));
+      if (!res.ok || !r.id) return reponse(502, { erreur: `fashn:${r.message ?? r.error?.message ?? res.status}` });
+      return reponse(200, { task_id: r.id });
+    }
+    if (corps.action === 'suivre_fashn' && typeof corps.task_id === 'string') {
+      const res = await fetch(`https://api.fashn.ai/v1/status/${encodeURIComponent(corps.task_id)}`, {
+        signal: AbortSignal.timeout(20000),
+        headers: { Authorization: `Bearer ${Deno.env.get('FASHN_API_KEY')}` },
+      });
+      const r = await res.json().catch(() => ({}));
+      return reponse(200, { statut: r.status ?? 'inconnu', message: r.error?.message ?? null, url: r.output?.[0] ?? null });
+    }
     return reponse(400, { erreur: 'Requête invalide.' });
   } catch (e) {
     return reponse(502, { erreur: e instanceof Error ? e.message : String(e) });
