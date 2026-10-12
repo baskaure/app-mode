@@ -108,6 +108,14 @@ export default function Historique() {
                         ) : (
                           <View style={styles.photo} />
                         )}
+                        {/* Toute image produite reste signalée comme IA, même en vignette (promesse des fiches des stores). */}
+                        {essai.urlResultat && (
+                          <View style={styles.badgeIA} accessibilityLabel="Image créée par IA">
+                            <ThemedText type="smallBold" style={styles.badgeIATexte}>
+                              Créée par IA
+                            </ThemedText>
+                          </View>
+                        )}
                         <View style={styles.legende}>
                           <ThemedText type="smallBold">
                             {libelleStatut(essai.statut)}
@@ -153,6 +161,16 @@ const styles = StyleSheet.create({
   grille: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   carte: { width: '48%', borderRadius: 14, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
+  badgeIA: {
+    position: 'absolute',
+    top: Spacing.two,
+    left: Spacing.two,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  badgeIATexte: { color: '#ffffff' },
   legende: { paddingHorizontal: Spacing.two, paddingTop: Spacing.two, gap: 2 },
   supprimer: { padding: Spacing.two, alignItems: 'center' },
 });
