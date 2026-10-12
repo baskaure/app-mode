@@ -20,6 +20,8 @@ import {
   lireEssai,
   type Essai,
 } from '@/lib/essais';
+import { ID_EDITEUR_AWIN, chargerMarchands, ouvrirAchat } from '@/lib/achat';
+import { lienAchat, type LienAchat } from '@/lib/affiliation';
 import { basculerAvis, type Avis } from '@/lib/avis';
 import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
@@ -40,6 +42,22 @@ export default function Vetement() {
   const [etape, setEtape] = useState<string | null>(null);
   const [resultat, setResultat] = useState<string | null>(null);
   const [avisEnCours, setAvisEnCours] = useState(false);
+  // Le lien calculé est rangé avec l'article dont il vient : un autre essai n'affiche jamais un ancien bouton.
+  const [achatCalcule, setAchatCalcule] = useState<{ pour: string; lien: LienAchat | null } | null>(null);
+  const lienArticle = essai?.lien_url ?? null;
+  const achat = achatCalcule && achatCalcule.pour === lienArticle ? achatCalcule.lien : null;
+
+  // Lien d'achat (affilié si le marchand est dans marchands_affilies) quand le vêtement vient d'un lien d'article.
+  useEffect(() => {
+    if (!lienArticle) return;
+    let annule = false;
+    void chargerMarchands().then((marchands) => {
+      if (!annule) setAchatCalcule({ pour: lienArticle, lien: lienAchat(lienArticle, marchands, ID_EDITEUR_AWIN) });
+    });
+    return () => {
+      annule = true;
+    };
+  }, [lienArticle]);
   const { profil } = useProfil();
   const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
 
@@ -155,6 +173,16 @@ export default function Vetement() {
               />
             </View>
           </View>
+        )}
+        {achat && (
+          <>
+            <Bouton label="Voir l’article" onPress={() => void ouvrirAchat(achat.url)} />
+            {achat.affilie && (
+              <ThemedText type="small" themeColor="textSecondary">
+                Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.
+              </ThemedText>
+            )}
+          </>
         )}
         {erreur && (
           <ThemedText type="small" style={styles.erreur}>

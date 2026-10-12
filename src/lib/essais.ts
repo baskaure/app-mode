@@ -20,6 +20,8 @@ export type Essai = {
   // Lien de l'image d'essayage, si l'essai est déjà fait (rouvert depuis l'historique).
   urlResultat: string | null;
   avis: Avis | null;
+  // Adresse de l'article quand le vêtement vient d'un lien (sinon null : photo, capture, dressing).
+  lien_url: string | null;
 };
 
 export async function essaiDepuisPhoto(photo: Photo): Promise<string> {
@@ -80,7 +82,7 @@ export async function donnerAvis(essaiId: string, avis: Avis | null): Promise<vo
 export async function lireEssai(id: string): Promise<Essai> {
   const { data, error } = await supabase
     .from('essais')
-    .select('id, source, vetement_bucket, vetement_path, statut, resultat_path, avis')
+    .select('id, source, vetement_bucket, vetement_path, statut, resultat_path, avis, lien_url')
     .eq('id', id)
     .single();
   if (error) throw new Error(error.message);
