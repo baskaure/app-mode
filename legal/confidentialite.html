@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Politique de confidentialité</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --fond: #ffffff; --texte: #1a1a1a; --doux: #5c5c5c; --ligne: #e4e4e4; --carte: #f6f6f4; --accent: #8a3b12;
+    --trou-fond: #fff3cd; --trou-texte: #6b4e00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fond: #141414; --texte: #ececec; --doux: #a8a8a8; --ligne: #2e2e2e; --carte: #1e1e1e; --accent: #f0a476;
+      --trou-fond: #3d3210; --trou-texte: #ffe08a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fond: #141414; --texte: #ececec; --doux: #a8a8a8; --ligne: #2e2e2e; --carte: #1e1e1e; --accent: #f0a476;
+    --trou-fond: #3d3210; --trou-texte: #ffe08a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 4px; }
+  h2 { font-size: 1.25rem; margin: 40px 0 8px; padding-top: 16px; border-top: 1px solid var(--ligne); }
+  h3 { font-size: 1.02rem; margin: 20px 0 4px; }
+  p, li { margin: 6px 0; }
+  .date { color: var(--doux); margin: 0 0 24px; }
+  .resume { background: var(--carte); border-radius: 12px; padding: 16px 20px; }
+  .resume ul { padding-left: 20px; margin: 8px 0 0; }
+  .trou { background: var(--trou-fond); color: var(--trou-texte); padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .tableau { overflow-x: auto; margin: 12px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.94rem; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--ligne); }
+  th { font-weight: 600; }
+  a { color: var(--accent); }
+  @media (max-width: 600px) {
+    table { min-width: 0; }
+    thead { display: none; }
+    tr { display: block; background: var(--carte); border-radius: 12px; padding: 4px 14px; margin: 0 0 12px; }
+    td { display: block; border: 0; padding: 6px 0; }
+    td::before { content: attr(data-label); display: block; font-size: 0.8rem; font-weight: 600; color: var(--doux); }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Politique de confidentialité</h1>
+<p class="date">Application <span class="trou">[NOM DE L’APP]</span> · Dernière mise à jour : <span class="trou">[DATE DE PUBLICATION]</span></p>
+
+<div class="resume">
+  <strong>En bref</strong>
+  <ul>
+    <li>Pas de nom ni d’e-mail demandés : ton compte est anonyme.</li>
+    <li>Ta photo sert uniquement à tes essayages. Elle n’est ni publiée, ni vendue, ni utilisée pour te reconnaître.</li>
+    <li>Pour chaque essayage, ta photo et celle du vêtement passent par deux prestataires d’IA situés hors de l’Union européenne (voir la section 4).</li>
+    <li>Pas de publicité, pas de revente de données, pas de traceur publicitaire dans l’app.</li>
+    <li>Tu peux supprimer ta photo et ton dressing dans l’app, et nous demander d’effacer tout le reste.</li>
+  </ul>
+</div>
+
+<h2>1. Qui est responsable de tes données</h2>
+<p>Le responsable du traitement est <span class="trou">[NOM DE L’ÉDITEUR OU DE LA SOCIÉTÉ]</span>, <span class="trou">[FORME JURIDIQUE, SIREN]</span>, <span class="trou">[ADRESSE]</span>.</p>
+<p>Pour toute question sur tes données : <span class="trou">[E-MAIL DE CONTACT]</span>.</p>
+
+<h2>2. Les données que nous traitons, et pourquoi</h2>
+<div class="tableau">
+<table>
+  <thead>
+    <tr><th>Donnée</th><th>À quoi elle sert</th><th>Base légale (RGPD)</th><th>Durée de conservation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-label="Donnée">Identifiant de compte anonyme, créé au premier lancement</td>
+      <td data-label="À quoi elle sert">Faire fonctionner l’app et retrouver tes données</td>
+      <td data-label="Base légale">Exécution du service (contrat)</td>
+      <td data-label="Durée de conservation">Jusqu’à la suppression de ton compte</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Réponses au questionnaire : vestiaire (femme ou homme), tranche d’âge, style préféré, ce qui te gêne, trois questions sur ta silhouette, et la silhouette qui en est déduite</td>
+      <td data-label="À quoi elle sert">Te donner des conseils adaptés à ta morphologie</td>
+      <td data-label="Base légale">Exécution du service</td>
+      <td data-label="Durée de conservation">Jusqu’à la suppression de ton compte</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Ta photo en pied, et la date à laquelle tu as donné ton accord</td>
+      <td data-label="À quoi elle sert">Réaliser tes essayages virtuels</td>
+      <td data-label="Base légale">Ton consentement, donné avant l’envoi de la photo</td>
+      <td data-label="Durée de conservation">Jusqu’à ce que tu la supprimes ou la remplaces dans l’app (l’ancienne photo est alors effacée)</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Photos des vêtements à essayer (capture d’écran, photo, image tirée d’un lien d’article) et adresse du lien</td>
+      <td data-label="À quoi elle sert">Réaliser l’essayage</td>
+      <td data-label="Base légale">Exécution du service</td>
+      <td data-label="Durée de conservation">Jusqu’à la suppression de ton compte</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Images d’essayage créées par l’IA</td>
+      <td data-label="À quoi elle sert">Te montrer le résultat</td>
+      <td data-label="Base légale">Exécution du service</td>
+      <td data-label="Durée de conservation">Jusqu’à la suppression de ton compte</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Ton dressing : photos de tes pièces, catégorie, couleur, coupe, matière, description</td>
+      <td data-label="À quoi elle sert">Essayer et associer tes propres vêtements</td>
+      <td data-label="Base légale">Exécution du service</td>
+      <td data-label="Durée de conservation">Jusqu’à ce que tu supprimes la pièce dans l’app</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Historique des essayages : date, et si l’essayage était offert ou compris dans l’abonnement</td>
+      <td data-label="À quoi elle sert">Appliquer l’essayage offert et le nombre d’essayages par mois, et éviter les abus</td>
+      <td data-label="Base légale">Exécution du service et intérêt légitime (lutte contre la fraude)</td>
+      <td data-label="Durée de conservation">Jusqu’à la suppression de ton compte</td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Abonnement : identifiant de compte, reçu Apple ou jeton d’achat Google, type d’appareil, système, date de dernière utilisation</td>
+      <td data-label="À quoi elle sert">Savoir si tu es abonné et gérer l’abonnement</td>
+      <td data-label="Base légale">Exécution du contrat d’abonnement</td>
+      <td data-label="Durée de conservation"><span class="trou">[À CONFIRMER : durée de conservation chez RevenueCat]</span></td>
+    </tr>
+    <tr>
+      <td data-label="Donnée">Données techniques de connexion (adresse IP, date et heure)</td>
+      <td data-label="À quoi elle sert">Sécurité et bon fonctionnement du service</td>
+      <td data-label="Base légale">Intérêt légitime (sécurité)</td>
+      <td data-label="Durée de conservation"><span class="trou">[À CONFIRMER : durée des journaux chez Supabase]</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Ce qui est obligatoire.</strong> Aucune donnée n’est exigée par la loi. Certaines sont nécessaires au service : sans photo de toi, pas d’essayage ; sans photo ou lien du vêtement, rien à essayer ; sans réponses au questionnaire, pas de conseils de morphologie. Le dressing est facultatif.</p>
+<p><strong>Paiement.</strong> Le paiement de l’abonnement est géré par Apple (App Store) ou Google (Google Play). Nous ne voyons jamais ta carte bancaire.</p>
+
+<h2>3. Ce que nous ne faisons pas</h2>
+<ul>
+  <li>Nous ne demandons ni ton nom, ni ton e-mail, ni ton numéro de téléphone.</li>
+  <li>Nous n’utilisons pas ta photo pour te reconnaître ou t’identifier. Elle sert seulement à créer l’image d’essayage.</li>
+  <li>Nous ne publions pas tes photos et nous ne les montrons à personne d’autre que toi.</li>
+  <li>Nous ne vendons pas tes données et nous ne faisons pas de publicité ciblée.</li>
+  <li>L’app ne contient ni cookie, ni traceur publicitaire, ni outil de mesure d’audience.</li>
+  <li>Nous n’entraînons pas de modèle d’IA avec tes photos.</li>
+</ul>
+
+<h2>4. Nos prestataires</h2>
+<p>Ces sociétés traitent des données pour notre compte, uniquement pour faire fonctionner l’app.</p>
+
+<h3>Supabase : hébergement des données et des photos</h3>
+<p>Base de données et stockage des fichiers, sur des serveurs situés à Paris (France). Supabase est une société américaine.</p>
+
+<h3>Kling AI : création de l’image d’essayage</h3>
+<p>À chaque essayage, ta photo et la photo du vêtement sont envoyées à Kling AI (société Kuaishou), qui crée l’image. Nous utilisons son service situé à Singapour, hors de l’Union européenne <span class="trou">[À CONFIRMER : lieu exact de traitement et de stockage chez Kling]</span>. D’après sa documentation, les images créées sont effacées de ses serveurs au bout de 30 jours. Nous en gardons une copie chez notre hébergeur pour te les montrer. <span class="trou">[À CONFIRMER : durée de conservation, chez Kling, des photos reçues]</span></p>
+
+<h3>Anthropic : vérification automatique des images</h3>
+<p>Avant chaque essayage, ta photo et celle du vêtement sont vérifiées automatiquement par une IA d’Anthropic (États-Unis). Elle refuse la lingerie, les maillots de bain, les vêtements transparents et la nudité. Anthropic indique effacer les données reçues par son API sous 30 jours. Une image signalée comme contraire à ses règles d’usage peut être gardée jusqu’à 2 ans. Si un vêtement est refusé à tort, écris-nous.</p>
+
+<h3>RevenueCat : gestion des abonnements</h3>
+<p>RevenueCat (États-Unis, serveurs aux États-Unis) reçoit les informations d’achat transmises par Apple ou Google, pour savoir si ton abonnement est actif.</p>
+
+<h3>Apple et Google</h3>
+<p>Ils distribuent l’app et encaissent l’abonnement, selon leurs propres politiques de confidentialité.</p>
+
+<h2>5. Transferts hors de l’Union européenne</h2>
+<p>Certaines données vont à Singapour (Kling AI) et aux États-Unis (Anthropic, RevenueCat). Ces transferts sont encadrés par <span class="trou">[À CONFIRMER AVANT PUBLICATION : clauses contractuelles types de la Commission européenne, ou certification au cadre UE-États-Unis, pour chaque prestataire]</span>. Tu peux nous demander une copie de ces garanties.</p>
+
+<h2>6. Tes droits</h2>
+<p>Tu peux à tout moment :</p>
+<ul>
+  <li>accéder à tes données et en obtenir une copie ;</li>
+  <li>les faire corriger ou effacer ;</li>
+  <li>limiter leur utilisation ou t’y opposer ;</li>
+  <li>récupérer tes données dans un format lisible (portabilité) ;</li>
+  <li>retirer ton consentement pour ta photo, en la supprimant dans l’app. Le retrait ne remet pas en cause ce qui a été fait avant ;</li>
+  <li>donner des directives sur le sort de tes données après ton décès (loi Informatique et Libertés, article 85).</li>
+</ul>
+<p><strong>Attention :</strong> supprimer ta photo n’efface pas les images d’essayage déjà créées, qui te montrent pourtant. Pour les effacer aussi, demande la suppression de ton compte (ci-dessous).</p>
+<p><strong>Dans l’app :</strong> l’onglet « Essayer » permet de supprimer ta photo, et l’onglet « Dressing » de supprimer chaque pièce.</p>
+<p><strong>Pour tout le reste</strong>, y compris effacer ton compte et toutes tes données, écris à <span class="trou">[E-MAIL DE CONTACT]</span>. Comme ton compte est anonyme, indique l’identifiant affiché dans l’app <span class="trou">[À AJOUTER DANS L’APP : affichage de l’identifiant, ou bouton « Supprimer toutes mes données »]</span>. Nous répondons sous un mois.</p>
+<p>Supprimer l’app de ton téléphone n’efface pas tes données chez nous. Pense à nous écrire.</p>
+<p>Si tu estimes que tes droits ne sont pas respectés, tu peux saisir la CNIL : <a href="https://www.cnil.fr/fr/plaintes">www.cnil.fr/fr/plaintes</a>.</p>
+
+<h2>7. Âge minimum</h2>
+<p>L’app est réservée aux personnes de 15 ans et plus : le questionnaire de départ bloque l’accès en dessous. En France, c’est l’âge à partir duquel on peut consentir seul au traitement de ses données pour ce type de service. L’abonnement payant doit être souscrit par une personne majeure, ou avec l’accord d’un parent.</p>
+
+<h2>8. Sécurité</h2>
+<ul>
+  <li>Tes photos sont stockées dans des espaces privés. Chaque compte n’accède qu’à ses propres données.</li>
+  <li>Kling AI reçoit les photos par des liens temporaires, valables 15 minutes. La vérification automatique reçoit les images directement, sans lien.</li>
+  <li>Les copies faites pour un essayage sont effacées à la fin de l’essayage, qu’il réussisse ou échoue. Si l’app est fermée pendant un essayage, elles restent jusqu’à la suppression de ton compte.</li>
+  <li>Les échanges entre l’app et nos serveurs sont chiffrés.</li>
+</ul>
+
+<h2>9. Décision automatique</h2>
+<p>Le refus d’une image par la vérification automatique (section 4) est une décision prise par une machine. Elle n’a pas d’autre effet que d’empêcher cet essayage. Tu peux demander qu’une personne réexamine ce refus en nous écrivant.</p>
+
+<h2>10. Modifications</h2>
+<p>Si cette politique change, la nouvelle version est publiée sur cette page avec sa date. En cas de changement important, nous te prévenons dans l’app.</p>
+
+</main>
+</body>
+</html>

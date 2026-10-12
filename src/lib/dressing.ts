@@ -51,9 +51,12 @@ export async function listerPieces(): Promise<Piece[]> {
 }
 
 export async function supprimerPiece(piece: Piece): Promise<void> {
-  // Les essais faits avec cette pièce lisent sa photo : on les supprime avec elle.
-  const essais = await supabase.from('essais').delete().eq('piece_id', piece.id);
+  // Les essais faits avec cette pièce lisent sa photo : on les supprime avec elle, images de résultat comprises
+  // (sinon elles resteraient dans le bucket `essayages` sans aucune ligne qui les désigne).
+  const essais = await supabase.from('essais').delete().eq('piece_id', piece.id).select('resultat_path');
   if (essais.error) throw new Error(essais.error.message);
+  const resultats = essais.data.map((e) => e.resultat_path).filter((c): c is string => !!c);
+  if (resultats.length) await supabase.storage.from('essayages').remove(resultats);
   const { error } = await supabase.from('pieces').delete().eq('id', piece.id);
   if (error) throw new Error(error.message);
   await supabase.storage.from(BUCKET).remove([piece.photo_path]);

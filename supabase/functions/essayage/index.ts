@@ -244,6 +244,8 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     if (maj.error) throw new Error(`Enregistrement de la tâche impossible : ${maj.error.message}`);
     return reponse(200, { statut: 'en_cours' });
   } catch (e) {
+    // Les copies figées contiennent la photo de la personne : on ne les laisse pas traîner après un échec.
+    await nettoyerFiges(admin, uid, essai.id).catch(() => {});
     await remettre('erreur', 'L’essayage n’a pas pu démarrer.');
     throw e;
   }
