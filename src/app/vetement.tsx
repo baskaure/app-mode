@@ -25,7 +25,8 @@ import { choisirPhoto, type Source } from '@/lib/photos';
 import { fermer } from '@/lib/navigation';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
-// Un partage depuis une autre app (écran partage) arrive ici avec `?essai=<id>` déjà créé.
+// Un partage depuis une autre app (écran partage) ou l'historique arrive ici avec `?essai=<id>` déjà créé.
+// Un essai déjà fait s'ouvre directement sur son résultat.
 export default function Vetement() {
   const theme = useTheme();
   const { essai: essaiPartage } = useLocalSearchParams<{ essai?: string }>();
@@ -43,7 +44,11 @@ export default function Vetement() {
     if (!essaiPartage) return;
     let annule = false;
     lireEssai(essaiPartage)
-      .then((e) => !annule && setEssai(e))
+      .then((e) => {
+        if (annule) return;
+        if (e.statut === 'fait' && e.urlResultat) setResultat(e.urlResultat);
+        else setEssai(e);
+      })
       .catch((e: unknown) => !annule && setErreur(e instanceof Error ? e.message : String(e)));
     return () => {
       annule = true;
@@ -129,7 +134,11 @@ export default function Vetement() {
       <Ecran>
         <ThemedText type="subtitle">Vêtement prêt</ThemedText>
         {essai.url && <Image source={{ uri: essai.url }} style={styles.apercu} contentFit="contain" />}
-        <Bouton label="M’essayer ce vêtement" desactive={occupe} onPress={() => void lancerEssayage(essai.id)} />
+        <Bouton
+          label={essai.statut === 'en_cours' ? 'Voir le résultat' : 'M’essayer ce vêtement'}
+          desactive={occupe}
+          onPress={() => void lancerEssayage(essai.id)}
+        />
         {etape && (
           <View style={styles.ligne}>
             <ActivityIndicator />

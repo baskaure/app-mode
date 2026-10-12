@@ -20,6 +20,11 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="historique">
+        <NativeTabs.Trigger.Label>Essayages</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="clock.arrow.circlepath" md="history" />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="dressing">
         <NativeTabs.Trigger.Label>Dressing</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon

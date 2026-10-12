@@ -16,6 +16,8 @@ export type Essai = {
   vetement_path: string;
   statut: 'a_faire' | 'en_cours' | 'fait' | 'refuse' | 'erreur';
   url: string | null;
+  // Lien de l'image d'essayage, si l'essai est déjà fait (rouvert depuis l'historique).
+  urlResultat: string | null;
 };
 
 export async function essaiDepuisPhoto(photo: Photo): Promise<string> {
@@ -66,12 +68,20 @@ export async function essaiDepuisPiece(piece: Piece): Promise<string> {
 export async function lireEssai(id: string): Promise<Essai> {
   const { data, error } = await supabase
     .from('essais')
-    .select('id, source, vetement_bucket, vetement_path, statut')
+    .select('id, source, vetement_bucket, vetement_path, statut, resultat_path')
     .eq('id', id)
     .single();
   if (error) throw new Error(error.message);
+  const { resultat_path, ...essai } = data;
   const lien = await supabase.storage.from(data.vetement_bucket).createSignedUrl(data.vetement_path, DUREE_LIEN_S);
-  return { ...(data as Omit<Essai, 'url'>), url: lien.data?.signedUrl ?? null };
+  const resultat = resultat_path
+    ? await supabase.storage.from('essayages').createSignedUrl(resultat_path, DUREE_LIEN_S)
+    : null;
+  return {
+    ...(essai as Omit<Essai, 'url' | 'urlResultat'>),
+    url: lien.data?.signedUrl ?? null,
+    urlResultat: resultat?.data?.signedUrl ?? null,
+  };
 }
 
 // L'essayage offert est utilisé : l'écran doit ouvrir le paywall (réponse 402 du serveur, code « abonnement »).
