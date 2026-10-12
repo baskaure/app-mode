@@ -35,7 +35,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - Bonus : commissions d'affiliation sur les liens d'achat (5 à 8 % du panier, voir la note Obsidian). C'est un bonus, pas le moteur.
 
 ## Technique
-- **App** : Expo SDK 57 + Expo Router, TypeScript. Le partage depuis une autre app passe par une extension de partage iOS et une intention Android (configuration Expo à vérifier).
+- **App** : Expo SDK 57 + Expo Router, TypeScript. Le partage depuis une autre app passe par le module officiel `expo-sharing` (expérimental en SDK 57) : extension de partage iOS + intention Android, écran `src/app/partage.tsx`, codé le 12 oct. 2026. Une capture d'écran ou une photo passe avant un lien. **Pas encore testé sur téléphone** (il faut un build de développement). Identifiant provisoire `com.cortexa.appmode`, définitif à la première publication en boutique.
 - **Données et comptes** : Supabase, projet `app-mode` (organisation Free « business »), comptes anonymes au départ.
 - **Essayage** : une API spécialisée (FASHN, ou une autre à comparer) appelée **uniquement depuis une fonction serveur** (Supabase Edge Function). Clé d'API jamais dans l'app. **À tester sur 20 vraies photos avant de coder l'écran**, pour vérifier la fidélité au corps.
 - **Lien d'article → image** : Edge Function `extraire-vetement` qui lit l'image de partage (og:image) de la page. **Test du 12 oct. 2026 : la plupart des sites de mode bloquent la lecture automatique** (403 chez Kiabi, Celio, Lacoste, La Redoute, Decathlon, Uniqlo ; Zara sans image de partage ; Vinted OK). On ne contourne pas ces protections. La capture d'écran reste la voie fiable ; le lien est un bonus.

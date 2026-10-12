@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,9 +17,10 @@ import { choisirPhoto, type Source } from '@/lib/photos';
 import { fermer } from '@/lib/navigation';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
-// Le partage direct depuis une autre app (Zara, Vinted…) viendra avec le build natif.
+// Un partage depuis une autre app (écran partage) arrive ici avec `?essai=<id>` déjà créé.
 export default function Vetement() {
   const theme = useTheme();
+  const { essai: essaiPartage } = useLocalSearchParams<{ essai?: string }>();
   const [lien, setLien] = useState('');
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [occupe, setOccupe] = useState(false);
@@ -28,6 +30,17 @@ export default function Vetement() {
   const [resultat, setResultat] = useState<string | null>(null);
   const { profil } = useProfil();
   const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
+
+  useEffect(() => {
+    if (!essaiPartage) return;
+    let annule = false;
+    lireEssai(essaiPartage)
+      .then((e) => !annule && setEssai(e))
+      .catch((e: unknown) => !annule && setErreur(e instanceof Error ? e.message : String(e)));
+    return () => {
+      annule = true;
+    };
+  }, [essaiPartage]);
 
   useEffect(() => {
     let annule = false;

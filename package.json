@@ -17,6 +17,7 @@
     "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.12",
     "expo-router": "~57.0.26",
+    "expo-sharing": "~57.0.23",
     "expo-splash-screen": "~57.0.10",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.3",
@@ -45,7 +46,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:filtre": "node --test supabase/functions/essayage/regles.test.ts"
+    "test:filtre": "node --test supabase/functions/essayage/regles.test.ts",
+    "test:partage": "node --test src/lib/partage.test.ts"
   },
   "private": true
 }
