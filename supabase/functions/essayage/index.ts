@@ -9,6 +9,7 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
 import { type Image, verifierImages } from './moderation.ts';
+import { imageDeSortie, lireTache } from './kling-suivi.ts';
 import { droitActif, type Quota, verifierQuota } from './quota.ts';
 
 const KLING = 'https://api-singapore.klingai.com';
@@ -263,7 +264,7 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   }
 
   const suivi = await kling(`/solutions?task_ids=${encodeURIComponent(essai.kling_task_id)}`, { method: 'GET' });
-  const tache = (suivi.data as Array<{ status: string; message?: string; outputs?: Array<{ type: string; url: string }> }>)[0];
+  const tache = lireTache(suivi.data, essai.kling_task_id);
   if (!tache || tache.status === 'submitted' || tache.status === 'processing') {
     return reponse(200, { statut: 'en_cours' });
   }
@@ -275,15 +276,15 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     return reponse(200, { statut: 'erreur', message });
   }
 
-  const sortie = tache.outputs?.find((o) => o.type === 'image');
-  if (!sortie) {
+  const urlSortie = imageDeSortie(tache);
+  if (!urlSortie) {
     await nettoyerFiges(admin, uid, essai.id);
     await admin.from('essais').update({ statut: 'erreur', message: 'Pas d’image en sortie.' }).eq('id', essai.id);
     return reponse(200, { statut: 'erreur', message: 'Pas d’image en sortie.' });
   }
 
   // Kling efface ses images au bout de 30 jours : on copie le résultat chez nous.
-  const image = await fetch(sortie.url, { signal: AbortSignal.timeout(20000) });
+  const image = await fetch(urlSortie, { signal: AbortSignal.timeout(20000) });
   const type = (image.headers.get('content-type') ?? 'image/jpeg').split(';')[0].trim();
   const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
   const chemin = `${uid}/${essai.id}.${extension}`;
