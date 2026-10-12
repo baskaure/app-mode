@@ -18,6 +18,7 @@ export default function RootLayout() {
           <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
           <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
           <Stack.Screen name="photo-soi" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="vetement" options={{ presentation: 'modal' }} />
         </Stack>
       </ProfilProvider>
     </ThemeProvider>

@@ -61,10 +61,7 @@ export default function Essayer() {
               {silhouette.url && (
                 <Image source={{ uri: silhouette.url }} style={styles.photo} contentFit="contain" />
               )}
-              <Bouton label="Choisir un vêtement à essayer" desactive onPress={() => {}} />
-              <ThemedText type="small" themeColor="textSecondary">
-                Bientôt : partage un article, colle un lien ou envoie la photo d’un vêtement.
-              </ThemedText>
+              <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
               <Bouton label="Changer ma photo" onPress={() => router.push('/photo-soi')} />
               <Bouton label="Supprimer ma photo" onPress={() => void supprimer()} />
             </>

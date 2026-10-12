@@ -51,6 +51,9 @@ export async function listerPieces(): Promise<Piece[]> {
 }
 
 export async function supprimerPiece(piece: Piece): Promise<void> {
+  // Les essais faits avec cette pièce lisent sa photo : on les supprime avec elle.
+  const essais = await supabase.from('essais').delete().eq('piece_id', piece.id);
+  if (essais.error) throw new Error(essais.error.message);
   const { error } = await supabase.from('pieces').delete().eq('id', piece.id);
   if (error) throw new Error(error.message);
   await supabase.storage.from(BUCKET).remove([piece.photo_path]);

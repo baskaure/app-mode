@@ -38,7 +38,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - **App** : Expo SDK 57 + Expo Router, TypeScript. Le partage depuis une autre app passe par une extension de partage iOS et une intention Android (configuration Expo à vérifier).
 - **Données et comptes** : Supabase, projet `app-mode` (organisation Free « business »), comptes anonymes au départ.
 - **Essayage** : une API spécialisée (FASHN, ou une autre à comparer) appelée **uniquement depuis une fonction serveur** (Supabase Edge Function). Clé d'API jamais dans l'app. **À tester sur 20 vraies photos avant de coder l'écran**, pour vérifier la fidélité au corps.
-- **Lien d'article → image** : lecture des métadonnées publiques de la page (image principale), côté serveur. Respect des conditions de chaque site : à vérifier.
+- **Lien d'article → image** : Edge Function `extraire-vetement` qui lit l'image de partage (og:image) de la page. **Test du 12 oct. 2026 : la plupart des sites de mode bloquent la lecture automatique** (403 chez Kiabi, Celio, Lacoste, La Redoute, Decathlon, Uniqlo ; Zara sans image de partage ; Vinted OK). On ne contourne pas ces protections. La capture d'écran reste la voie fiable ; le lien est un bonus.
 - **Catalogue d'inspirations** : les flux produits des réseaux d'affiliation (Awin, Effiliation…), et non le scraping de Google Shopping, qui n'a pas d'API publique.
 - **Concurrent à surveiller** : Google fait déjà l'essayage sur sa propre photo aux États-Unis (Search, Shopping, app Doppl, depuis juillet 2025). Arrivée en France : à confirmer.
 
