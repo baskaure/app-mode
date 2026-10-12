@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,7 +17,7 @@ type Etape = {
 };
 
 export default function Onboarding() {
-  const { profil, majProfil, terminerOnboarding } = useProfil();
+  const { profil, pret, onboardingFini, majProfil, terminerOnboarding } = useProfil();
   const [index, setIndex] = useState(0);
   const [trop_jeune, setTropJeune] = useState(false);
   const [morpho, setMorpho] = useState<Partial<ReponsesMorpho>>({});
@@ -102,6 +102,8 @@ export default function Onboarding() {
     },
   ];
 
+  if (pret && onboardingFini) return <Redirect href="/" />;
+
   if (trop_jeune) {
     return (
       <Ecran>
@@ -129,7 +131,7 @@ export default function Onboarding() {
         <Bouton
           label="Ajouter mes 3 premières pièces"
           onPress={() => {
-            terminerOnboarding();
+            void terminerOnboarding();
             router.replace('/dressing');
           }}
         />

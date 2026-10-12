@@ -4,7 +4,8 @@ import AppTabs from '@/components/app-tabs';
 import { useProfil } from '@/state/profil';
 
 export default function TabsLayout() {
-  const { onboardingFini } = useProfil();
+  const { pret, onboardingFini } = useProfil();
+  if (!pret) return null;
   if (!onboardingFini) return <Redirect href="/onboarding" />;
   return <AppTabs />;
 }
