@@ -32,6 +32,14 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "L'app accède à tes photos pour ajouter des vêtements à ton dressing.",
+          "cameraPermission": "L'app utilise l'appareil photo pour photographier tes vêtements.",
+          "microphonePermission": false
+        }
       ]
     ],
     "experiments": {

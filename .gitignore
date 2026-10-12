@@ -41,3 +41,8 @@ example
 # generated native folders
 /ios
 /android
+
+# Tests de qualité de l essayage (images, hors git)
+tests-essayage/images/
+tests-essayage/resultats/
+__pycache__/
