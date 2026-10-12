@@ -64,7 +64,9 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 8. V2 : inspirations par catalogue d'affiliation, dressing, bonne taille.
 
 ## À faire avant tout lancement public (bloquant)
-- [ ] **Filtre lingerie / maillots / transparence** sur l'image du vêtement, côté serveur, avant l'appel à Kling (pas encore codé).
+- [x] **Filtre lingerie / maillots / transparence** codé le 12 oct. 2026 (`supabase/functions/essayage/moderation.ts` + `regles.ts`, tests : `npm run test:filtre`). Claude Haiku 5.5 vérifie le vêtement **et** la photo de soi avant Kling ; en cas de doute ou de panne, l'essai est bloqué. Les images vérifiées sont figées (bucket `figes`) pour que Kling reçoive exactement ce qui a été vérifié ; l'app ne peut plus écrire le statut ni contourner le plafond (migration 000005, journal `essayages_journal`). Coût estimé : moins de 0,001 $ par essayage (à confirmer sur la facture).
+- [ ] **Ajouter le secret `ANTHROPIC_API_KEY`** dans Supabase (sans lui, l'essayage renvoie 503). Puis tester le filtre sur 10 vraies images (5 à refuser, 5 à accepter) avant le lancement.
+- [ ] **Avis juridique : Anthropic (États-Unis) voit aussi la photo de soi** (mentionné dans le consentement de `photo-soi.tsx`).
 - [ ] **Avis juridique RGPD** : transfert des photos vers Kling (serveurs à Singapour, société Kuaishou), base légale, mention dans la politique de confidentialité.
 - [ ] **CAPTCHA** sur la création des comptes anonymes, et réglage « Allow manual linking » pour passer un compte anonyme en compte e-mail.
 - [ ] **Projet Supabase** passé en formule payante, sinon il se met en pause après 1 semaine sans activité.

@@ -1,0 +1,47 @@
+// Verrou du filtre lingerie : npm run test:filtre (Node 24, types effacés à la volée).
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import { CATEGORIES_AUTORISEES, CATEGORIES_REFUSEES, decider, MESSAGES, SCHEMA } from './regles.ts';
+
+const ok = { vetement_categorie: 'haut', vetement_autorise: true, personne_autorisee: true } as const;
+
+test('un haut sur une photo correcte passe', () => {
+  assert.deepEqual(decider(ok), { autorise: true });
+});
+
+test('lingerie, maillot et transparent sont bloqués même si le modèle dit autorisé', () => {
+  for (const c of ['lingerie_sous_vetement', 'maillot_de_bain', 'transparent'] as const) {
+    assert.deepEqual(decider({ ...ok, vetement_categorie: c }), { autorise: false, message: MESSAGES.lingerie });
+  }
+});
+
+test('une catégorie autorisée mais jugée sexualisée est bloquée', () => {
+  assert.equal(decider({ ...ok, vetement_autorise: false }).autorise, false);
+});
+
+test('une photo de soi dénudée bloque, quel que soit le vêtement', () => {
+  assert.deepEqual(decider({ ...ok, personne_autorisee: false }), { autorise: false, message: MESSAGES.personne });
+});
+
+test('pas de vêtement visible : message dédié', () => {
+  assert.deepEqual(decider({ ...ok, vetement_categorie: 'pas_un_vetement' }), {
+    autorise: false,
+    message: MESSAGES.pas_un_vetement,
+  });
+});
+
+test('réponse absente ou inconnue : bloqué (fail-closed)', () => {
+  assert.equal(decider(null).autorise, false);
+  assert.equal(decider({ ...ok, vetement_categorie: 'inconnue' as never }).autorise, false);
+});
+
+test('le schéma JSON liste exactement les catégories du code', () => {
+  assert.deepEqual(SCHEMA.properties.vetement_categorie.enum, [...CATEGORIES_AUTORISEES, ...CATEGORIES_REFUSEES]);
+  assert.equal(SCHEMA.additionalProperties, false);
+});
+
+test('un booléen mal formé (texte "true") ne vaut pas un feu vert', () => {
+  assert.equal(decider({ ...ok, vetement_autorise: 'true' as never }).autorise, false);
+  assert.equal(decider({ ...ok, personne_autorisee: 1 as never }).autorise, false);
+});

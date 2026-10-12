@@ -95,8 +95,9 @@ export default function PhotoSoi() {
               />
               <ThemedText type="small" style={styles.texteConsentement}>
                 C’est bien moi sur la photo, et j’ai plus de 15 ans. Ma photo reste privée et sert uniquement à mes
-                essayages. Pour chaque essayage, elle est envoyée à notre prestataire d’IA (Kling, serveurs à
-                Singapour, hors de l’Union européenne). Je peux la supprimer quand je veux.
+                essayages. Pour chaque essayage, elle est vérifiée automatiquement (Anthropic, États-Unis) puis
+                envoyée à notre prestataire d’IA (Kling, serveurs à Singapour), donc hors de l’Union européenne. Je
+                peux la supprimer quand je veux.
               </ThemedText>
             </Pressable>
           )}
