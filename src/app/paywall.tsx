@@ -19,10 +19,10 @@ import {
 } from '@/lib/abonnement';
 import { fermer } from '@/lib/navigation';
 
-// Paywall (étape 6 du BRIEF), affiché après l'essayage offert. Prix validés le 12 oct. 2026 : 39,99 €/an ou
+// Paywall (étape 6 du BRIEF), affiché après l'essayage offert. Prix validés le 12 oct. 2026 : 59,99 €/an ou
 // 9,99 €/mois. Les prix affichés viennent du store quand il répond ; le serveur vérifie l'abonnement lui-même.
 const PRIX_AFFICHES = {
-  annuel: { prix: '39,99 € par an', parMois: '3,33 € par mois' },
+  annuel: { prix: '59,99 € par an', parMois: '5,00 € par mois' },
   mensuel: { prix: '9,99 € par mois', parMois: null },
 } as const;
 

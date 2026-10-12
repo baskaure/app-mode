@@ -31,7 +31,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - Pas de lingerie ni de maillots de bain dans l'essayage (voir les garde-fous).
 
 ## Modèle
-- Abonnement via RevenueCat : **9,99 €/mois ou 39,99 €/an** (validé le 12 oct. 2026, à tester).
+- Abonnement via RevenueCat : **9,99 €/mois ou 59,99 €/an** (validé le 12 oct. 2026 ; annuel relevé de 39,99 à 59,99 € pour couvrir les crédits d'essayage, 1 €/mois/abonné).
 - Bonus : commissions d'affiliation sur les liens d'achat (5 à 8 % du panier, voir la note Obsidian). C'est un bonus, pas le moteur.
 
 ## Technique
@@ -81,7 +81,7 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 - [ ] Tester le widget dans la WebView sur un vrai téléphone (iOS et Android).
 - [ ] **Projet Supabase** passé en formule payante, sinon il se met en pause après 1 semaine sans activité.
 - [x] Plafond d'essayages relié à l'abonnement RevenueCat (12 oct. 2026, `quota.ts`, tests : `npm test`). Sans abonnement : `ESSAIS_GRATUITS` (1) au total ; abonné : `ESSAIS_MAX_PAR_MOIS` (30) par mois.
-- [ ] **Brancher RevenueCat** : créer le projet, l'« entitlement » `premium`, une offre avec un paquet mensuel (9,99 €) et un annuel (39,99 €) reliés aux produits App Store et Google Play. Clés publiques dans `.env.local` (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`) ; clé secrète `REVENUECAT_SECRET_KEY` dans les secrets Supabase. Sans elle, personne n'est abonné (seul l'essayage offert passe).
+- [ ] **Brancher RevenueCat** : créer le projet, l'« entitlement » `premium`, une offre avec un paquet mensuel (9,99 €) et un annuel (59,99 €) reliés aux produits App Store et Google Play. Clés publiques dans `.env.local` (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`) ; clé secrète `REVENUECAT_SECRET_KEY` dans les secrets Supabase. Sans elle, personne n'est abonné (seul l'essayage offert passe).
 - [x] Comptes anonymes recréés à volonté : les essayages offerts sont aussi plafonnés à `ESSAIS_GRATUITS_JOUR` (50) par jour, tous comptes confondus, soit environ 5,6 $ par jour au maximum. Le CAPTCHA reste nécessaire.
 - [ ] Le jour où un vrai compte (e-mail) remplace le compte anonyme : appeler `Purchases.logIn` avec le nouvel id, sinon l'abonnement reste rattaché à l'ancien.
 - [x] **Politique de confidentialité rédigée** le 12 oct. 2026 : `legal/confidentialite.html` (page autonome, prête à héberger). Relue par le vérificateur (GO). **Avant publication** : remplir les 13 passages surlignés en jaune (éditeur, contact, garanties de transfert, durées chez RevenueCat, Supabase et Kling), la faire valider par un juriste, l'héberger, puis mettre son adresse dans `EXPO_PUBLIC_URL_CONFIDENTIALITE`.
