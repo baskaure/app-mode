@@ -78,6 +78,14 @@ export default function Essayer() {
             </ThemedText>
           )}
           <Bouton label="Voir l’offre complète" onPress={() => router.push('/paywall')} />
+          <ThemedText
+            type="small"
+            themeColor="textSecondary"
+            style={styles.lienDiscret}
+            accessibilityRole="button"
+            onPress={() => router.push('/supprimer-donnees')}>
+            Supprimer toutes mes données
+          </ThemedText>
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -88,6 +96,7 @@ const styles = StyleSheet.create({
   fond: { flex: 1 },
   zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
   contenu: { padding: Spacing.four, gap: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
+  lienDiscret: { textAlign: 'center', textDecorationLine: 'underline', paddingVertical: Spacing.two },
   photo: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
   erreur: { color: '#D93025' },
 });

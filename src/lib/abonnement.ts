@@ -32,6 +32,17 @@ export function configurerAchats(uid: string) {
   configure = true;
 }
 
+// Nouveau compte (après suppression des données) : RevenueCat doit suivre le nouvel id.
+export async function changerUtilisateurAchats(uid: string) {
+  if (!configure) return configurerAchats(uid);
+  await Purchases.logIn(uid);
+}
+
+// Écran de gestion de l'abonnement du store (pour résilier). Sans effet hors app mobile.
+export async function gererAbonnement() {
+  if (configure) await Purchases.showManageSubscriptions();
+}
+
 export function estAbonne(info: CustomerInfo): boolean {
   return info.entitlements.active[DROIT_ABONNEMENT] !== undefined;
 }

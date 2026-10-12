@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-import { configurerAchats } from '@/lib/abonnement';
+import { changerUtilisateurAchats, configurerAchats } from '@/lib/abonnement';
 import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 import { supabase } from '@/lib/supabase';
 
@@ -22,6 +22,7 @@ type ProfilCtx = {
   erreur: string | null;
   majProfil: (maj: Partial<Profil>) => void;
   terminerOnboarding: () => Promise<void>;
+  repartirDeZero: () => Promise<void>;
 };
 
 const vide: Profil = { vestiaire: null, age: null, style: null, gene: null, morpho: null, silhouette: null };
@@ -118,8 +119,19 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Après « Supprimer toutes mes données » : le compte n'existe plus. On oublie la session locale,
+  // on vide l'état et on recrée un compte anonyme neuf, comme au premier lancement.
+  const repartirDeZero = async () => {
+    await supabase.auth.signOut({ scope: 'local' });
+    setProfil(vide);
+    setOnboardingFini(false);
+    setErreur(null);
+    const id = await utilisateurCourant();
+    await changerUtilisateurAchats(id);
+  };
+
   return (
-    <Ctx.Provider value={{ profil, pret, onboardingFini, erreur, majProfil, terminerOnboarding }}>
+    <Ctx.Provider value={{ profil, pret, onboardingFini, erreur, majProfil, terminerOnboarding, repartirDeZero }}>
       {children}
     </Ctx.Provider>
   );
