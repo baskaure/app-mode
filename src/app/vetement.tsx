@@ -27,6 +27,7 @@ import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
 import { fermer } from '@/lib/navigation';
+import { enregistrerImage } from '@/lib/telecharger';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
 // Un partage depuis une autre app (écran partage) ou l'historique arrive ici avec `?essai=<id>` déjà créé.
@@ -42,6 +43,7 @@ export default function Vetement() {
   const [etape, setEtape] = useState<string | null>(null);
   const [resultat, setResultat] = useState<string | null>(null);
   const [avisEnCours, setAvisEnCours] = useState(false);
+  const [enregistrement, setEnregistrement] = useState<'en_cours' | 'fait' | null>(null);
   // Le lien calculé est rangé avec l'article dont il vient : un autre essai n'affiche jamais un ancien bouton.
   const [achatCalcule, setAchatCalcule] = useState<{ pour: string; lien: LienAchat | null } | null>(null);
   const lienArticle = essai?.lien_url ?? null;
@@ -143,14 +145,39 @@ export default function Vetement() {
     }
   };
 
+  const telechargerResultat = async () => {
+    if (!resultat) return;
+    setEnregistrement('en_cours');
+    try {
+      await enregistrerImage(resultat, `essayage-${essai?.id ?? Date.now()}.png`);
+      setEnregistrement('fait');
+      setErreur(null);
+    } catch (e) {
+      setEnregistrement(null);
+      setErreur(e instanceof Error ? e.message : String(e));
+    }
+  };
+
   if (resultat) {
     return (
       <Ecran>
         <ThemedText type="subtitle">Sur toi</ThemedText>
-        <Image source={{ uri: resultat }} style={styles.apercu} contentFit="contain" />
+        <Pressable
+          accessibilityRole="imagebutton"
+          accessibilityLabel="Agrandir l’image"
+          onPress={() =>
+            router.push({ pathname: '/image', params: { url: resultat, nom: `essayage-${essai?.id ?? 'image'}.png` } })
+          }>
+          <Image source={{ uri: resultat }} style={styles.apercu} contentFit="contain" />
+        </Pressable>
         <ThemedText type="small" themeColor="textSecondary">
-          Image créée par IA à partir de ta photo.
+          Image créée par IA à partir de ta photo. Touche-la pour l’agrandir.
         </ThemedText>
+        <Bouton
+          label={enregistrement === 'fait' ? 'Image enregistrée ✓' : 'Télécharger l’image'}
+          desactive={enregistrement === 'en_cours'}
+          onPress={() => void telechargerResultat()}
+        />
         {conseil && (
           <ThemedText>
             {conseil.nom} : {conseil.objectif}
@@ -194,6 +221,7 @@ export default function Vetement() {
           onPress={() => {
             setResultat(null);
             setEssai(null);
+            setEnregistrement(null);
           }}
         />
         <Bouton label="Fermer" onPress={() => fermer()} />

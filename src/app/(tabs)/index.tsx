@@ -1,21 +1,27 @@
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { conseilPour } from '@/lib/morphologie';
 import { lireSilhouette, supprimerSilhouette, type Silhouette } from '@/lib/silhouette';
+import { suggestions, touche } from '@/lib/suggestions';
 import { useProfil } from '@/state/profil';
 
 // Onglet principal : la photo de soi, puis (étape suivante du BRIEF) le vêtement à essayer.
 export default function Essayer() {
   const { profil } = useProfil();
+  const theme = useTheme();
   const conseil = profil.silhouette ? conseilPour(profil.silhouette, profil.vestiaire ?? 'femme') : null;
+  // Idées de pièces (version rapide, sans catalogue) : règles de la silhouette + mot-clé du style.
+  const idees =
+    conseil && profil.style ? suggestions(conseil.aPrivilegier, profil.style, profil.vestiaire ?? 'femme') : [];
   const [silhouette, setSilhouette] = useState<Silhouette | null>(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -72,6 +78,35 @@ export default function Essayer() {
             </>
           )}
 
+          {idees.length > 0 && profil.style && (
+            <View style={styles.idees}>
+              <ThemedText type="smallBold">Idées pour toi</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                Choisies pour ta silhouette et ton style ({touche(profil.style)}). Trouve un article, puis partage-le
+                vers l’app, ou fais une capture et choisis-la pour l’essayer.
+              </ThemedText>
+              {idees.map((idee) => (
+                <View key={idee.piece} style={[styles.idee, { backgroundColor: theme.backgroundElement }]}>
+                  <ThemedText style={styles.ideeNom}>{idee.piece}</ThemedText>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel={`Chercher ${idee.piece} sur Vinted`}
+                    onPress={() => void Linking.openURL(idee.vinted)}
+                    style={[styles.lien, { borderColor: theme.textSecondary }]}>
+                    <ThemedText type="small">Vinted</ThemedText>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel={`Chercher ${idee.piece} sur Google Shopping`}
+                    onPress={() => void Linking.openURL(idee.google)}
+                    style={[styles.lien, { borderColor: theme.textSecondary }]}>
+                    <ThemedText type="small">Google</ThemedText>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          )}
+
           {erreur && (
             <ThemedText type="small" style={styles.erreur}>
               {erreur}
@@ -99,4 +134,8 @@ const styles = StyleSheet.create({
   lienDiscret: { textAlign: 'center', textDecorationLine: 'underline', paddingVertical: Spacing.two },
   photo: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
   erreur: { color: '#D93025' },
+  idees: { gap: Spacing.two },
+  idee: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, padding: Spacing.three, borderRadius: 14 },
+  ideeNom: { flex: 1 },
+  lien: { paddingHorizontal: Spacing.two, paddingVertical: Spacing.one, borderRadius: 10, borderWidth: 1 },
 });

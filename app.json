@@ -67,6 +67,17 @@
             ]
           }
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "L'app accède à tes photos pour ajouter des vêtements à ton dressing.",
+          "savePhotosPermission": "L'app enregistre tes essayages dans ta galerie quand tu le demandes.",
+          "isAccessMediaLocationEnabled": false,
+          "granularPermissions": [
+            "photo"
+          ]
+        }
       ]
     ],
     "experiments": {
