@@ -124,6 +124,13 @@ async function estAbonne(uid: string): Promise<boolean> {
   return droitActif(corps?.subscriber?.entitlements?.[DROIT_ABONNEMENT], new Date());
 }
 
+// Compte de test (table `testeurs`, écrite à la main par l'équipe) : ni paiement ni plafond.
+// Une lecture ratée vaut « pas testeur » : on retombe sur les règles normales.
+async function estTesteur(admin: SupabaseClient, uid: string): Promise<boolean> {
+  const { data } = await admin.from('testeurs').select('user_id').eq('user_id', uid).maybeSingle();
+  return !!data;
+}
+
 function refusQuota(quota: Exclude<Quota, { ok: true }>) {
   if (quota.code === 'abonnement') {
     return reponse(402, { erreur: 'Ton essayage offert est utilisé. Abonne-toi pour continuer.', code: 'abonnement' });
@@ -158,8 +165,9 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   }
 
   // Droit à un essayage (offert ou abonnement) : on s'arrête avant de payer la vérification.
-  const abonne = await estAbonne(uid);
-  const quotaAvant = verifierQuota({
+  const testeur = await estTesteur(admin, uid);
+  const abonne = testeur || (await estAbonne(uid));
+  const quotaAvant: Quota = testeur ? { ok: true } : verifierQuota({
     abonne,
     ...(await compterEssayages(admin, uid)),
     maxParMois: MAX_PAR_MOIS,
@@ -210,7 +218,7 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
       .select('id')
       .single();
     if (erreurJournal || !ligne) throw new Error(`Journal indisponible : ${erreurJournal?.message}`);
-    const quotaApres = verifierQuota({
+    const quotaApres: Quota = testeur ? { ok: true } : verifierQuota({
       abonne,
       ...(await compterEssayages(admin, uid)),
       maxParMois: MAX_PAR_MOIS,
