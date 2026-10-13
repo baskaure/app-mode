@@ -1,41 +1,26 @@
-// Edge Function : essayage d'un vêtement sur la photo de soi, par OpenAI (gpt-image-2.5-sunburst, choisi le 12 oct. 2026).
-//   POST { action: 'lancer', essai_id } → vérifie, réserve le quota, puis génère l'image en tâche de fond
-//     (EdgeRuntime.waitUntil : une image peut prendre jusqu'à 2 minutes) ; l'essai passe « en_cours ».
-//   POST { action: 'suivre', essai_id } → lit l'état de l'essai (l'app interroge toutes les 3 s).
+// Edge Function : essayage d'un vêtement sur la photo de soi, par GPT Image 2.5 (sunburst) via Kie.ai.
+// Choisi le 12 oct. 2026 ; Kie.ai revend l'accès au modèle d'OpenAI (voir kie.ts pour la doc).
+//   POST { action: 'lancer', essai_id } → vérifie, réserve le quota, crée la tâche Kie ; l'essai passe « en_cours ».
+//   POST { action: 'suivre', essai_id } → interroge Kie ; si c'est fini, vérifie l'image et la copie dans `essayages`.
 // Avant la génération, moderation.ts refuse lingerie, maillots, transparence et nudité (statut « refuse »).
 // Après, l'image produite est vérifiée à son tour : refusée, elle n'est ni enregistrée ni affichée.
-// Les clés OPENAI_API_KEY et ANTHROPIC_API_KEY sont des secrets Supabase : elles ne quittent jamais le serveur.
+// Les clés KIE_API_KEY et ANTHROPIC_API_KEY sont des secrets Supabase : elles ne quittent jamais le serveur.
 // Lectures avec le JWT de l'utilisateur (RLS) ; écritures des colonnes serveur avec service_role (migration 000005).
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
 import { type Image, verifierImages, verifierResultat } from './moderation.ts';
-import {
-  CONSIGNE_ESSAYAGE,
-  depuisBase64,
-  essaiAbandonne,
-  estimerCoutUsd,
-  lireReponse,
-  MODELE_IMAGE,
-  type ResultatImage,
-  TAILLE_IMAGE,
-} from './openai-reponse.ts';
+import { corpsCreation, essaiAbandonne, KIE, lireCreation, lireTache } from './kie.ts';
 import { MESSAGE_RESULTAT_REFUSE } from './regles.ts';
 import { droitActif, type Quota, verifierQuota } from './quota.ts';
 
-// Tâches de fond des Edge Functions (https://supabase.com/docs/guides/functions/background-tasks).
-declare const EdgeRuntime: { waitUntil(tache: Promise<unknown>): void };
-
-const OPENAI_EDITS = 'https://api.openai.com/v1/images/edits';
-// Qualité de l'image (low, medium, high…) : elle fixe surtout le coût. Réglable sans redéployer.
-const QUALITE = Deno.env.get('ESSAI_QUALITE') ?? 'medium';
-// Au-delà, on abandonne : le worker gratuit s'arrête à 150 s (vérifications comprises).
-const DELAI_OPENAI_MS = 120_000;
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+// Durée des liens signés donnés à Kie pour lire les deux images figées.
+const DUREE_LIEN_KIE_S = 15 * 60;
 // Plafond d'essayages par abonné et par mois (budget : environ 1 € de génération par abonné et par mois).
 const MAX_PAR_MOIS = Number(Deno.env.get('ESSAIS_MAX_PAR_MOIS') ?? '30');
 // Essayages offerts sans abonnement, au total (le « moment waouh » avant le paywall).
@@ -49,40 +34,48 @@ function reponse(statut: number, corps: Record<string, unknown>) {
   return new Response(JSON.stringify(corps), { status: statut, headers: { ...CORS, 'Content-Type': 'application/json' } });
 }
 
-// Une seule requête : la personne (image 1) et le vêtement (image 2), tels qu'ils ont été vérifiés.
-async function genererImage(personne: Image, vetement: Image): Promise<ResultatImage> {
-  const cle = Deno.env.get('OPENAI_API_KEY');
+// La clé Kie a d'abord été rangée sous OPENAI_API_KEY (12 oct. 2026) : on accepte les deux noms.
+function cleKie() {
+  return Deno.env.get('KIE_API_KEY') ?? Deno.env.get('OPENAI_API_KEY');
+}
+
+async function kie(chemin: string, init: RequestInit): Promise<unknown> {
+  const cle = cleKie();
   if (!cle) throw new Error('cle_absente');
-  const formulaire = new FormData();
-  formulaire.append('model', MODELE_IMAGE);
-  formulaire.append('prompt', CONSIGNE_ESSAYAGE);
-  formulaire.append('image[]', new Blob([new Uint8Array(personne.octets)], { type: personne.type }), 'personne');
-  formulaire.append('image[]', new Blob([new Uint8Array(vetement.octets)], { type: vetement.type }), 'vetement');
-  formulaire.append('size', TAILLE_IMAGE);
-  formulaire.append('quality', QUALITE);
-  formulaire.append('output_format', 'jpeg');
-  formulaire.append('n', '1');
-  const res = await fetch(OPENAI_EDITS, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${cle}` },
-    body: formulaire,
-    signal: AbortSignal.timeout(DELAI_OPENAI_MS),
+  const res = await fetch(`${KIE}${chemin}`, {
+    ...init,
+    signal: AbortSignal.timeout(20000),
+    headers: { Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' },
   });
-  const corps = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(`openai:${corps?.error?.message ?? res.status}`);
-  return lireReponse(corps);
+  return await res.json().catch(() => null);
 }
 
 const TYPES_IMAGE = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
-// Lit l'image avec le JWT de l'utilisateur (donc seulement ses fichiers). Les mêmes octets, gardés en mémoire,
-// passent à la vérification puis à OpenAI : rien ne peut être remplacé entre les deux, et aucune copie n'est stockée.
-async function lireImage(supabase: SupabaseClient, bucket: string, chemin: string): Promise<Image> {
+// Copie l'image de l'utilisateur dans `figes` (bucket sans accès utilisateur) : il ne peut plus la remplacer
+// entre la vérification et la lecture par Kie. La lecture se fait avec son JWT, donc seulement ses fichiers.
+async function figer(supabase: SupabaseClient, admin: SupabaseClient, bucket: string, chemin: string, cible: string) {
   const { data, error } = await supabase.storage.from(bucket).download(chemin);
   if (error || !data) throw new Error(`Image introuvable : ${error?.message}`);
   const type = (data.type || 'image/jpeg').split(';')[0].trim() as Image['type'];
   if (!TYPES_IMAGE.includes(type)) throw new Error('Format d’image non pris en charge.');
-  return { octets: new Uint8Array(await data.arrayBuffer()), type };
+  const octets = new Uint8Array(await data.arrayBuffer());
+  const envoi = await admin.storage.from('figes').upload(cible, octets, { contentType: type, upsert: true });
+  if (envoi.error) throw new Error(`Copie de l’image impossible : ${envoi.error.message}`);
+  const lien = await admin.storage.from('figes').createSignedUrl(cible, DUREE_LIEN_KIE_S);
+  if (lien.error || !lien.data) throw new Error(`Lien de l’image impossible : ${lien.error?.message}`);
+  return { image: { octets, type } satisfies Image, url: lien.data.signedUrl };
+}
+
+// Un dossier par essai, un nom unique par tentative : une relance ne réécrit jamais une image déjà donnée à Kie.
+function cheminsFiges(uid: string, essaiId: string) {
+  const tentative = `${Date.now()}-${crypto.randomUUID()}`;
+  return { vetement: `${uid}/${essaiId}/${tentative}-vetement`, personne: `${uid}/${essaiId}/${tentative}-personne` };
+}
+
+async function nettoyerFiges(admin: SupabaseClient, uid: string, essaiId: string) {
+  const { data } = await admin.storage.from('figes').list(`${uid}/${essaiId}`);
+  if (data?.length) await admin.storage.from('figes').remove(data.map((f) => `${uid}/${essaiId}/${f.name}`));
 }
 
 function debutDuJour() {
@@ -152,8 +145,8 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     .single();
   if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
   if (essai.statut === 'en_cours' || essai.statut === 'fait') return reponse(200, { statut: essai.statut });
-  // Sans clé OpenAI, inutile de payer la vérification.
-  if (!Deno.env.get('OPENAI_API_KEY')) throw new Error('cle_absente');
+  // Sans clé Kie, inutile de payer la vérification.
+  if (!cleKie()) throw new Error('cle_absente');
 
   const { data: profil } = await supabase
     .from('profils')
@@ -178,24 +171,34 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
 
   // Réservation atomique : deux appels simultanés ne lancent qu'un seul essayage.
   // Un essai refusé est revérifié : la personne a pu changer sa photo de soi entre-temps.
+  // `lance_at` est posé ICI, avant la ligne du journal : suivre() retrouve cette ligne par created_at >= lance_at
+  // (posé après, le 13 oct. 2026, le coût n'était jamais noté et un échec n'était jamais rendu).
   const { data: reserve } = await admin
     .from('essais')
-    .update({ statut: 'en_cours', message: null, lance_at: new Date().toISOString() })
+    .update({
+      statut: 'en_cours',
+      tache_id: null,
+      message: null,
+      erreur_technique: null,
+      lance_at: new Date().toISOString(),
+    })
     .eq('id', essai.id)
     .eq('user_id', uid)
     .in('statut', ['a_faire', 'refuse', 'erreur'])
     .select('id');
   if (!reserve?.length) return reponse(200, { statut: 'en_cours' });
 
-  const remettre = (statut: string, message: string | null) =>
-    admin.from('essais').update({ statut, message }).eq('id', essai.id);
+  const remettre = (statut: string, message: string | null, technique: string | null = null) =>
+    admin.from('essais').update({ statut, message, erreur_technique: technique }).eq('id', essai.id);
 
   try {
-    const vetement = await lireImage(supabase, essai.vetement_bucket, essai.vetement_path);
-    const personne = await lireImage(supabase, 'silhouettes', profil.photo_soi_path);
+    const chemins = cheminsFiges(uid, essai.id);
+    const vetement = await figer(supabase, admin, essai.vetement_bucket, essai.vetement_path, chemins.vetement);
+    const personne = await figer(supabase, admin, 'silhouettes', profil.photo_soi_path, chemins.personne);
 
-    const decision = await verifierImages(vetement, personne);
+    const decision = await verifierImages(vetement.image, personne.image);
     if (!decision.autorise) {
+      await nettoyerFiges(admin, uid, essai.id);
       await remettre('refuse', decision.message);
       return reponse(200, { statut: 'refuse', message: decision.message });
     }
@@ -217,96 +220,100 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     });
     if (!quotaApres.ok) {
       await admin.from('essayages_journal').delete().eq('id', ligne.id);
+      await nettoyerFiges(admin, uid, essai.id);
       await remettre('a_faire', null);
       return refusQuota(quotaApres);
     }
 
-    // La génération continue après la réponse : l'app suit l'avancement avec « suivre ».
-    EdgeRuntime.waitUntil(generer(admin, uid, essai.id, ligne.id, personne, vetement));
+    let tacheId: string;
+    try {
+      tacheId = lireCreation(
+        await kie('/createTask', { method: 'POST', body: JSON.stringify(corpsCreation(personne.url, vetement.url)) }),
+      );
+    } catch (e) {
+      // Kie n'a rien pris en charge : l'essai ne compte pas dans le plafond.
+      await admin.from('essayages_journal').delete().eq('id', ligne.id);
+      throw e;
+    }
+
+    const maj = await admin.from('essais').update({ tache_id: tacheId }).eq('id', essai.id);
+    if (maj.error) throw new Error(`Enregistrement de la tâche impossible : ${maj.error.message}`);
     return reponse(200, { statut: 'en_cours' });
   } catch (e) {
-    await remettre('erreur', 'L’essayage n’a pas pu démarrer.');
+    // Les copies figées contiennent la photo de la personne : on ne les laisse pas traîner après un échec.
+    await nettoyerFiges(admin, uid, essai.id).catch(() => {});
+    const detail = e instanceof Error ? e.message : String(e);
+    await remettre('erreur', 'L’essayage n’a pas pu démarrer.', detail.slice(0, 500));
     throw e;
   }
 }
 
-// Tâche de fond : génère, vérifie et enregistre l'image. Ne lève jamais : tout échec finit en statut d'essai.
-async function generer(
-  admin: SupabaseClient,
-  uid: string,
-  essaiId: string,
-  ligneJournal: string,
-  personne: Image,
-  vetement: Image,
-) {
-  const finir = (statut: string, champs: Record<string, unknown>) =>
-    admin.from('essais').update({ statut, ...champs }).eq('id', essaiId).eq('statut', 'en_cours');
-
-  let resultat: ResultatImage;
-  try {
-    resultat = await genererImage(personne, vetement);
-  } catch (e) {
-    // Pas d'image produite : l'essai ne compte pas dans le plafond.
-    const detail = e instanceof Error ? e.message : String(e);
-    console.error('essayage: génération échouée', detail);
-    await admin.from('essayages_journal').delete().eq('id', ligneJournal);
-    await finir('erreur', {
-      message: 'L’IA n’a pas pu créer l’image. Réessaie dans un instant.',
-      erreur_technique: detail.slice(0, 500),
-    });
-    return;
-  }
-
-  try {
-    // Coût réel de chaque image, pour vérifier le budget (environ 1 € par abonné et par mois).
-    await admin
-      .from('essayages_journal')
-      .update({ usage: resultat.usage ?? null, cout_usd: estimerCoutUsd(resultat.usage) })
-      .eq('id', ligneJournal);
-
-    // Image refusée : rien n'est enregistré ni montré. L'essayage reste décompté (OpenAI l'a facturé) :
-    // sinon, provoquer des refus ferait générer des images à nos frais.
-    const image: Image = { octets: depuisBase64(resultat.base64), type: 'image/jpeg' };
-    if (!(await verifierResultat(image))) {
-      await finir('refuse', { message: MESSAGE_RESULTAT_REFUSE });
-      return;
-    }
-    const chemin = `${uid}/${essaiId}.jpg`;
-    const envoi = await admin.storage
-      .from('essayages')
-      .upload(chemin, image.octets, { contentType: image.type, upsert: true });
-    if (envoi.error) throw new Error(`Copie du résultat impossible : ${envoi.error.message}`);
-    await finir('fait', { resultat_path: chemin, message: null, erreur_technique: null });
-  } catch (e) {
-    const detail = e instanceof Error ? e.message : String(e);
-    console.error('essayage: fin échouée', detail);
-    await finir('erreur', { message: 'L’essayage a échoué.', erreur_technique: detail.slice(0, 500) });
-  }
-}
-
-async function suivre(supabase: SupabaseClient, admin: SupabaseClient, essaiId: string) {
+async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: string, essaiId: string) {
   const { data: essai, error } = await supabase
     .from('essais')
-    .select('id, statut, lance_at, resultat_path, message')
+    .select('id, statut, tache_id, lance_at, resultat_path, message')
     .eq('id', essaiId)
     .single();
   if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
+  if (essai.statut !== 'en_cours' || !essai.tache_id) {
+    return reponse(200, { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message });
+  }
 
-  // Tâche de fond arrêtée en route (plafond de durée du worker) : on libère l'essai et on rend l'essayage.
-  if (essai.statut === 'en_cours' && essaiAbandonne(essai.lance_at, new Date())) {
+  // Ne passe à l'état final qu'un essai encore « en cours » : deux suivis simultanés ne s'écrasent pas.
+  const finir = (statut: string, champs: Record<string, unknown>) =>
+    admin.from('essais').update({ statut, ...champs }).eq('id', essai.id).eq('statut', 'en_cours');
+  // Le journal garde les crédits Kie consommés, pour vérifier le budget (environ 1 € par abonné et par mois).
+  const noterCredits = (credits: number | null) =>
+    admin
+      .from('essayages_journal')
+      .update({ usage: { fournisseur: 'kie', credits } })
+      .eq('essai_id', essai.id)
+      .gte('created_at', essai.lance_at);
+  const rendreEssayage = () =>
+    admin.from('essayages_journal').delete().eq('essai_id', essai.id).gte('created_at', essai.lance_at);
+
+  const tache = lireTache(await kie(`/recordInfo?taskId=${encodeURIComponent(essai.tache_id)}`, { method: 'GET' }));
+
+  if (tache.etat === 'en_cours') {
+    if (!essaiAbandonne(essai.lance_at, new Date())) return reponse(200, { statut: 'en_cours' });
+    // File d'attente bloquée : on libère l'essai et on rend l'essayage.
     const message = 'L’essayage a pris trop de temps. Réessaie.';
-    const { data: libere } = await admin
-      .from('essais')
-      .update({ statut: 'erreur', message })
-      .eq('id', essai.id)
-      .eq('statut', 'en_cours')
-      .select('id');
-    if (libere?.length) {
-      await admin.from('essayages_journal').delete().eq('essai_id', essai.id).gte('created_at', essai.lance_at);
-    }
+    await rendreEssayage();
+    await nettoyerFiges(admin, uid, essai.id);
+    await finir('erreur', { message, erreur_technique: 'délai dépassé chez Kie' });
     return reponse(200, { statut: 'erreur', message });
   }
-  return reponse(200, { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message });
+
+  if (tache.etat === 'echec') {
+    // Kie ne facture pas une tâche échouée (creditsConsumed = 0) : l'essai ne compte pas.
+    if (!tache.credits) await rendreEssayage();
+    else await noterCredits(tache.credits);
+    const message = 'L’IA n’a pas pu créer l’image. Réessaie dans un instant.';
+    await nettoyerFiges(admin, uid, essai.id);
+    await finir('erreur', { message, erreur_technique: tache.raison.slice(0, 500) });
+    return reponse(200, { statut: 'erreur', message });
+  }
+
+  await noterCredits(tache.credits);
+  // Kie efface ses images au bout de 14 jours : on copie le résultat chez nous, après vérification.
+  const image = await fetch(tache.url, { signal: AbortSignal.timeout(20000) });
+  const type = (image.headers.get('content-type') ?? 'image/png').split(';')[0].trim() as Image['type'];
+  const octets = new Uint8Array(await image.arrayBuffer());
+  // Format inattendu ou image refusée : rien n'est enregistré ni montré. L'essayage reste décompté
+  // (Kie l'a facturé) : sinon, provoquer des refus ferait générer des images à nos frais.
+  if (!TYPES_IMAGE.includes(type) || !(await verifierResultat({ octets, type }))) {
+    await nettoyerFiges(admin, uid, essai.id);
+    await finir('refuse', { message: MESSAGE_RESULTAT_REFUSE });
+    return reponse(200, { statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE });
+  }
+  const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
+  const chemin = `${uid}/${essai.id}.${extension}`;
+  const envoi = await admin.storage.from('essayages').upload(chemin, octets, { contentType: type, upsert: true });
+  if (envoi.error) throw new Error(`Copie du résultat impossible : ${envoi.error.message}`);
+
+  await nettoyerFiges(admin, uid, essai.id);
+  await finir('fait', { resultat_path: chemin, message: null, erreur_technique: null });
+  return reponse(200, { statut: 'fait', resultat_path: chemin });
 }
 
 Deno.serve(async (req) => {
@@ -318,7 +325,7 @@ Deno.serve(async (req) => {
   });
   const { data: utilisateur } = await supabase.auth.getUser();
   if (!utilisateur.user) return reponse(401, { erreur: 'Session invalide.' });
-  // Client serveur : seul à pouvoir écrire statut, résultat et journal.
+  // Client serveur : seul à pouvoir écrire statut, résultat, journal et images figées.
   // Chaque lecture des données de l'utilisateur passe d'abord par `supabase` (son JWT, règles RLS).
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
     auth: { persistSession: false },
@@ -335,12 +342,12 @@ Deno.serve(async (req) => {
 
   try {
     if (action === 'lancer') return await lancer(supabase, admin, utilisateur.user.id, essaiId);
-    if (action === 'suivre') return await suivre(supabase, admin, essaiId);
+    if (action === 'suivre') return await suivre(supabase, admin, utilisateur.user.id, essaiId);
     return reponse(400, { erreur: 'Action inconnue.' });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     if (message === 'cle_absente') {
-      return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé OpenAI manquante).' });
+      return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé du service d’image manquante).' });
     }
     if (message === 'moderation_cle_absente') {
       return reponse(503, { erreur: 'L’essayage n’est pas encore activé (clé de vérification manquante).' });
@@ -350,6 +357,9 @@ Deno.serve(async (req) => {
     }
     if (message.startsWith('abonnement:')) {
       return reponse(502, { erreur: 'Vérification de l’abonnement impossible. Réessaie dans un instant.' });
+    }
+    if (message.startsWith('kie:')) {
+      return reponse(502, { erreur: 'Le service d’image n’a pas accepté la demande. Réessaie dans un instant.' });
     }
     return reponse(500, { erreur: message });
   }

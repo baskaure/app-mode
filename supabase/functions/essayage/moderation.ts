@@ -1,6 +1,6 @@
 // Filtre avant l'essayage : pas de lingerie, de maillot de bain, de vêtement transparent ni de nudité.
 // Claude Haiku 5.5 regarde les deux images (vêtement + photo de soi) et répond en JSON strict.
-// Règle : en cas de doute ou de panne, on bloque (OpenAI n'est jamais appelé sans feu vert).
+// Règle : en cas de doute ou de panne, on bloque (le service d'image n'est jamais appelé sans feu vert).
 import Anthropic from 'npm:@anthropic-ai/sdk@0.133.0';
 
 import {
@@ -25,7 +25,7 @@ function enBase64(octets: Uint8Array): string {
   return btoa(binaire);
 }
 
-// Les octets sont envoyés tels quels (pas d'URL) : Claude voit exactement ce qu'OpenAI recevra.
+// Les octets sont envoyés tels quels (pas d'URL) : Claude voit exactement ce que le service d'image recevra.
 // Renvoie la décision. Lève 'moderation_cle_absente' si le secret manque, 'moderation:…' si l'API échoue.
 export async function verifierImages(vetement: Image, personne: Image): Promise<Decision> {
   const cle = Deno.env.get('ANTHROPIC_API_KEY');
