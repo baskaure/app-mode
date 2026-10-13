@@ -4,7 +4,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-const [racine, photoPersonne, photoVetement, sortie] = process.argv.slice(2);
+const [racineBrute, photoPersonne, photoVetement, sortie] = process.argv.slice(2);
+const racine = path.resolve(racineBrute ?? '.');
 const require = createRequire(path.join(racine, 'package.json'));
 const { createClient } = require('@supabase/supabase-js');
 
