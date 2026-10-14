@@ -6,9 +6,8 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { BadgeIA, BoutonFermer, MessageInfo } from '@/components/ui';
+import { ActionIcone, BadgeIA, BoutonFermer, ICONES, MessageInfo } from '@/components/ui';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { AccesRefuse, enregistrerImage } from '@/lib/telecharger';
@@ -90,6 +89,7 @@ export default function VueImage() {
     <View style={[styles.fond, { backgroundColor: theme.background }]}>
       <SafeAreaView style={styles.zone}>
         <View style={styles.haut}>
+          <ActionIcone nom={ICONES.telecharger} label="Enregistrer l’image" surPhoto desactive={!url} chargement={occupe} onPress={() => void telecharger()} />
           <BoutonFermer />
         </View>
         <GestureDetector gesture={Gesture.Simultaneous(pincer, glisser, doubleTouche)}>
@@ -107,7 +107,6 @@ export default function VueImage() {
             Pince pour zoomer, touche deux fois pour revenir
           </ThemedText>
           {message && <MessageInfo>{message}</MessageInfo>}
-          <Bouton label="Télécharger l’image" desactive={!url} chargement={occupe} onPress={() => void telecharger()} />
         </View>
       </SafeAreaView>
     </View>
@@ -117,7 +116,7 @@ export default function VueImage() {
 const styles = StyleSheet.create({
   fond: { flex: 1 },
   zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  haut: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingTop: Spacing.two },
+  haut: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingTop: Spacing.two },
   cadre: { flex: 1, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
   bas: { paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.four, gap: 10 },

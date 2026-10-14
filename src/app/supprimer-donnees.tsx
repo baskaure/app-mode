@@ -4,10 +4,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { CaseACocher, Carte, Ecran, MessageErreur, Puce } from '@/components/ui';
+import { Carte, CaseACocher, Ecran, LienDiscret, MessageErreur, Puce } from '@/components/ui';
 import { achatsDisponibles, gererAbonnement } from '@/lib/abonnement';
 import { AbonnementActif, monIdentifiant, supprimerToutesMesDonnees } from '@/lib/compte';
-import { fermer } from '@/lib/navigation';
 import { useProfil } from '@/state/profil';
 
 const CE_QUI_EST_EFFACE = [
@@ -70,8 +69,8 @@ export default function SupprimerDonnees() {
       <View style={styles.actions}>
         {abonne ? (
           <>
-            {achatsDisponibles() && (
-              <Bouton variante="secondaire" label="Gérer mon abonnement" desactive={occupe} onPress={() => void gererAbonnement()} />
+            {achatsDisponibles() && !occupe && (
+              <LienDiscret label="Gérer mon abonnement" onPress={() => void gererAbonnement()} />
             )}
             <Bouton
               variante="danger"
@@ -90,7 +89,6 @@ export default function SupprimerDonnees() {
             onPress={() => void supprimer(false)}
           />
         )}
-        <Bouton variante="discret" label="Annuler" desactive={occupe} onPress={() => fermer()} />
       </View>
 
       {identifiant && (

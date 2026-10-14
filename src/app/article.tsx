@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, Chargement, Ecran, MessageErreur, SurtitreEtincelle } from '@/components/ui';
+import { Carte, Chargement, Ecran, LienDiscret, MessageErreur, SurtitreEtincelle } from '@/components/ui';
 import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { ouvrirAchat } from '@/lib/achat';
@@ -80,12 +80,7 @@ export default function FicheArticle() {
       <MessageErreur>{erreur}</MessageErreur>
       <View style={styles.actions}>
         <Bouton label="M’essayer cet article" chargement={occupe} onPress={() => void essayer()} />
-        <Bouton
-          variante="secondaire"
-          label={`Voir sur ${article.marchand}`}
-          desactive={occupe}
-          onPress={() => void ouvrirAchat(article.lien)}
-        />
+        {!occupe && <LienDiscret label={`Voir sur ${article.marchand}`} onPress={() => void ouvrirAchat(article.lien)} />}
       </View>
       {article.source === 'awin' && (
         <ThemedText type="small" themeColor="textSecondary" style={styles.note}>

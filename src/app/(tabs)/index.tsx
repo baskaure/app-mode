@@ -6,7 +6,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { CarteArticle } from '@/components/carte-article';
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, Chargement, Ecran, Logo, MessageErreur, Section, SurtitreEtincelle } from '@/components/ui';
+import { ActionIcone, Carte, Chargement, Ecran, ICONES, LienDiscret, Logo, MessageErreur, Section, SurtitreEtincelle } from '@/components/ui';
 import { Rayon, Spacing } from '@/constants/theme';
 import { useInspirations } from '@/hooks/use-inspirations';
 import { useTheme } from '@/hooks/use-theme';
@@ -78,17 +78,13 @@ export default function Essayer() {
               <View style={[styles.etiquette, { backgroundColor: theme.backgroundElement }]}>
                 <ThemedText type="smallBold">Ta photo</ThemedText>
               </View>
+              <View style={styles.actionsPhoto}>
+                <ActionIcone nom={ICONES.changer} label="Changer ma photo" surPhoto onPress={() => router.push('/photo-soi')} />
+                <ActionIcone nom={ICONES.supprimer} label="Supprimer ma photo" surPhoto onPress={() => void supprimer()} />
+              </View>
             </View>
           )}
           <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
-          <View style={styles.rangee}>
-            <View style={styles.moitie}>
-              <Bouton variante="secondaire" label="Changer" onPress={() => router.push('/photo-soi')} />
-            </View>
-            <View style={styles.moitie}>
-              <Bouton variante="secondaire" label="Supprimer" onPress={() => void supprimer()} />
-            </View>
-          </View>
         </Carte>
       ) : (
         <Carte accent style={styles.carteVide}>
@@ -109,7 +105,7 @@ export default function Essayer() {
               <CarteArticle key={r.article.id} reco={r} piece={r.pieceId ? piecesParId.get(r.pieceId) : null} largeur={156} />
             ))}
           </ScrollView>
-          <Bouton variante="secondaire" label="Voir toutes les inspirations" onPress={() => router.push('/inspirations')} />
+          <LienDiscret label="Voir toutes les inspirations" onPress={() => router.push('/inspirations')} />
         </Section>
       ) : idees.length > 0 && profil.style && (
         <Section
@@ -174,8 +170,7 @@ const styles = StyleSheet.create({
   cadrePhoto: { borderRadius: Rayon.moyen + 2, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
   etiquette: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 12, paddingVertical: 5, borderRadius: Rayon.pilule },
-  rangee: { flexDirection: 'row', gap: 10 },
-  moitie: { flex: 1 },
+  actionsPhoto: { position: 'absolute', top: 12, right: 12, flexDirection: 'row', gap: 8 },
   carteVide: { paddingVertical: 28 },
   idees: { gap: 8 },
   rangeeArticles: { gap: 12, paddingRight: 20 },

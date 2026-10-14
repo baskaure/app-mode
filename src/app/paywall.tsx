@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Chargement, Ecran, MessageInfo, Puce, SurtitreEtincelle } from '@/components/ui';
+import { Chargement, Ecran, LienDiscret, MessageInfo, Puce, SurtitreEtincelle } from '@/components/ui';
 import { Aura, Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import {
@@ -156,10 +156,9 @@ export default function Paywall() {
             onPress={() => void sAbonner()}
           />
         )}
-        {achatsDisponibles() && (
-          <Bouton variante="secondaire" label="Restaurer mes achats" desactive={occupe} onPress={() => void restaurerAchats()} />
+        {achatsDisponibles() && !occupe && (
+          <LienDiscret label="Restaurer mes achats" onPress={() => void restaurerAchats()} />
         )}
-        <Bouton variante="discret" label="Plus tard" desactive={occupe} onPress={() => fermer()} />
       </View>
 
       <ThemedText type="small" themeColor="textSecondary" style={styles.legal}>

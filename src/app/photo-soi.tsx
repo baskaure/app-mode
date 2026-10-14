@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { CaseACocher, Carte, Ecran, MessageErreur, Puce } from '@/components/ui';
+import { Carte, CaseACocher, Ecran, ICONES, MessageErreur, Puce, RangeeTuiles, TuileAction } from '@/components/ui';
 import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { choisirPhoto, type Photo, type Source } from '@/lib/photos';
@@ -72,15 +72,10 @@ export default function PhotoSoi() {
         </Carte>
       )}
 
-      <View style={styles.boutons}>
-        <Bouton
-          variante={photo ? 'secondaire' : 'principal'}
-          label={photo ? 'Reprendre la photo' : 'Prendre la photo'}
-          desactive={envoi}
-          onPress={() => void prendre('camera')}
-        />
-        <Bouton variante="secondaire" label="Choisir dans la galerie" desactive={envoi} onPress={() => void prendre('galerie')} />
-      </View>
+      <RangeeTuiles>
+        <TuileAction nom={ICONES.photo} label={photo ? 'Reprendre' : 'Photo'} desactive={envoi} onPress={() => void prendre('camera')} />
+        <TuileAction nom={ICONES.galerie} label="Galerie" desactive={envoi} onPress={() => void prendre('galerie')} />
+      </RangeeTuiles>
 
       {photo && (
         <CaseACocher coche={consentement} onPress={() => setConsentement((c) => !c)}>
@@ -106,5 +101,4 @@ const styles = StyleSheet.create({
   liste: { gap: 10 },
   cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
   apercu: { width: '100%', aspectRatio: 3 / 4 },
-  boutons: { gap: 10 },
 });

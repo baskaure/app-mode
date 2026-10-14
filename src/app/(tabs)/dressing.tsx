@@ -1,10 +1,9 @@
 import { Image } from 'expo-image';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, Chargement, Ecran, MessageErreur } from '@/components/ui';
+import { ActionIcone, Carte, Chargement, Ecran, ICONES, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
 import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import {
@@ -109,10 +108,10 @@ export default function Dressing() {
         </Carte>
       )}
 
-      <View style={styles.boutons}>
-        <Bouton label="Prendre une photo" chargement={envoi} onPress={() => void ajouter('camera')} />
-        <Bouton variante="secondaire" label="Choisir dans la galerie" desactive={envoi} onPress={() => void ajouter('galerie')} />
-      </View>
+      <RangeeTuiles>
+        <TuileAction nom={ICONES.photo} label="Photo" desactive={envoi} onPress={() => void ajouter('camera')} />
+        <TuileAction nom={ICONES.galerie} label="Galerie" desactive={envoi} onPress={() => void ajouter('galerie')} />
+      </RangeeTuiles>
 
       {envoi && <Chargement texte="Envoi de la photo…" />}
       <MessageErreur>{erreur}</MessageErreur>
@@ -128,6 +127,9 @@ export default function Dressing() {
               ) : (
                 <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
               )}
+              <View style={styles.retirer}>
+                <ActionIcone nom={ICONES.supprimer} label="Retirer cette pièce" surPhoto onPress={() => void supprimer(piece)} />
+              </View>
               <View style={styles.legende}>
                 <ThemedText type="small" numberOfLines={1} themeColor={piece.description ? 'text' : 'textSecondary'}>
                   {piece.description
@@ -137,15 +139,6 @@ export default function Dressing() {
                       : 'Analyse en cours…'}
                 </ThemedText>
               </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Supprimer cette pièce"
-                onPress={() => void supprimer(piece)}
-                style={({ pressed }) => [styles.supprimer, pressed && { opacity: 0.5 }]}>
-                <ThemedText type="small" themeColor="textSecondary">
-                  Retirer
-                </ThemedText>
-              </Pressable>
             </View>
           ))}
         </View>
@@ -158,10 +151,9 @@ const styles = StyleSheet.create({
   objectif: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16 },
   points: { flexDirection: 'row', gap: 6 },
   point: { width: 10, height: 10, borderRadius: 5 },
-  boutons: { gap: 10 },
   grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
-  legende: { paddingHorizontal: 12, paddingTop: 10, paddingBottom: 2 },
-  supprimer: { paddingVertical: 10, alignItems: 'center' },
+  legende: { paddingHorizontal: 12, paddingVertical: 10 },
+  retirer: { position: 'absolute', top: 8, right: 8 },
 });

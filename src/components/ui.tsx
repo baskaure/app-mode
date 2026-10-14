@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import type { ReactNode } from 'react';
+import { SymbolView } from 'expo-symbols';
+import type { ComponentProps, ReactNode } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -302,4 +303,111 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(11,11,15,0.62)',
   },
   badgeIATexte: { color: '#FFFFFF', fontFamily: Police.demiGras, fontSize: 11, lineHeight: 15 },
+  action: { alignItems: 'center', gap: 6, minWidth: 64 },
+  rondIcone: { width: 52, height: 52, borderRadius: 26, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  pastilleIcone: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  labelAction: { fontSize: 12, lineHeight: 16 },
+  barreActions: { flexDirection: 'row', justifyContent: 'center', gap: 22, paddingVertical: 4 },
+  tuile: { flex: 1, borderRadius: Rayon.moyen, borderWidth: 1, paddingVertical: 18, alignItems: 'center', gap: 8 },
+  rangeeTuiles: { flexDirection: 'row', gap: 10 },
+  lienDiscret: { textAlign: 'center', paddingVertical: 6 },
 });
+
+// --- Actions secondaires : de petites icônes, jamais un gros bouton de plus (règle du 15 oct. 2026). ---
+export type NomIcone = Extract<ComponentProps<typeof SymbolView>['name'], object>;
+
+// Icônes de l'app (SF Symbols sur iPhone, Material Symbols sur Android et le web).
+export const ICONES = {
+  partager: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  telecharger: { ios: 'arrow.down.to.line', android: 'download', web: 'download' },
+  aime: { ios: 'heart', android: 'favorite', web: 'favorite' },
+  aimeActif: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
+  photo: { ios: 'camera', android: 'photo_camera', web: 'photo_camera' },
+  galerie: { ios: 'photo.on.rectangle', android: 'photo_library', web: 'photo_library' },
+  changer: { ios: 'arrow.triangle.2.circlepath', android: 'sync', web: 'sync' },
+  supprimer: { ios: 'trash', android: 'delete', web: 'delete' },
+  valider: { ios: 'arrow.right', android: 'arrow_forward', web: 'arrow_forward' },
+} as const satisfies Record<string, NomIcone>;
+
+export function Icone({ nom, taille = 20, couleur }: { nom: NomIcone; taille?: number; couleur?: string }) {
+  const theme = useTheme();
+  return <SymbolView name={nom} size={taille} tintColor={couleur ?? theme.text} />;
+}
+
+type PropsAction = {
+  nom: NomIcone;
+  label: string;
+  onPress: () => void;
+  actif?: boolean;
+  desactive?: boolean;
+  chargement?: boolean;
+  /** Sur une photo : pastille plus petite, sans libellé visible. */
+  surPhoto?: boolean;
+  danger?: boolean;
+};
+
+export function ActionIcone({ nom, label, onPress, actif = false, desactive = false, chargement = false, surPhoto = false, danger = false }: PropsAction) {
+  const theme = useTheme();
+  const couleur = danger ? theme.erreur : actif ? theme.accent : theme.text;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: actif, disabled: desactive || chargement, busy: chargement }}
+      disabled={desactive || chargement}
+      hitSlop={6}
+      onPress={onPress}
+      style={({ pressed }) => [styles.action, (pressed || desactive) && { opacity: desactive ? 0.35 : 0.6 }]}>
+      <View
+        style={[
+          surPhoto ? styles.pastilleIcone : styles.rondIcone,
+          { backgroundColor: theme.backgroundElement, borderColor: danger ? theme.erreur : theme.border },
+        ]}>
+        {chargement ? <ActivityIndicator color={theme.text} /> : <Icone nom={nom} taille={surPhoto ? 17 : 21} couleur={couleur} />}
+      </View>
+      {!surPhoto && (
+        <ThemedText type="small" style={[styles.labelAction, danger && { color: theme.erreur }]}>
+          {label}
+        </ThemedText>
+      )}
+    </Pressable>
+  );
+}
+
+// Une rangée d'actions secondaires, centrée sous le contenu.
+export function BarreActions({ children }: { children: ReactNode }) {
+  return <View style={styles.barreActions}>{children}</View>;
+}
+
+// Deux grandes tuiles côte à côte (appareil photo / galerie) au lieu de deux gros boutons empilés.
+export function TuileAction({ nom, label, onPress, desactive = false }: { nom: NomIcone; label: string; onPress: () => void; desactive?: boolean }) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      disabled={desactive}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.tuile,
+        { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+        (pressed || desactive) && { opacity: desactive ? 0.35 : 0.7 },
+      ]}>
+      <Icone nom={nom} taille={26} />
+      <ThemedText type="smallBold">{label}</ThemedText>
+    </Pressable>
+  );
+}
+
+export function RangeeTuiles({ children }: { children: ReactNode }) {
+  return <View style={styles.rangeeTuiles}>{children}</View>;
+}
+
+// Lien discret (« Essayer un autre vêtement »), à la place d'un bouton secondaire.
+export function LienDiscret({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <ThemedText type="link" themeColor="textSecondary" accessibilityRole="button" onPress={onPress} style={styles.lienDiscret}>
+      {label}
+    </ThemedText>
+  );
+}

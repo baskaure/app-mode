@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Bouton, Pastille } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { BadgeIA, Carte, Chargement, Ecran, Etincelle, MessageErreur } from '@/components/ui';
+import { ActionIcone, BadgeIA, Carte, Chargement, Ecran, Etincelle, ICONES, MessageErreur } from '@/components/ui';
 import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { filtrerParAvis, type Filtre } from '@/lib/avis';
@@ -114,22 +114,20 @@ export default function Historique() {
                         {essai.avis === 'aime_pas' ? ' · J’aime pas' : ''}
                       </ThemedText>
                       <ThemedText type="small" themeColor="textSecondary">
-                        {dateCourte(essai.created_at, maintenant)}
+                        {confirmer ? 'Toucher encore pour supprimer' : dateCourte(essai.created_at, maintenant)}
                       </ThemedText>
                     </View>
                   </Pressable>
                   {supprimable(essai) && (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="Supprimer cet essayage"
-                      onPress={() => void supprimer(essai)}
-                      style={[styles.supprimer, confirmer && { backgroundColor: theme.erreurFond }]}>
-                      <ThemedText
-                        type={confirmer ? 'smallBold' : 'small'}
-                        style={{ color: confirmer ? theme.erreur : theme.textSecondary }}>
-                        {confirmer ? 'Toucher encore pour supprimer' : 'Supprimer'}
-                      </ThemedText>
-                    </Pressable>
+                    <View style={styles.supprimer}>
+                      <ActionIcone
+                        nom={ICONES.supprimer}
+                        label={confirmer ? 'Toucher encore pour supprimer' : 'Supprimer cet essayage'}
+                        surPhoto
+                        danger={confirmer}
+                        onPress={() => void supprimer(essai)}
+                      />
+                    </View>
                   )}
                 </View>
               );
@@ -157,6 +155,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  legende: { paddingHorizontal: 12, paddingTop: 10, gap: 1 },
-  supprimer: { paddingVertical: 10, paddingHorizontal: 8, alignItems: 'center' },
+  legende: { paddingHorizontal: 12, paddingVertical: 10, paddingRight: 54, gap: 1 },
+  supprimer: { position: 'absolute', right: 8, bottom: 8 },
 });
