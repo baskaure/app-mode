@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
+import { AttenteEssayage } from '@/components/attente-essayage';
 import { BadgeIA, Carte, Chargement, Ecran, Etincelle, MessageErreur, Section } from '@/components/ui';
 import { Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -21,6 +22,7 @@ import {
 } from '@/lib/essais';
 import { ID_EDITEUR_AWIN, chargerMarchands, ouvrirAchat } from '@/lib/achat';
 import { lienAchat, type LienAchat } from '@/lib/affiliation';
+import { messagesAttente } from '@/lib/attente';
 import { basculerAvis, type Avis } from '@/lib/avis';
 import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
@@ -241,15 +243,10 @@ export default function Vetement() {
           </View>
         )}
         {etape && (
-          <Carte accent style={styles.attente}>
-            <Chargement />
-            <ThemedText type="smallBold" style={styles.centre}>
-              {etape}
-            </ThemedText>
-            <ThemedText type="small" themeColor="textSecondary" style={styles.centre}>
-              Ça prend environ 2 minutes.
-            </ThemedText>
-          </Carte>
+          <AttenteEssayage
+            etape={etape}
+            messages={messagesAttente(conseil?.objectif ?? null, conseil?.aPrivilegier ?? [])}
+          />
         )}
         <MessageErreur>{erreur}</MessageErreur>
         <View style={styles.groupe}>
@@ -376,5 +373,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   conseil: { gap: 6 },
-  attente: { alignItems: 'center', gap: 4 },
 });
