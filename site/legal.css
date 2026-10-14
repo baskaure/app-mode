@@ -1,0 +1,12 @@
+@font-face { font-family: "Onest"; src: url("/polices/onest.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+:root { --fond: #FFF7F2; --texte: #0B0B0F; --texte-2: #6B6470; --rose-texte: #BF1D63; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root { --fond: #0B0B0F; --texte: #FFF7F2; --texte-2: #A9A2AE; --rose-texte: #FF5C9E; color-scheme: dark; } }
+body { margin: 0; background: var(--fond); color: var(--texte); font: 17px/1.6 "Onest", ui-sans-serif, system-ui, sans-serif; }
+main { max-width: 680px; margin: 0 auto; padding: 32px 20px 64px; }
+h1 { font-size: 40px; letter-spacing: -0.035em; line-height: 1.05; margin: 28px 0 8px; }
+h2 { font-size: 20px; letter-spacing: -0.01em; margin: 32px 0 6px; }
+p { margin: 0 0 10px; }
+.maj, .retour { color: var(--texte-2); font-size: 14px; }
+.retour { text-decoration: none; }
+a { color: inherit; }
+.trou { color: var(--rose-texte); font-weight: 600; }

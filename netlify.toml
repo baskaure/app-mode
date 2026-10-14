@@ -1,0 +1,27 @@
+# Site akalie.app (page d'attente) : fichiers statiques du dossier site/, sans étape de build.
+[build]
+  publish = "site"
+  command = ""
+
+[[redirects]]
+  from = "/confidentialite"
+  to = "/confidentialite.html"
+  status = 200
+
+[[redirects]]
+  from = "/mentions-legales"
+  to = "/mentions-legales.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src https://ccqlylvpqugdixqojjxk.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/polices/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
