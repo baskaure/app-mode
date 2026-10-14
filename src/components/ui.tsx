@@ -165,7 +165,7 @@ export function SurtitreEtincelle({ children, couleur }: { children: ReactNode; 
   return (
     <View style={styles.surtitre}>
       <Etincelle taille={7} couleur={couleur} />
-      <ThemedText type="eyebrow" style={{ color: couleur ?? theme.accent }}>
+      <ThemedText type="eyebrow" style={{ color: couleur ?? theme.accentTexte }}>
         {children}
       </ThemedText>
     </View>

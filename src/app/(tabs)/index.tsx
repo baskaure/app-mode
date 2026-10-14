@@ -133,7 +133,7 @@ export default function Essayer() {
         accessibilityRole="button"
         onPress={() => router.push('/paywall')}
         style={({ pressed }) => [styles.offre, { backgroundColor: theme.text }, pressed && { opacity: 0.85 }]}>
-        <SurtitreEtincelle>Offre complète</SurtitreEtincelle>
+        <SurtitreEtincelle couleur={theme.accentInverse}>Offre complète</SurtitreEtincelle>
         <ThemedText type="titreCarte" style={{ color: theme.surTexte }}>
           Jusqu’à 30 essayages par mois
         </ThemedText>

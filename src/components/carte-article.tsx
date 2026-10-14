@@ -49,7 +49,7 @@ export function CarteArticle({ reco, piece, largeur, raison = true }: Props) {
         </ThemedText>
         {prix && <ThemedText type="smallBold">{prix}</ThemedText>}
         {raison && (
-          <ThemedText type="small" numberOfLines={2} style={[styles.raison, { color: theme.accent }]}>
+          <ThemedText type="small" numberOfLines={2} style={[styles.raison, { color: theme.accentTexte }]}>
             {reco.raison}
           </ThemedText>
         )}

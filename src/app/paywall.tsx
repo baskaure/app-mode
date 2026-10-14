@@ -103,8 +103,8 @@ export default function Paywall() {
           <View style={styles.entete}>
             <ThemedText type="titreCarte">{titre}</ThemedText>
             {id === 'annuel' && (
-              <View style={[styles.badge, { backgroundColor: theme.accent }]}>
-                <ThemedText style={styles.badgeTexte}>Le plus choisi</ThemedText>
+              <View style={[styles.badge, { backgroundColor: theme.accentTexte }]}>
+                <ThemedText style={[styles.badgeTexte, { color: theme.surTexte }]}>Le plus choisi</ThemedText>
               </View>
             )}
           </View>
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   formuleTexte: { flex: 1, gap: 2 },
   entete: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: Rayon.pilule },
-  badgeTexte: { color: '#FFFFFF', fontFamily: Police.demiGras, fontSize: 11, lineHeight: 15 },
+  badgeTexte: { fontFamily: Police.demiGras, fontSize: 11, lineHeight: 15 },
   actions: { gap: 10 },
   legal: { fontSize: 12, lineHeight: 17 },
   liens: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },

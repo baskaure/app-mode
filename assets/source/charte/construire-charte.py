@@ -33,7 +33,7 @@ TEINTES = [
     ('Crème', '#FFF7F2', 'Fond principal', '#0B0B0F'),
     ('Encre', '#0B0B0F', 'Texte, boutons, mode sombre', '#FFF7F2'),
     ('Rose étoile', '#FF3D8B', 'Étincelle, badges, accents', '#0B0B0F'),
-    ('Rose texte', '#C81E66', 'Petit texte en rose', '#FFFFFF'),
+    ('Rose texte', '#BF1D63', 'Petit texte en rose', '#FFFFFF'),
     ('Aura rose', '#FFC2D1', 'Fond flou, illustrations', '#0B0B0F'),
     ('Aura pêche', '#FFD9B0', 'Fond flou, illustrations', '#0B0B0F'),
     ('Aura lilas', '#C9B8FF', 'Fond flou, illustrations', '#0B0B0F'),
