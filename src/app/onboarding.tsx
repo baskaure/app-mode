@@ -1,12 +1,12 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 import { Bouton, Choix } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { Carte, Ecran, Logo, Puce } from '@/components/ui';
+import { Police, Rayon, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { conseilPour, type EpaulesHanches, type ReponsesMorpho, type Taille, type Ventre, type Vestiaire } from '@/lib/morphologie';
 import { useProfil, type Style } from '@/state/profil';
 
@@ -17,6 +17,7 @@ type Etape = {
 };
 
 export default function Onboarding() {
+  const theme = useTheme();
   const { profil, pret, onboardingFini, majProfil, terminerOnboarding } = useProfil();
   const [index, setIndex] = useState(0);
   const [trop_jeune, setTropJeune] = useState(false);
@@ -106,9 +107,8 @@ export default function Onboarding() {
 
   if (trop_jeune) {
     return (
-      <Ecran>
-        <ThemedText type="subtitle">Désolé</ThemedText>
-        <ThemedText>Pour l’instant, l’app est réservée aux 15 ans et plus.</ThemedText>
+      <Ecran enTete={<Logo />} titre="Désolé" intro="Pour l’instant, l’app est réservée aux 15 ans et plus." centre>
+        {null}
       </Ecran>
     );
   }
@@ -116,18 +116,24 @@ export default function Onboarding() {
   if (index >= etapes.length && profil.silhouette) {
     const conseil = conseilPour(profil.silhouette, profil.vestiaire ?? 'femme');
     return (
-      <Ecran>
-        <ThemedText type="small" themeColor="textSecondary">
-          Ta morphologie
-        </ThemedText>
-        <ThemedText type="subtitle">{conseil.nom}</ThemedText>
-        <ThemedText>{conseil.objectif}</ThemedText>
+      <Ecran enTete={<Logo />}>
+        <Carte style={styles.resultat}>
+          <ThemedText type="eyebrow">Ta morphologie</ThemedText>
+          <View style={[styles.lettre, { backgroundColor: theme.accentDoux }]}>
+            <ThemedText style={styles.lettreTexte}>{profil.silhouette}</ThemedText>
+          </View>
+          <ThemedText type="subtitle">{conseil.nom}</ThemedText>
+          <ThemedText themeColor="textSecondary">{conseil.objectif}</ThemedText>
+        </Carte>
         <View style={styles.liste}>
+          <ThemedText type="titreCarte">Ce qui te va</ThemedText>
           {conseil.aPrivilegier.map((c) => (
-            <ThemedText key={c}>• {c}</ThemedText>
+            <Puce key={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</Puce>
           ))}
         </View>
-        <ThemedText>Prends 3 vêtements de ton placard en photo : je te compose tes premières tenues.</ThemedText>
+        <ThemedText themeColor="textSecondary">
+          Prends 3 vêtements de ton placard en photo : je te compose tes premières tenues.
+        </ThemedText>
         <Bouton
           label="Ajouter mes 3 premières pièces"
           onPress={() => {
@@ -140,11 +146,17 @@ export default function Onboarding() {
   }
 
   const etape = etapes[Math.min(index, etapes.length - 1)];
+  const progression = (index + 1) / etapes.length;
   return (
-    <Ecran>
-      <ThemedText type="small" themeColor="textSecondary">
-        {index + 1} / {etapes.length}
-      </ThemedText>
+    <Ecran enTete={<Logo />}>
+      <View style={styles.progression}>
+        <View style={[styles.rail, { backgroundColor: theme.border }]}>
+          <View style={[styles.avance, { width: `${progression * 100}%`, backgroundColor: theme.text }]} />
+        </View>
+        <ThemedText type="eyebrow">
+          Question {index + 1} sur {etapes.length}
+        </ThemedText>
+      </View>
       <ThemedText type="subtitle">{etape.question}</ThemedText>
       <View style={styles.options}>
         {etape.options.map((o) => (
@@ -162,20 +174,13 @@ export default function Onboarding() {
   );
 }
 
-function Ecran({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu}>{children}</ScrollView>
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three },
-  options: { gap: Spacing.two, marginTop: Spacing.two },
-  liste: { gap: Spacing.one },
+  progression: { gap: 10, marginTop: Spacing.two },
+  rail: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  avance: { height: 4, borderRadius: 2 },
+  options: { gap: 10 },
+  resultat: { alignItems: 'flex-start', gap: 12, marginTop: Spacing.two },
+  lettre: { width: 72, height: 72, borderRadius: Rayon.moyen, alignItems: 'center', justifyContent: 'center' },
+  lettreTexte: { fontFamily: Police.tresGras, fontSize: 40, lineHeight: 46 },
+  liste: { gap: 10 },
 });

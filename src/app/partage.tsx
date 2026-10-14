@@ -1,15 +1,12 @@
 import { router } from 'expo-router';
 import { useIncomingShare } from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { Chargement, Ecran, Logo } from '@/components/ui';
 import { essaiDepuisLien, essaiDepuisPhoto } from '@/lib/essais';
-import { fermer } from '@/lib/navigation';
 import { etapePartage, lirePartage } from '@/lib/partage';
 import { useProfil } from '@/state/profil';
 
@@ -20,7 +17,7 @@ import { useProfil } from '@/state/profil';
 const DELAI_RESOLUTION_MS = 8000;
 
 export default function Partage() {
-  return Platform.OS === 'web' ? <Ecran vide /> : <RecevoirPartage />;
+  return Platform.OS === 'web' ? <EcranPartage vide /> : <RecevoirPartage />;
 }
 
 function RecevoirPartage() {
@@ -77,45 +74,38 @@ function RecevoirPartage() {
     })();
   }, [pret, isResolving, error, delaiPasse, resolvedSharedPayloads, sharedPayloads, clearSharedPayloads]);
 
-  return <Ecran vide={vide} erreur={erreur} />;
+  return <EcranPartage vide={vide} erreur={erreur} />;
 }
 
-function Ecran({ vide = false, erreur = null }: { vide?: boolean; erreur?: string | null }) {
+function EcranPartage({ vide = false, erreur = null }: { vide?: boolean; erreur?: string | null }) {
+  if (erreur || vide) {
+    return (
+      <Ecran
+        fermable
+        centre
+        titre={vide ? 'Rien à essayer' : 'Impossible d’utiliser ce partage'}
+        intro={vide ? 'Partage une capture d’écran, une photo ou le lien d’un vêtement depuis une autre app.' : erreur ?? undefined}>
+        <View style={styles.actions}>
+          <Bouton label="Choisir le vêtement autrement" onPress={() => router.replace('/vetement')} />
+        </View>
+      </Ecran>
+    );
+  }
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        {erreur || vide ? (
-          <>
-            <ThemedText type="subtitle">{vide ? 'Rien à essayer' : 'Impossible d’utiliser ce partage'}</ThemedText>
-            <ThemedText>
-              {vide
-                ? 'Partage une capture d’écran, une photo ou le lien d’un vêtement depuis une autre app.'
-                : erreur}
-            </ThemedText>
-            <Bouton label="Choisir le vêtement autrement" onPress={() => router.replace('/vetement')} />
-            <Bouton label="Fermer" onPress={() => fermer()} />
-          </>
-        ) : (
-          <>
-            <ActivityIndicator size="large" />
-            <ThemedText style={styles.centre}>Préparation du vêtement…</ThemedText>
-          </>
-        )}
-      </SafeAreaView>
-    </ThemedView>
+    <Ecran centre>
+      <View style={styles.attente}>
+        <Logo taille={40} />
+        <Chargement />
+        <ThemedText themeColor="textSecondary" style={styles.centre}>
+          Préparation du vêtement…
+        </ThemedText>
+      </View>
+    </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: {
-    flex: 1,
-    width: '100%',
-    maxWidth: MaxContentWidth,
-    alignSelf: 'center',
-    padding: Spacing.four,
-    gap: Spacing.three,
-    justifyContent: 'center',
-  },
+  actions: { gap: 10, marginTop: 8 },
+  attente: { alignItems: 'center', gap: 16 },
   centre: { textAlign: 'center' },
 });

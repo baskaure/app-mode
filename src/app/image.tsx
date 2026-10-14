@@ -8,9 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
-import { fermer } from '@/lib/navigation';
+import { BadgeIA, BoutonFermer, MessageInfo } from '@/components/ui';
+import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { AccesRefuse, enregistrerImage } from '@/lib/telecharger';
 
 const ZOOM_MAX = 4;
@@ -19,6 +19,7 @@ const ZOOM_DOUBLE_TAP = 2.5;
 // Image d'essayage en plein écran : pincer pour zoomer, glisser pour se déplacer, double-toucher pour zoomer ou revenir.
 // Ouverte depuis le résultat avec `?url=<lien signé>&nom=<fichier>`.
 export default function VueImage() {
+  const theme = useTheme();
   const { url, nom } = useLocalSearchParams<{ url?: string; nom?: string }>();
   const [message, setMessage] = useState<string | null>(null);
   const [occupe, setOccupe] = useState(false);
@@ -86,8 +87,11 @@ export default function VueImage() {
   };
 
   return (
-    <ThemedView style={styles.fond}>
+    <View style={[styles.fond, { backgroundColor: theme.background }]}>
       <SafeAreaView style={styles.zone}>
+        <View style={styles.haut}>
+          <BoutonFermer />
+        </View>
         <GestureDetector gesture={Gesture.Simultaneous(pincer, glisser, doubleTouche)}>
           <View style={styles.cadre} collapsable={false}>
             {url && (
@@ -95,30 +99,27 @@ export default function VueImage() {
                 <Image source={{ uri: url }} style={styles.image} contentFit="contain" accessibilityLabel="Image créée par IA" />
               </Animated.View>
             )}
+            <BadgeIA />
           </View>
         </GestureDetector>
         <View style={styles.bas}>
           <ThemedText type="small" themeColor="textSecondary" style={styles.texte}>
-            Image créée par IA · pince pour zoomer, touche deux fois pour revenir
+            Pince pour zoomer, touche deux fois pour revenir
           </ThemedText>
-          {message && (
-            <ThemedText type="small" style={styles.texte}>
-              {message}
-            </ThemedText>
-          )}
-          <Bouton label="Télécharger l’image" desactive={occupe || !url} onPress={() => void telecharger()} />
-          <Bouton label="Fermer" onPress={() => fermer()} />
+          {message && <MessageInfo>{message}</MessageInfo>}
+          <Bouton label="Télécharger l’image" desactive={!url} chargement={occupe} onPress={() => void telecharger()} />
         </View>
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   fond: { flex: 1 },
-  zone: { flex: 1 },
+  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
+  haut: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingTop: Spacing.two },
   cadre: { flex: 1, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
-  bas: { padding: Spacing.four, gap: Spacing.two },
+  bas: { paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.four, gap: 10 },
   texte: { textAlign: 'center' },
 });

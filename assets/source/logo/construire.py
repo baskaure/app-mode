@@ -70,7 +70,21 @@ for nom, contenu in fichiers.items():
 fond_seul = svg('0 0 100 100', aura('b')[0], aura('b')[1])
 avant_plan = svg('0 0 100 100', '', f'<g transform="translate(50 50) scale(.72) translate(-52 -48)">{symbole()}</g>')
 mono = svg('0 0 100 100', '', f'<g transform="translate(50 50) scale(.72) translate(-52 -48)">{symbole(NOIR, NOIR)}</g>')
+MARQUE = IMAGES / 'marque'; MARQUE.mkdir(exist_ok=True)
+
+def aura_ecran(base, opacite):
+    # Fond des écrans de l'app : l'aura du logo en haut, qui se fond dans la couleur de base vers le bas.
+    taches = [(18, 10, 30, '#FFC2D1'), (82, 4, 26, '#FFD9B0'), (88, 40, 30, '#C9B8FF'), (8, 58, 22, '#FFC2D1')]
+    cercles = ''.join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{c}" opacity="{opacite}"/>' for x, y, r, c in taches)
+    return svg('0 0 100 216', '<filter id="fe" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="16"/></filter>'
+               f'<linearGradient id="fd" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="{base}" stop-opacity="0"/><stop offset=".8" stop-color="{base}"/></linearGradient>',
+               f'<rect width="100" height="216" fill="{base}"/><g filter="url(#fe)">{cercles}</g><rect width="100" height="216" fill="url(#fd)"/>')
+
 rendus = [
+    (aura_ecran(CREME, 1), MARQUE / 'aura-clair.png', 750, 1620),
+    (aura_ecran(NOIR, .32), MARQUE / 'aura-sombre.png', 750, 1620),
+    (svg('0 0 100 100', '', symbole()), MARQUE / 'symbole.png', 256, 256),
+    (svg('0 0 100 100', '', symbole('#FFF7F2', ROSE)), MARQUE / 'symbole-clair.png', 256, 256),
     (fichiers['akalie-icone.svg'], IMAGES / 'icon.png', 1024, 1024),
     (fond_seul, IMAGES / 'android-icon-background.png', 1024, 1024),
     (avant_plan, IMAGES / 'android-icon-foreground.png', 1024, 1024),

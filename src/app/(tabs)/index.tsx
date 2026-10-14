@@ -1,20 +1,19 @@
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Carte, Chargement, Ecran, Logo, MessageErreur, Section, SurtitreEtincelle } from '@/components/ui';
+import { Rayon, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { conseilPour } from '@/lib/morphologie';
 import { lireSilhouette, supprimerSilhouette, type Silhouette } from '@/lib/silhouette';
 import { suggestions, touche } from '@/lib/suggestions';
 import { useProfil } from '@/state/profil';
 
-// Onglet principal : la photo de soi, puis (étape suivante du BRIEF) le vêtement à essayer.
+// Onglet principal : la photo de soi, puis le vêtement à essayer.
 export default function Essayer() {
   const { profil } = useProfil();
   const theme = useTheme();
@@ -50,92 +49,120 @@ export default function Essayer() {
   };
 
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu}>
-          <ThemedText type="subtitle">Essayer</ThemedText>
-          {conseil && (
-            <ThemedText themeColor="textSecondary">
-              {conseil.nom} · {conseil.objectif}
-            </ThemedText>
-          )}
+    <Ecran onglet enTete={<Logo />}>
+      <View style={styles.titres}>
+        <ThemedText type="title">Essaie avant{'\n'}d’acheter.</ThemedText>
+        {conseil && (
+          <View style={[styles.morpho, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+            <ThemedText type="smallBold">{conseil.nom}</ThemedText>
+          </View>
+        )}
+      </View>
 
-          {chargement ? (
-            <ActivityIndicator />
-          ) : silhouette ? (
-            <>
-              {silhouette.url && (
-                <Image source={{ uri: silhouette.url }} style={styles.photo} contentFit="contain" />
-              )}
-              <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
-              <Bouton label="Changer ma photo" onPress={() => router.push('/photo-soi')} />
-              <Bouton label="Supprimer ma photo" onPress={() => void supprimer()} />
-            </>
-          ) : (
-            <>
-              <ThemedText>Pour t’essayer des vêtements, ajoute d’abord une photo de toi en pied.</ThemedText>
-              <Bouton label="Ajouter ma photo" onPress={() => router.push('/photo-soi')} />
-            </>
-          )}
-
-          {idees.length > 0 && profil.style && (
-            <View style={styles.idees}>
-              <ThemedText type="smallBold">Idées pour toi</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                Choisies pour ta silhouette et ton style ({touche(profil.style)}). Trouve un article, puis partage-le
-                vers l’app, ou fais une capture et choisis-la pour l’essayer.
-              </ThemedText>
-              {idees.map((idee) => (
-                <View key={idee.piece} style={[styles.idee, { backgroundColor: theme.backgroundElement }]}>
-                  <ThemedText style={styles.ideeNom}>{idee.piece}</ThemedText>
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel={`Chercher ${idee.piece} sur Vinted`}
-                    onPress={() => void Linking.openURL(idee.vinted)}
-                    style={[styles.lien, { borderColor: theme.textSecondary }]}>
-                    <ThemedText type="small">Vinted</ThemedText>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel={`Chercher ${idee.piece} sur Google Shopping`}
-                    onPress={() => void Linking.openURL(idee.google)}
-                    style={[styles.lien, { borderColor: theme.textSecondary }]}>
-                    <ThemedText type="small">Google</ThemedText>
-                  </Pressable>
-                </View>
-              ))}
+      {chargement ? (
+        <Chargement />
+      ) : silhouette ? (
+        <Carte style={styles.carteSoi}>
+          {silhouette.url && (
+            <View style={styles.cadrePhoto}>
+              <Image source={{ uri: silhouette.url }} style={styles.photo} contentFit="cover" />
+              <View style={[styles.etiquette, { backgroundColor: theme.backgroundElement }]}>
+                <ThemedText type="smallBold">Ta photo</ThemedText>
+              </View>
             </View>
           )}
-
-          {erreur && (
-            <ThemedText type="small" style={styles.erreur}>
-              {erreur}
-            </ThemedText>
-          )}
-          <Bouton label="Voir l’offre complète" onPress={() => router.push('/paywall')} />
-          <ThemedText
-            type="small"
-            themeColor="textSecondary"
-            style={styles.lienDiscret}
-            accessibilityRole="button"
-            onPress={() => router.push('/supprimer-donnees')}>
-            Supprimer toutes mes données
+          <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
+          <View style={styles.rangee}>
+            <View style={styles.moitie}>
+              <Bouton variante="secondaire" label="Changer" onPress={() => router.push('/photo-soi')} />
+            </View>
+            <View style={styles.moitie}>
+              <Bouton variante="secondaire" label="Supprimer" onPress={() => void supprimer()} />
+            </View>
+          </View>
+        </Carte>
+      ) : (
+        <Carte accent style={styles.carteVide}>
+          <ThemedText type="titreCarte">Commence par ta photo</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            Une photo de toi en pied, de face. Akalie t’habille avec les vêtements que tu veux essayer.
           </ThemedText>
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+          <Bouton label="Ajouter ma photo" onPress={() => router.push('/photo-soi')} />
+        </Carte>
+      )}
+
+      <MessageErreur>{erreur}</MessageErreur>
+
+      {idees.length > 0 && profil.style && (
+        <Section
+          titre="Idées pour toi"
+          detail={`Pour ta silhouette et ton style (${touche(profil.style)}). Trouve un article, puis partage-le vers l’app, ou fais une capture et choisis-la pour l’essayer.`}>
+          <View style={styles.idees}>
+            {idees.map((idee) => (
+              <View
+                key={idee.piece}
+                style={[styles.idee, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+                <ThemedText style={styles.ideeNom}>{idee.piece}</ThemedText>
+                <Lien label="Vinted" a11y={`Chercher ${idee.piece} sur Vinted`} url={idee.vinted} />
+                <Lien label="Google" a11y={`Chercher ${idee.piece} sur Google Shopping`} url={idee.google} />
+              </View>
+            ))}
+          </View>
+        </Section>
+      )}
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/paywall')}
+        style={({ pressed }) => [styles.offre, { backgroundColor: theme.text }, pressed && { opacity: 0.85 }]}>
+        <SurtitreEtincelle>Offre complète</SurtitreEtincelle>
+        <ThemedText type="titreCarte" style={{ color: theme.surTexte }}>
+          Jusqu’à 30 essayages par mois
+        </ThemedText>
+        <ThemedText type="small" style={{ color: theme.surTexte, opacity: 0.7 }}>
+          Voir l’offre →
+        </ThemedText>
+      </Pressable>
+
+      <ThemedText
+        type="small"
+        themeColor="textSecondary"
+        style={styles.lienDiscret}
+        accessibilityRole="button"
+        onPress={() => router.push('/supprimer-donnees')}>
+        Supprimer toutes mes données
+      </ThemedText>
+    </Ecran>
+  );
+}
+
+function Lien({ label, a11y, url }: { label: string; a11y: string; url: string }) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={a11y}
+      onPress={() => void Linking.openURL(url)}
+      style={({ pressed }) => [styles.lien, { backgroundColor: theme.background }, pressed && { opacity: 0.6 }]}>
+      <ThemedText type="smallBold">{label}</ThemedText>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-  lienDiscret: { textAlign: 'center', textDecorationLine: 'underline', paddingVertical: Spacing.two },
-  photo: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
-  erreur: { color: '#D93025' },
-  idees: { gap: Spacing.two },
-  idee: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, padding: Spacing.three, borderRadius: 14 },
+  titres: { gap: 14, marginTop: Spacing.two },
+  morpho: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 6, borderRadius: Rayon.pilule, borderWidth: 1 },
+  carteSoi: { padding: 12, gap: 12 },
+  cadrePhoto: { borderRadius: Rayon.moyen + 2, overflow: 'hidden' },
+  photo: { width: '100%', aspectRatio: 3 / 4 },
+  etiquette: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 12, paddingVertical: 5, borderRadius: Rayon.pilule },
+  rangee: { flexDirection: 'row', gap: 10 },
+  moitie: { flex: 1 },
+  carteVide: { paddingVertical: 28 },
+  idees: { gap: 8 },
+  idee: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingLeft: 18, paddingRight: 10, borderRadius: Rayon.moyen, borderWidth: 1 },
   ideeNom: { flex: 1 },
-  lien: { paddingHorizontal: Spacing.two, paddingVertical: Spacing.one, borderRadius: 10, borderWidth: 1 },
+  lien: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: Rayon.pilule },
+  offre: { borderRadius: Rayon.grand, padding: 22, gap: 6 },
+  lienDiscret: { textAlign: 'center', textDecorationLine: 'underline', paddingVertical: Spacing.two },
 });

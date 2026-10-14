@@ -4,7 +4,10 @@
     {
       "name": "app-mode-web",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-lc", "source ~/.bashrc >/dev/null 2>&1; cd /home/baskaure/Documents/sites/app-mode && npx expo start --web --port 8081 --clear"],
+      "runtimeArgs": [
+        "-lc",
+        "cd /home/aurelien/Documents/applications/AppMode/app-mode && if command -v node >/dev/null; then npx expo start --web --port 8081; else flatpak-spawn --host sh -c 'cd /home/aurelien/Documents/applications/AppMode/app-mode && npx expo start --web --port 8081'; fi"
+      ],
       "port": 8081
     }
   ]

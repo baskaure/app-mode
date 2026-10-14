@@ -1,13 +1,12 @@
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Bouton, Choix } from '@/components/choix';
+import { Bouton, Pastille } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BadgeIA, Carte, Chargement, Ecran, Etincelle, MessageErreur } from '@/components/ui';
+import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { filtrerParAvis, type Filtre } from '@/lib/avis';
 import { listerEssais, supprimerEssai, type EssaiHistorique } from '@/lib/historique';
@@ -60,117 +59,104 @@ export default function Historique() {
   const affiches = filtrerParAvis(essais, filtre);
 
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu}>
-          <ThemedText type="subtitle">Tes essayages</ThemedText>
-          {erreur && (
-            <ThemedText type="small" style={styles.erreur}>
-              {erreur}
+    <Ecran onglet eyebrow="Essayages" titre="Tes essayages">
+      <MessageErreur>{erreur}</MessageErreur>
+
+      {chargement ? (
+        <Chargement />
+      ) : essais.length === 0 ? (
+        <Carte accent style={styles.vide}>
+          <ThemedText type="titreCarte">Rien pour l’instant</ThemedText>
+          <ThemedText themeColor="textSecondary">
+            Tes essayages apparaîtront ici. Choisis un vêtement pour commencer.
+          </ThemedText>
+          <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
+        </Carte>
+      ) : (
+        <>
+          <View style={styles.filtres}>
+            <Pastille label="Tous" selectionne={filtre === 'tous'} onPress={() => setFiltre('tous')} />
+            <Pastille label="J’aime" selectionne={filtre === 'aime'} onPress={() => setFiltre('aime')} />
+          </View>
+          {affiches.length === 0 && (
+            <ThemedText themeColor="textSecondary">
+              Aucun essayage aimé pour l’instant. Touche « J’aime » sous un résultat.
             </ThemedText>
           )}
-
-          {chargement ? (
-            <ActivityIndicator />
-          ) : essais.length === 0 ? (
-            <>
-              <ThemedText themeColor="textSecondary">
-                Tes essayages apparaîtront ici. Choisis un vêtement pour commencer.
-              </ThemedText>
-              <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
-            </>
-          ) : (
-            <>
-              <View style={styles.filtres}>
-                <View style={styles.filtre}>
-                  <Choix label="Tous" selectionne={filtre === 'tous'} onPress={() => setFiltre('tous')} />
-                </View>
-                <View style={styles.filtre}>
-                  <Choix label="J’aime" selectionne={filtre === 'aime'} onPress={() => setFiltre('aime')} />
-                </View>
-              </View>
-              {affiches.length === 0 && (
-                <ThemedText themeColor="textSecondary">
-                  Aucun essayage aimé pour l’instant. Touche « J’aime » sous un résultat.
-                </ThemedText>
-              )}
-              <View style={styles.grille}>
-                {affiches.map((essai) => {
-                  const image = essai.urlResultat ?? essai.urlVetement;
-                  return (
-                    <View key={essai.id} style={[styles.carte, { backgroundColor: theme.backgroundElement }]}>
-                      <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel={`Ouvrir l’essayage : ${libelleStatut(essai.statut)}`}
-                        onPress={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}>
-                        {image ? (
-                          <Image source={{ uri: image }} style={styles.photo} contentFit="cover" />
-                        ) : (
-                          <View style={styles.photo} />
-                        )}
-                        {/* Toute image produite reste signalée comme IA, même en vignette (promesse des fiches des stores). */}
-                        {essai.urlResultat && (
-                          <View style={styles.badgeIA} accessibilityLabel="Image créée par IA">
-                            <ThemedText type="smallBold" style={styles.badgeIATexte}>
-                              Créée par IA
-                            </ThemedText>
-                          </View>
-                        )}
-                        <View style={styles.legende}>
-                          <ThemedText type="smallBold">
-                            {libelleStatut(essai.statut)}
-                            {essai.avis === 'aime' ? ' · J’aime' : essai.avis === 'aime_pas' ? ' · J’aime pas' : ''}
-                          </ThemedText>
-                          <ThemedText type="small" themeColor="textSecondary">
-                            {dateCourte(essai.created_at, maintenant)}
-                          </ThemedText>
-                        </View>
-                      </Pressable>
-                      {supprimable(essai) && (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel="Supprimer cet essayage"
-                          onPress={() => void supprimer(essai)}
-                          style={styles.supprimer}>
-                          <ThemedText
-                            type={aConfirmer === essai.id ? 'smallBold' : 'small'}
-                            themeColor={aConfirmer === essai.id ? 'text' : 'textSecondary'}>
-                            {aConfirmer === essai.id ? 'Toucher encore pour supprimer' : 'Supprimer'}
-                          </ThemedText>
-                        </Pressable>
-                      )}
+          <View style={styles.grille}>
+            {affiches.map((essai) => {
+              const image = essai.urlResultat ?? essai.urlVetement;
+              const confirmer = aConfirmer === essai.id;
+              return (
+                <View key={essai.id} style={[styles.carte, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Ouvrir l’essayage : ${libelleStatut(essai.statut)}`}
+                    onPress={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}
+                    style={({ pressed }) => pressed && { opacity: 0.85 }}>
+                    {image ? (
+                      <Image source={{ uri: image }} style={styles.photo} contentFit="cover" />
+                    ) : (
+                      <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
+                    )}
+                    {essai.urlResultat && <BadgeIA />}
+                    {essai.avis === 'aime' && (
+                      <View
+                        style={[styles.coeur, { backgroundColor: theme.backgroundElement }]}
+                        accessible
+                        accessibilityLabel="J’aime">
+                        <Etincelle taille={9} />
+                      </View>
+                    )}
+                    <View style={styles.legende}>
+                      <ThemedText type="smallBold">
+                        {libelleStatut(essai.statut)}
+                        {essai.avis === 'aime_pas' ? ' · J’aime pas' : ''}
+                      </ThemedText>
+                      <ThemedText type="small" themeColor="textSecondary">
+                        {dateCourte(essai.created_at, maintenant)}
+                      </ThemedText>
                     </View>
-                  );
-                })}
-              </View>
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+                  </Pressable>
+                  {supprimable(essai) && (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Supprimer cet essayage"
+                      onPress={() => void supprimer(essai)}
+                      style={[styles.supprimer, confirmer && { backgroundColor: theme.erreurFond }]}>
+                      <ThemedText
+                        type={confirmer ? 'smallBold' : 'small'}
+                        style={{ color: confirmer ? theme.erreur : theme.textSecondary }}>
+                        {confirmer ? 'Toucher encore pour supprimer' : 'Supprimer'}
+                      </ThemedText>
+                    </Pressable>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        </>
+      )}
+    </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-  erreur: { color: '#D93025' },
-  filtres: { flexDirection: 'row', gap: Spacing.two },
-  filtre: { flex: 1 },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  carte: { width: '48%', borderRadius: 14, overflow: 'hidden' },
+  vide: { paddingVertical: 28 },
+  filtres: { flexDirection: 'row', gap: 8 },
+  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
-  badgeIA: {
+  coeur: {
     position: 'absolute',
-    top: Spacing.two,
-    left: Spacing.two,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 2,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    top: 10,
+    right: 10,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  badgeIATexte: { color: '#ffffff' },
-  legende: { paddingHorizontal: Spacing.two, paddingTop: Spacing.two, gap: 2 },
-  supprimer: { padding: Spacing.two, alignItems: 'center' },
+  legende: { paddingHorizontal: 12, paddingTop: 10, gap: 1 },
+  supprimer: { paddingVertical: 10, paddingHorizontal: 8, alignItems: 'center' },
 });

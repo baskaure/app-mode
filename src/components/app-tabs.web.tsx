@@ -1,17 +1,10 @@
-import {
-  Tabs,
-  TabList,
-  TabTrigger,
-  TabSlot,
-  TabTriggerSlotProps,
-  TabListProps,
-} from 'expo-router/ui';
+import { Tabs, TabList, TabTrigger, TabSlot, TabTriggerSlotProps, TabListProps } from 'expo-router/ui';
 import { Pressable, View, StyleSheet } from 'react-native';
 
 import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
 
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { MaxContentWidth, Rayon } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
   return (
@@ -35,54 +28,49 @@ export default function AppTabs() {
 }
 
 export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
+  const theme = useTheme();
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
-          {children}
-        </ThemedText>
-      </ThemedView>
+    <Pressable
+      {...props}
+      style={({ pressed }) => [styles.bouton, isFocused && { backgroundColor: theme.text }, pressed && styles.enfonce]}>
+      <ThemedText type="smallBold" style={{ color: isFocused ? theme.surTexte : theme.textSecondary }}>
+        {children}
+      </ThemedText>
     </Pressable>
   );
 }
 
+// Barre flottante en pilule, posée au-dessus du contenu.
 export function CustomTabList(props: TabListProps) {
+  const theme = useTheme();
   return (
-    <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
+    <View {...props} style={styles.conteneur}>
+      <View style={[styles.barre, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
         {props.children}
-      </ThemedView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tabListContainer: {
+  conteneur: {
+    position: 'absolute',
+    bottom: 16,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  barre: {
+    flexDirection: 'row',
+    gap: 4,
+    padding: 5,
+    borderRadius: Rayon.pilule,
+    borderWidth: 1,
     width: '100%',
-    padding: Spacing.three,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    maxWidth: MaxContentWidth - 80,
+    boxShadow: '0 10px 30px rgba(11,11,15,0.10)',
   },
-  innerContainer: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexGrow: 1,
-    justifyContent: 'space-around',
-    gap: Spacing.two,
-    maxWidth: MaxContentWidth,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
-  },
+  bouton: { flex: 1, alignItems: 'center', paddingVertical: 11, borderRadius: Rayon.pilule },
+  enfonce: { opacity: 0.7 },
 });

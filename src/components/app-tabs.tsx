@@ -1,36 +1,34 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Police } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const theme = useTheme();
 
   return (
     <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      backgroundColor={theme.background}
+      indicatorColor={theme.accentDoux}
+      tintColor={theme.text}
+      iconColor={{ default: theme.textSecondary, selected: theme.text }}
+      labelStyle={{
+        default: { color: theme.textSecondary, fontFamily: Police.moyen },
+        selected: { color: theme.text, fontFamily: Police.demiGras },
+      }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Essayer</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="sparkles" md="auto_awesome" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="historique">
         <NativeTabs.Trigger.Label>Essayages</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="clock.arrow.circlepath" md="history" />
+        <NativeTabs.Trigger.Icon sf={{ default: 'photo.on.rectangle', selected: 'photo.fill.on.rectangle.fill' }} md="photo_library" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="dressing">
         <NativeTabs.Trigger.Label>Dressing</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="hanger" md="checkroom" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

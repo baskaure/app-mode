@@ -1,12 +1,11 @@
 import { Image } from 'expo-image';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Carte, Chargement, Ecran, MessageErreur } from '@/components/ui';
+import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { ajouterPiece, choisirPhoto, listerPieces, supprimerPiece, type Piece, type Source } from '@/lib/dressing';
 
@@ -66,75 +65,70 @@ export default function Dressing() {
   const restantes = Math.max(0, MINIMUM - pieces.length);
 
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu}>
-          <ThemedText type="subtitle">Ton dressing</ThemedText>
-          <ThemedText themeColor="textSecondary">
-            Pose un vêtement à plat, à la lumière du jour, et prends-le en photo.
-          </ThemedText>
-          {restantes > 0 && (
-            <ThemedText type="smallBold">
-              Encore {restantes} pièce{restantes > 1 ? 's' : ''} pour tes premières tenues.
-            </ThemedText>
-          )}
-
-          <View style={styles.boutons}>
-            <Bouton label="Prendre une photo" desactive={envoi} onPress={() => void ajouter('camera')} />
-            <Bouton label="Choisir dans la galerie" desactive={envoi} onPress={() => void ajouter('galerie')} />
+    <Ecran
+      onglet
+      eyebrow={pieces.length > 0 ? `${pieces.length} pièce${pieces.length > 1 ? 's' : ''}` : 'Dressing'}
+      titre="Ton dressing"
+      intro="Pose un vêtement à plat, à la lumière du jour, et prends-le en photo.">
+      {restantes > 0 && (
+        <Carte accent style={styles.objectif}>
+          <View style={styles.points}>
+            {Array.from({ length: MINIMUM }, (_, i) => (
+              <View
+                key={i}
+                style={[styles.point, { backgroundColor: i < pieces.length ? theme.text : theme.backgroundElement }]}
+              />
+            ))}
           </View>
+          <ThemedText type="smallBold">
+            Encore {restantes} pièce{restantes > 1 ? 's' : ''} pour tes premières tenues.
+          </ThemedText>
+        </Carte>
+      )}
 
-          {envoi && (
-            <View style={styles.ligne}>
-              <ActivityIndicator />
-              <ThemedText type="small">Envoi de la photo…</ThemedText>
-            </View>
-          )}
-          {erreur && (
-            <ThemedText type="small" style={styles.erreur}>
-              {erreur}
-            </ThemedText>
-          )}
+      <View style={styles.boutons}>
+        <Bouton label="Prendre une photo" chargement={envoi} onPress={() => void ajouter('camera')} />
+        <Bouton variante="secondaire" label="Choisir dans la galerie" desactive={envoi} onPress={() => void ajouter('galerie')} />
+      </View>
 
-          {chargement ? (
-            <ActivityIndicator />
-          ) : (
-            <View style={styles.grille}>
-              {pieces.map((piece) => (
-                <View key={piece.id} style={[styles.carte, { backgroundColor: theme.backgroundElement }]}>
-                  {piece.url ? (
-                    <Image source={{ uri: piece.url }} style={styles.photo} contentFit="cover" />
-                  ) : (
-                    <View style={styles.photo} />
-                  )}
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Supprimer cette pièce"
-                    onPress={() => void supprimer(piece)}
-                    style={styles.supprimer}>
-                    <ThemedText type="small" themeColor="textSecondary">
-                      Supprimer
-                    </ThemedText>
-                  </Pressable>
-                </View>
-              ))}
+      {envoi && <Chargement texte="Envoi de la photo…" />}
+      <MessageErreur>{erreur}</MessageErreur>
+
+      {chargement ? (
+        <Chargement />
+      ) : (
+        <View style={styles.grille}>
+          {pieces.map((piece) => (
+            <View key={piece.id} style={[styles.carte, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+              {piece.url ? (
+                <Image source={{ uri: piece.url }} style={styles.photo} contentFit="cover" />
+              ) : (
+                <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
+              )}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Supprimer cette pièce"
+                onPress={() => void supprimer(piece)}
+                style={({ pressed }) => [styles.supprimer, pressed && { opacity: 0.5 }]}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  Retirer
+                </ThemedText>
+              </Pressable>
             </View>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+          ))}
+        </View>
+      )}
+    </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-  boutons: { gap: Spacing.two },
-  ligne: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  erreur: { color: '#D93025' },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-  carte: { width: '48%', borderRadius: 14, overflow: 'hidden' },
+  objectif: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16 },
+  points: { flexDirection: 'row', gap: 6 },
+  point: { width: 10, height: 10, borderRadius: 5 },
+  boutons: { gap: 10 },
+  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
-  supprimer: { padding: Spacing.two, alignItems: 'center' },
+  supprimer: { paddingVertical: 10, alignItems: 'center' },
 });

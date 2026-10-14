@@ -1,12 +1,11 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { CaseACocher, Carte, Ecran, MessageErreur, Puce } from '@/components/ui';
+import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { choisirPhoto, type Photo, type Source } from '@/lib/photos';
 import { enregistrerSilhouette, verifierCadrage } from '@/lib/silhouette';
@@ -57,76 +56,55 @@ export default function PhotoSoi() {
   };
 
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu}>
-          <ThemedText type="subtitle">Ta photo pour l’essayage</ThemedText>
-
-          {photo ? (
-            <Image source={{ uri: photo.uri }} style={styles.apercu} contentFit="contain" />
-          ) : (
-            <View style={styles.liste}>
-              {CONSEILS.map((c) => (
-                <ThemedText key={c}>• {c}</ThemedText>
-              ))}
-            </View>
-          )}
-
-          <View style={styles.boutons}>
-            <Bouton
-              label={photo ? 'Reprendre la photo' : 'Prendre la photo'}
-              desactive={envoi}
-              onPress={() => void prendre('camera')}
-            />
-            <Bouton label="Choisir dans la galerie" desactive={envoi} onPress={() => void prendre('galerie')} />
+    <Ecran fermable eyebrow="Ta photo" titre="Ta photo pour l’essayage">
+      {photo ? (
+        <View style={[styles.cadre, { backgroundColor: theme.backgroundElement }]}>
+          <Image source={{ uri: photo.uri }} style={styles.apercu} contentFit="contain" />
+        </View>
+      ) : (
+        <Carte>
+          <ThemedText type="titreCarte">Pour un bon résultat</ThemedText>
+          <View style={styles.liste}>
+            {CONSEILS.map((c) => (
+              <Puce key={c}>{c}</Puce>
+            ))}
           </View>
+        </Carte>
+      )}
 
-          {photo && (
-            <Pressable
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: consentement }}
-              onPress={() => setConsentement((c) => !c)}
-              style={styles.consentement}>
-              <View
-                style={[
-                  styles.case,
-                  { borderColor: theme.text, backgroundColor: consentement ? theme.text : 'transparent' },
-                ]}
-              />
-              <ThemedText type="small" style={styles.texteConsentement}>
-                C’est bien moi sur la photo, et j’ai 15 ans ou plus. Ma photo reste privée et sert uniquement à mes
-                essayages. Pour chaque essayage, elle est vérifiée automatiquement (Anthropic, États-Unis) puis
-                envoyée à nos prestataires d’IA (Kie.ai, puis OpenAI aux États-Unis), donc hors de l’Union européenne. Je
-                peux la supprimer quand je veux.
-              </ThemedText>
-            </Pressable>
-          )}
+      <View style={styles.boutons}>
+        <Bouton
+          variante={photo ? 'secondaire' : 'principal'}
+          label={photo ? 'Reprendre la photo' : 'Prendre la photo'}
+          desactive={envoi}
+          onPress={() => void prendre('camera')}
+        />
+        <Bouton variante="secondaire" label="Choisir dans la galerie" desactive={envoi} onPress={() => void prendre('galerie')} />
+      </View>
 
-          {photo && (
-            <Bouton label="Utiliser cette photo" desactive={!consentement || envoi} onPress={() => void valider()} />
-          )}
+      {photo && (
+        <CaseACocher coche={consentement} onPress={() => setConsentement((c) => !c)}>
+          <ThemedText type="small">
+            C’est bien moi sur la photo, et j’ai 15 ans ou plus. Ma photo reste privée et sert uniquement à mes
+            essayages. Pour chaque essayage, elle est vérifiée automatiquement (Anthropic, États-Unis) puis envoyée à
+            nos prestataires d’IA (Kie.ai, puis OpenAI aux États-Unis), donc hors de l’Union européenne. Je peux la
+            supprimer quand je veux.
+          </ThemedText>
+        </CaseACocher>
+      )}
 
-          {envoi && <ActivityIndicator />}
-          {erreur && (
-            <ThemedText type="small" style={styles.erreur}>
-              {erreur}
-            </ThemedText>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+      {photo && (
+        <Bouton label="Utiliser cette photo" desactive={!consentement} chargement={envoi} onPress={() => void valider()} />
+      )}
+
+      <MessageErreur>{erreur}</MessageErreur>
+    </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three },
-  liste: { gap: Spacing.two },
-  apercu: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
-  boutons: { gap: Spacing.two },
-  consentement: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
-  case: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, marginTop: 2 },
-  texteConsentement: { flex: 1 },
-  erreur: { color: '#D93025' },
+  liste: { gap: 10 },
+  cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
+  apercu: { width: '100%', aspectRatio: 3 / 4 },
+  boutons: { gap: 10 },
 });

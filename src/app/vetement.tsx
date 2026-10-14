@@ -1,13 +1,12 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
-import { Bouton, Choix } from '@/components/choix';
+import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { BadgeIA, Carte, Chargement, Ecran, Etincelle, MessageErreur, Section } from '@/components/ui';
+import { Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { listerPieces, type Piece } from '@/lib/dressing';
 import {
@@ -160,136 +159,148 @@ export default function Vetement() {
 
   if (resultat) {
     return (
-      <Ecran>
-        <ThemedText type="subtitle">Sur toi</ThemedText>
+      <Ecran fermable eyebrow="Résultat" titre="Sur toi">
         <Pressable
           accessibilityRole="imagebutton"
           accessibilityLabel="Agrandir l’image"
           onPress={() =>
             router.push({ pathname: '/image', params: { url: resultat, nom: `essayage-${essai?.id ?? 'image'}.png` } })
-          }>
+          }
+          style={({ pressed }) => [styles.cadre, { backgroundColor: theme.backgroundElement }, pressed && { opacity: 0.9 }]}>
           <Image source={{ uri: resultat }} style={styles.apercu} contentFit="contain" />
+          <BadgeIA />
+          <View style={[styles.loupe, { backgroundColor: theme.backgroundElement }]}>
+            <ThemedText type="smallBold">Agrandir</ThemedText>
+          </View>
         </Pressable>
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText type="small" themeColor="textSecondary" style={styles.centre}>
           Image créée par IA à partir de ta photo. Touche-la pour l’agrandir.
         </ThemedText>
-        <Bouton
-          label={enregistrement === 'fait' ? 'Image enregistrée ✓' : 'Télécharger l’image'}
-          desactive={enregistrement === 'en_cours'}
-          onPress={() => void telechargerResultat()}
-        />
-        {conseil && (
-          <ThemedText>
-            {conseil.nom} : {conseil.objectif}
-          </ThemedText>
-        )}
+
         {essai && (
           <View style={styles.avis}>
-            <View style={styles.choixAvis}>
-              <Choix
-                label={essai.avis === 'aime' ? 'J’aime ✓' : 'J’aime'}
-                selectionne={essai.avis === 'aime'}
-                onPress={() => void choisirAvis('aime')}
-              />
-            </View>
-            <View style={styles.choixAvis}>
-              <Choix
-                label={essai.avis === 'aime_pas' ? 'J’aime pas ✓' : 'J’aime pas'}
-                selectionne={essai.avis === 'aime_pas'}
-                onPress={() => void choisirAvis('aime_pas')}
-              />
-            </View>
+            <BoutonAvis
+              label="J’aime"
+              actif={essai.avis === 'aime'}
+              onPress={() => void choisirAvis('aime')}
+            />
+            <BoutonAvis
+              label="J’aime pas"
+              actif={essai.avis === 'aime_pas'}
+              onPress={() => void choisirAvis('aime_pas')}
+            />
           </View>
         )}
+
+        {conseil && (
+          <Carte accent style={styles.conseil}>
+            <ThemedText type="eyebrow">{conseil.nom}</ThemedText>
+            <ThemedText>{conseil.objectif}</ThemedText>
+          </Carte>
+        )}
+
         {achat && (
-          <>
+          <View style={styles.groupe}>
             <Bouton label="Voir l’article" onPress={() => void ouvrirAchat(achat.url)} />
             {achat.affilie && (
-              <ThemedText type="small" themeColor="textSecondary">
+              <ThemedText type="small" themeColor="textSecondary" style={styles.centre}>
                 Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.
               </ThemedText>
             )}
-          </>
+          </View>
         )}
-        {erreur && (
-          <ThemedText type="small" style={styles.erreur}>
-            {erreur}
-          </ThemedText>
-        )}
-        <Bouton
-          label="Essayer un autre vêtement"
-          onPress={() => {
-            setResultat(null);
-            setEssai(null);
-            setEnregistrement(null);
-          }}
-        />
-        <Bouton label="Fermer" onPress={() => fermer()} />
+        <MessageErreur>{erreur}</MessageErreur>
+        <View style={styles.groupe}>
+          <Bouton
+            variante={achat ? 'secondaire' : 'principal'}
+            label={enregistrement === 'fait' ? 'Image enregistrée ✓' : 'Télécharger l’image'}
+            chargement={enregistrement === 'en_cours'}
+            onPress={() => void telechargerResultat()}
+          />
+          <Bouton
+            variante="secondaire"
+            label="Essayer un autre vêtement"
+            onPress={() => {
+              setResultat(null);
+              setEssai(null);
+              setEnregistrement(null);
+            }}
+          />
+          <Bouton variante="discret" label="Fermer" onPress={() => fermer()} />
+        </View>
       </Ecran>
     );
   }
 
   if (essai) {
     return (
-      <Ecran>
-        <ThemedText type="subtitle">Vêtement prêt</ThemedText>
-        {essai.url && <Image source={{ uri: essai.url }} style={styles.apercu} contentFit="contain" />}
-        <Bouton
-          label={essai.statut === 'en_cours' ? 'Voir le résultat' : 'M’essayer ce vêtement'}
-          desactive={occupe}
-          onPress={() => void lancerEssayage(essai.id)}
-        />
-        {etape && (
-          <View style={styles.ligne}>
-            <ActivityIndicator />
-            <ThemedText type="small">{etape}</ThemedText>
+      <Ecran fermable eyebrow="Vêtement prêt" titre="On l’essaie ?">
+        {essai.url && (
+          <View style={[styles.cadre, { backgroundColor: theme.backgroundElement }]}>
+            <Image source={{ uri: essai.url }} style={styles.apercu} contentFit="contain" />
           </View>
         )}
-        {erreur && (
-          <ThemedText type="small" style={styles.erreur}>
-            {erreur}
-          </ThemedText>
+        {etape && (
+          <Carte accent style={styles.attente}>
+            <Chargement />
+            <ThemedText type="smallBold" style={styles.centre}>
+              {etape}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.centre}>
+              Ça prend environ 2 minutes.
+            </ThemedText>
+          </Carte>
         )}
-        <Bouton label="Choisir un autre vêtement" desactive={occupe} onPress={() => setEssai(null)} />
-        <Bouton label="Fermer" onPress={() => fermer()} />
+        <MessageErreur>{erreur}</MessageErreur>
+        <View style={styles.groupe}>
+          <Bouton
+            label={essai.statut === 'en_cours' ? 'Voir le résultat' : 'M’essayer ce vêtement'}
+            chargement={occupe}
+            onPress={() => void lancerEssayage(essai.id)}
+          />
+          <Bouton variante="secondaire" label="Choisir un autre vêtement" desactive={occupe} onPress={() => setEssai(null)} />
+          <Bouton variante="discret" label="Fermer" onPress={() => fermer()} />
+        </View>
       </Ecran>
     );
   }
 
+  const lienValide = /^https?:\/\/\S+\.\S+/.test(lien.trim());
   return (
-    <Ecran>
-      <ThemedText type="subtitle">Quel vêtement essayer ?</ThemedText>
+    <Ecran fermable eyebrow="Nouvel essayage" titre="Quel vêtement essayer ?">
+      <Carte>
+        <Section titre="Une photo du vêtement" detail="Une capture d’écran de l’article, ou une photo prise en magasin.">
+          <View style={styles.groupe}>
+            <Bouton label="Prendre une photo" desactive={occupe} onPress={() => void depuisPhoto('camera')} />
+            <Bouton variante="secondaire" label="Choisir dans la galerie" desactive={occupe} onPress={() => void depuisPhoto('galerie')} />
+          </View>
+        </Section>
+      </Carte>
 
-      <ThemedText type="smallBold">Une photo du vêtement</ThemedText>
-      <ThemedText type="small" themeColor="textSecondary">
-        Une capture d’écran de l’article, ou une photo prise en magasin.
-      </ThemedText>
-      <View style={styles.boutons}>
-        <Bouton label="Prendre une photo" desactive={occupe} onPress={() => void depuisPhoto('camera')} />
-        <Bouton label="Choisir dans la galerie" desactive={occupe} onPress={() => void depuisPhoto('galerie')} />
-      </View>
-
-      <ThemedText type="smallBold">Le lien de l’article</ThemedText>
-      <TextInput
-        value={lien}
-        onChangeText={setLien}
-        placeholder="https://www.zara.com/fr/…"
-        placeholderTextColor={theme.textSecondary}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="url"
-        inputMode="url"
-        style={[styles.champ, { color: theme.text, backgroundColor: theme.backgroundElement }]}
-      />
-      <Bouton
-        label="Utiliser ce lien"
-        desactive={occupe || !/^https?:\/\/\S+\.\S+/.test(lien.trim())}
-        onPress={() => void lancer(() => essaiDepuisLien(lien))}
-      />
+      <Carte>
+        <Section titre="Le lien de l’article">
+          <TextInput
+            value={lien}
+            onChangeText={setLien}
+            placeholder="https://www.zara.com/fr/…"
+            placeholderTextColor={theme.textSecondary}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="url"
+            inputMode="url"
+            style={[styles.champ, { color: theme.text, backgroundColor: theme.background, borderColor: theme.border }]}
+          />
+          <Bouton
+            variante={lienValide ? 'principal' : 'secondaire'}
+            label="Utiliser ce lien"
+            desactive={occupe || !lienValide}
+            onPress={() => void lancer(() => essaiDepuisLien(lien))}
+          />
+        </Section>
+      </Carte>
 
       {pieces.length > 0 && (
-        <>
-          <ThemedText type="smallBold">Une pièce de ton dressing</ThemedText>
+        <Section titre="Une pièce de ton dressing">
           <ScrollView horizontal contentContainerStyle={styles.rangee} showsHorizontalScrollIndicator={false}>
             {pieces.map((piece) => (
               <Pressable
@@ -297,47 +308,73 @@ export default function Vetement() {
                 accessibilityRole="button"
                 accessibilityLabel="Essayer cette pièce"
                 disabled={occupe}
-                onPress={() => void lancer(() => essaiDepuisPiece(piece))}>
+                onPress={() => void lancer(() => essaiDepuisPiece(piece))}
+                style={({ pressed }) => [styles.vignetteCadre, { borderColor: theme.border }, pressed && { opacity: 0.7 }]}>
                 {piece.url && <Image source={{ uri: piece.url }} style={styles.vignette} contentFit="cover" />}
               </Pressable>
             ))}
           </ScrollView>
-        </>
+        </Section>
       )}
 
-      {occupe && <ActivityIndicator />}
-      {erreur && (
-        <ThemedText type="small" style={styles.erreur}>
-          {erreur}
-        </ThemedText>
-      )}
+      {occupe && <Chargement texte="Préparation du vêtement…" />}
+      <MessageErreur>{erreur}</MessageErreur>
     </Ecran>
   );
 }
 
-function Ecran({ children }: { children: React.ReactNode }) {
+function BoutonAvis({ label, actif, onPress }: { label: string; actif: boolean; onPress: () => void }) {
+  const theme = useTheme();
   return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ScrollView contentContainerStyle={styles.contenu} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: actif }}
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.boutonAvis,
+        {
+          backgroundColor: actif ? theme.text : theme.backgroundElement,
+          borderColor: actif ? theme.text : theme.border,
+        },
+        pressed && { opacity: 0.75 },
+      ]}>
+      {actif && <Etincelle taille={7} />}
+      <ThemedText type="smallBold" style={{ color: actif ? theme.surTexte : theme.text }}>
+        {label}
+      </ThemedText>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  contenu: { padding: Spacing.four, gap: Spacing.three },
-  boutons: { gap: Spacing.two },
-  champ: { borderRadius: 14, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, fontSize: 16 },
-  rangee: { gap: Spacing.two },
-  vignette: { width: 96, height: 128, borderRadius: 10 },
-  apercu: { width: '100%', aspectRatio: 3 / 4, borderRadius: 14 },
-  erreur: { color: '#D93025' },
-  ligne: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
-  avis: { flexDirection: 'row', gap: Spacing.two },
-  choixAvis: { flex: 1 },
+  groupe: { gap: 10 },
+  centre: { textAlign: 'center' },
+  champ: {
+    borderRadius: Rayon.moyen,
+    borderWidth: 1,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    fontSize: 16,
+    fontFamily: Police.normal,
+  },
+  rangee: { gap: 10 },
+  vignetteCadre: { borderRadius: Rayon.petit + 2, borderWidth: 1, overflow: 'hidden' },
+  vignette: { width: 104, height: 138 },
+  cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
+  apercu: { width: '100%', aspectRatio: 3 / 4 },
+  loupe: { position: 'absolute', right: 12, bottom: 12, paddingHorizontal: 14, paddingVertical: 7, borderRadius: Rayon.pilule },
+  avis: { flexDirection: 'row', gap: 10 },
+  boutonAvis: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
+    borderRadius: Rayon.pilule,
+    borderWidth: 1,
+  },
+  conseil: { gap: 6 },
+  attente: { alignItems: 'center', gap: 4 },
 });
