@@ -10,14 +10,14 @@ export const MODELE_IMAGE = 'gpt-image-2-5-sunburst-image-to-image';
 
 // Ordre des images envoyées : 1 = la personne, 2 = le vêtement. La consigne s'y réfère.
 export const CONSIGNE_ESSAYAGE = `Virtual try-on.
-Image 1 is a photo of a real person. Image 2 shows one garment.
-Edit image 1 so that the person wears the garment from image 2.
+Image 1 is a photo of a real person. Image 2 shows one garment or one pair of shoes.
+Edit image 1 so that the person wears the garment (or the shoes) from image 2.
 
 Keep exactly the same as image 1: face, hair, skin, body shape and proportions, height, pose, hands, background, lighting and framing. Never slim, enlarge or reshape the body.
 
-Reproduce the garment faithfully: same cut and fit (straight stays straight, wide stays wide, fitted stays fitted), same length, colour, fabric, pattern and details.
+Reproduce the garment faithfully: same cut and fit (straight stays straight, wide stays wide, fitted stays fitted), same length, colour, fabric, pattern and details. For shoes: same shape, sole, heel height, colour, material and details, on both feet.
 
-Replace only what the garment replaces: a top replaces the top, trousers or a skirt replace the bottoms, a dress replaces both. Keep every other piece of clothing, the shoes and the accessories unchanged. Never remove clothing and never show more skin than image 1, except where the garment itself is designed to.
+Replace only what the garment replaces: a top replaces the top, trousers or a skirt replace the bottoms, a dress replaces both, shoes replace only the shoes. Keep every other piece of clothing, the shoes (unless image 2 shows shoes) and the accessories unchanged. Never remove clothing and never show more skin than image 1, except where the garment itself is designed to.
 
 Photorealistic result. No text, no logo added, no watermark.`;
 

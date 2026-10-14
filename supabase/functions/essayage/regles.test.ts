@@ -32,6 +32,11 @@ test('une photo de soi dénudée bloque, quel que soit le vêtement', () => {
   assert.deepEqual(decider({ ...ok, personne_autorisee: false }), { autorise: false, message: MESSAGES.personne });
 });
 
+test('des chaussures passent (le 15 oct. 2026 elles étaient classées « pas un vêtement »)', () => {
+  assert.deepEqual(decider({ ...ok, vetement_categorie: 'chaussures' }), { autorise: true });
+  assert.ok((CATEGORIES_AUTORISEES as readonly string[]).includes('chaussures'));
+});
+
 test('pas de vêtement visible : message dédié', () => {
   assert.deepEqual(decider({ ...ok, vetement_categorie: 'pas_un_vetement' }), {
     autorise: false,

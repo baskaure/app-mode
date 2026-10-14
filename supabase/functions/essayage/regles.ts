@@ -7,6 +7,8 @@ export const CATEGORIES_AUTORISEES = [
   'combinaison',
   'veste_manteau',
   'tenue_de_sport_couvrante',
+  // Ajouté le 15 oct. 2026 : sans cette catégorie, une paire de chaussures était classée « pas_un_vetement ».
+  'chaussures',
 ] as const;
 export const CATEGORIES_REFUSEES = ['lingerie_sous_vetement', 'maillot_de_bain', 'transparent', 'pas_un_vetement'] as const;
 
@@ -53,6 +55,7 @@ Image 2 : la photo de la personne qui va l'essayer.
 
 Pour l'image 1, choisis la catégorie du vêtement principal :
 - haut, bas, robe_jupe, combinaison, veste_manteau, tenue_de_sport_couvrante : vêtements de tous les jours ;
+- chaussures : baskets, bottes, bottines, escarpins, sandales, mocassins, derbies, portées ou seules ;
 - lingerie_sous_vetement : soutien-gorge, culotte, string, caleçon, boxer, body ou nuisette de lingerie, bas résille, déshabillé ;
 - maillot_de_bain : maillot une pièce, bikini, slip ou short de bain ;
 - transparent : vêtement en voile, résille ou dentelle qui laisserait voir les seins, les fesses ou les parties intimes ;

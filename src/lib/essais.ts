@@ -135,14 +135,15 @@ async function appelerEssayage(action: 'lancer' | 'suivre', essaiId: string): Pr
   return data;
 }
 
-// Lance l'essayage puis interroge le serveur toutes les 3 s, au plus 5 minutes. Renvoie le lien de l'image.
+// Lance l'essayage puis interroge le serveur toutes les 2 s, au plus 5 minutes. Renvoie le lien de l'image.
+// (3 s avant le 15 oct. 2026 : en moyenne 1,5 s perdue entre la fin de la génération et l'affichage.)
 export async function essayer(essaiId: string, onEtape?: (etape: string) => void): Promise<string> {
   onEtape?.('Envoi au service d’essayage…');
   let etat = await appelerEssayage('lancer', essaiId);
   const fin = Date.now() + 5 * 60 * 1000;
   while (etat.statut === 'en_cours' && Date.now() < fin) {
     onEtape?.('L’IA t’habille… (jusqu’à 2 minutes)');
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2000));
     etat = await appelerEssayage('suivre', essaiId);
   }
   if (etat.statut === 'erreur' || etat.statut === 'refuse') throw new Error(etat.message ?? 'L’essayage a échoué.');

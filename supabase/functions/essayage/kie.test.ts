@@ -48,6 +48,11 @@ test('suivi : échec avec sa raison ; succès sans image = échec', () => {
   assert.equal(lireTache({ code: 200, data: { state: 'success', resultJson: 'pas du json' } }).etat, 'echec');
 });
 
+test('la consigne sait essayer des chaussures sans toucher au reste', () => {
+  assert.match(CONSIGNE_ESSAYAGE, /one pair of shoes/);
+  assert.match(CONSIGNE_ESSAYAGE, /shoes replace only the shoes/);
+});
+
 test('la consigne protège le corps et la tenue non essayée', () => {
   assert.match(CONSIGNE_ESSAYAGE, /Never slim, enlarge or reshape the body/);
   assert.match(CONSIGNE_ESSAYAGE, /Never remove clothing/);
