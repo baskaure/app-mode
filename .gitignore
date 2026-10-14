@@ -46,3 +46,6 @@ example
 tests-essayage/images/
 tests-essayage/resultats/
 __pycache__/
+
+# Netlify (lien local vers le site akalie, recréé par netlify link)
+.netlify/
