@@ -1,0 +1,22 @@
+AKALIE · CALQUES POUR LE MOTION DESIGN
+PNG transparents, haute définition. Régénérés par assets/source/logo/construire-motion.py.
+
+icone/   4096 × 4096 px. Tous les calques sont alignés : empile-les au même endroit, ils reforment l'icône.
+         00-icone-complete       l'icône finale, pour référence
+         01-tuile-aura-arrondie  le fond pastel flou, coins arrondis (01-tuile-aura-carree : sans les coins)
+         02-anneau               le rond du « a » (noir ou crème)
+         03-barre                la barre du « a » (noir ou crème)
+         04-etincelle-rose       l'étincelle de l'IA
+         05-symbole              anneau + barre + étincelle d'un bloc
+         Idée d'animation : la tuile apparaît, l'anneau se dessine, la barre descend, l'étincelle « pop » et tourne.
+
+mot/     4000 px de large. Le mot entier, et chaque lettre seule à sa place dans le mot
+         (lettre-1-a … lettre-6-e) : empile-les pour une apparition lettre par lettre.
+
+logo/    Logo complet (icône + mot), 4000 px de large, mot noir ou crème.
+
+fonds/   L'aura en plein cadre : 9:16 (2160 × 3840) clair et sombre, 16:9 (3840 × 2160), carré (2160).
+
+Couleurs : crème #FFF7F2 · encre #0B0B0F · rose étoile #FF3D8B · aura #FFC2D1 #FFD9B0 #C9B8FF
+Police des textes animés : Onest (Google Fonts), Bold ou ExtraBold, interlettrage serré (-4 %).
+Charte complète : https://claude.ai/artifact/32Y95E4jmR9KfXr5ATibCZ
