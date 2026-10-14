@@ -1,15 +1,15 @@
 {
   "expo": {
     "name": "Akalie",
-    "slug": "app-mode",
+    "slug": "akalie",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "appmode",
+    "scheme": "akalie",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.cortexa.appmode"
+      "bundleIdentifier": "app.akalie"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.cortexa.appmode"
+      "package": "app.akalie",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
     "web": {
       "output": "static",
@@ -78,11 +84,36 @@
             "photo"
           ]
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "expo-sharing-extension",
+                  "bundleIdentifier": "app.akalie.expo-sharing-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.app.akalie"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "235d5d96-3414-4e63-b357-9646051dae27"
+      }
+    },
+    "owner": "baskaure"
   }
 }

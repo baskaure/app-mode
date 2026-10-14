@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { normaliser } from './regles.ts';
+import { ANALYSES_MAX_PAR_JOUR, normaliser, plafondAtteint } from './regles.ts';
 
 test('une pièce reconnue est gardée telle quelle, description en minuscules', () => {
   assert.deepEqual(
@@ -23,4 +23,9 @@ test('valeurs hors liste ou description sans possessif : écartées', () => {
   assert.deepEqual(r, { categorie: 'haut', couleur: null, description: null });
   // @ts-expect-error catégorie hors liste
   assert.equal(normaliser({ est_vetement: true, categorie: 'chaussette', couleur: 'noir', description: 'tes chaussettes' }).categorie, null);
+});
+
+test('plafond : 40 analyses par 24 h, la 41e est refusée', () => {
+  assert.equal(plafondAtteint(ANALYSES_MAX_PAR_JOUR - 1), false);
+  assert.equal(plafondAtteint(ANALYSES_MAX_PAR_JOUR), true);
 });

@@ -45,6 +45,14 @@ Décris la pièce principale pour proposer ensuite des articles qui vont avec.
 
 const DESCRIPTION_MAX = 40;
 
+// Plafond d'analyses par personne et par 24 h (15 oct. 2026) : chaque analyse coûte un appel à Claude Haiku.
+// 40 laisse de quoi photographier tout un placard dans la journée, sans laisser un compte tourner en boucle.
+export const ANALYSES_MAX_PAR_JOUR = 40;
+
+export function plafondAtteint(analysesDernieres24h: number): boolean {
+  return analysesDernieres24h >= ANALYSES_MAX_PAR_JOUR;
+}
+
 // Décision prise par le code : valeurs hors liste ou pièce non reconnue → rien d'enregistré (null).
 export function normaliser(analyse: Analyse | null): Maj {
   const vide: Maj = { categorie: null, couleur: null, description: null };

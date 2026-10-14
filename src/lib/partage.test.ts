@@ -46,10 +46,10 @@ test('un lien seul (type url ou website résolu)', () => {
 });
 
 test('seul le lien d’ouverture d’expo-sharing mène à l’écran partage', () => {
-  assert.equal(estLienDePartage('appmode://expo-sharing'), true);
-  assert.equal(estLienDePartage('appmode://expo-sharing?id=1'), true);
-  assert.equal(estLienDePartage('appmode://vetement'), false);
-  assert.equal(estLienDePartage('appmode://expo-sharing-faux'), false);
+  assert.equal(estLienDePartage('akalie://expo-sharing'), true);
+  assert.equal(estLienDePartage('akalie://expo-sharing?id=1'), true);
+  assert.equal(estLienDePartage('akalie://vetement'), false);
+  assert.equal(estLienDePartage('akalie://expo-sharing-faux'), false);
   assert.equal(estLienDePartage('/partage'), false);
 });
 

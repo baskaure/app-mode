@@ -40,7 +40,7 @@ export function lirePartage(charges: Charge[]): Partage {
   return { type: 'rien' };
 }
 
-// Lien d'ouverture envoyé par expo-sharing : `appmode://expo-sharing…`. Pas de `new URL().hostname` :
+// Lien d'ouverture envoyé par expo-sharing : `akalie://expo-sharing…`. Pas de `new URL().hostname` :
 // selon les versions, l'URL de React Native ne lit pas bien l'hôte d'un schéma maison.
 export function estLienDePartage(chemin: string): boolean {
   return /^[a-z][a-z0-9+.-]*:\/\/expo-sharing(?:[/?#]|$)/i.test(chemin);

@@ -14,9 +14,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { CaptchaProvider } from '@/components/captcha';
 import { Colors } from '@/constants/theme';
+import { demarrerSuiviErreurs, avecSuiviErreurs } from '@/lib/suivi-erreurs';
 import { ProfilProvider } from '@/state/profil';
 
 SplashScreen.preventAutoHideAsync();
+demarrerSuiviErreurs();
 
 // Thèmes de navigation aux couleurs Akalie (fond des modales, transitions).
 const themeClair = {
@@ -28,7 +30,7 @@ const themeSombre = {
   colors: { ...DarkTheme.colors, background: Colors.dark.background, card: Colors.dark.background, primary: Colors.dark.accent },
 };
 
-export default function RootLayout() {
+function RootLayout() {
   const colorScheme = useColorScheme();
   const [policesPretes, erreurPolices] = useFonts({
     Onest_400Regular,
@@ -64,3 +66,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default avecSuiviErreurs(RootLayout);

@@ -7,7 +7,7 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Anthropic from 'npm:@anthropic-ai/sdk@0.133.0';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-import { CONSIGNE, normaliser, SCHEMA, type Analyse } from './regles.ts';
+import { CONSIGNE, normaliser, plafondAtteint, SCHEMA, type Analyse } from './regles.ts';
 
 const MODELE = 'claude-haiku-5-5';
 const TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -74,6 +74,13 @@ Deno.serve(async (req) => {
     return reponse(400, { erreur: 'Requête invalide.' });
   }
   if (!/^[0-9a-f-]{36}$/i.test(pieceId)) return reponse(400, { erreur: 'Pièce inconnue.' });
+
+  // Plafond : analyses faites par cette personne sur les dernières 24 h (RLS : seulement ses pièces).
+  const depuis = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const recentes = await supabase.from('pieces').select('id', { count: 'exact', head: true }).gte('analyse_at', depuis);
+  if (recentes.error || plafondAtteint(recentes.count ?? 0)) {
+    return reponse(429, { erreur: 'Beaucoup de pièces analysées aujourd’hui : la suite sera reconnue demain.' });
+  }
 
   const piece = await supabase.from('pieces').select('id, photo_path').eq('id', pieceId).maybeSingle();
   if (piece.error || !piece.data) return reponse(404, { erreur: 'Pièce introuvable.' });
