@@ -1,0 +1,75 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Outfit:wght@400;600;700&family=Nunito:wght@900&family=DM+Serif+Display&family=Syne:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Unbounded:wght@500;700&family=Italiana&family=Cormorant+Garamond:wght@500;600&family=Playfair+Display:ital,wght@0,600;1,500&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@600&display=block" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#ECE7E2;font-family:Outfit,sans-serif;padding:28px;width:1500px;color:#2E1A33}
+h1{font-size:24px;margin-bottom:6px}p.s{opacity:.7;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.num{font-weight:700;font-size:15px}.num span{font-weight:400;opacity:.6}
+.row{display:flex;align-items:center;gap:12px}
+.icon{width:120px;height:120px;border-radius:27px;overflow:hidden;flex:none}
+.sm{width:44px;height:44px;border-radius:10px}.xs{width:28px;height:28px;border-radius:6px}
+.wm{font-size:46px;line-height:1.05;white-space:nowrap}
+.band{border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+svg{display:block}
+</style></head><body>
+<h1>akalie : 20 variantes</h1><p class="s">Icône d'app (grande, moyenne, petite) · logo texte · version inversée</p>
+<div class="grid" id="g"></div>
+<script>
+const star=(x,y,s,f)=>`<path fill="${f}" d="M${x} ${y-s}C${x+s*.18} ${y-s*.18} ${x+s*.18} ${y-s*.18} ${x+s} ${y}C${x+s*.18} ${y+s*.18} ${x+s*.18} ${y+s*.18} ${x} ${y+s}C${x-s*.18} ${y+s*.18} ${x-s*.18} ${y+s*.18} ${x-s} ${y}C${x-s*.18} ${y-s*.18} ${x-s*.18} ${y-s*.18} ${x} ${y-s}Z"/>`;
+const bgf=bg=>bg.startsWith('grad:')?`<defs><linearGradient id="g${++gid}" x1="0" y1="0" x2="1" y2="1">${bg.slice(5).split(',').map((c,i,a)=>`<stop offset="${i/(a.length-1)}" stop-color="${c}"/>`).join('')}</linearGradient></defs><rect width="100" height="100" fill="url(#g${gid})"/>`:`<rect width="100" height="100" fill="${bg}"/>`;
+let gid=0;
+const S=(inner,bg)=>`<svg viewBox="0 0 100 100" width="100%" height="100%">${bgf(bg)}${inner}</svg>`;
+const T=(t,x,y,f,w,s,c,extra='')=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="${f}" font-weight="${w}" font-size="${s}" fill="${c}" ${extra}>${t}</text>`;
+const hook=(c,w=5.5)=>`<path d="M50 33V28.5C50 25 56.5 24 56.5 18.5C56.5 14.5 53.5 11.5 50 11.5C46.5 11.5 43.5 14 43.5 17.5" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+// symboles
+const sym={
+ serifA:(f,a)=>T('a',47,71,'Fraunces',500,74,f)+star(74,27,9,a),
+ hangerA:(f,a)=>hook(f)+`<path d="M50 33L19 73.5Q17 78 22 78H78Q83 78 81 73.5Z" fill="none" stroke="${f}" stroke-width="5.5" stroke-linejoin="round"/>`+star(50,60,8.5,a),
+ hangerFill:(f,a)=>hook(f)+`<path d="M50 33L19 73.5Q17 78 22 78H78Q83 78 81 73.5Z" fill="${f}" stroke="${f}" stroke-width="5.5" stroke-linejoin="round"/>`+star(50,61,9,a),
+ hangerThin:(f,a)=>hook(f,3)+`<path d="M50 33L17 76H83Z" fill="none" stroke="${f}" stroke-width="3" stroke-linejoin="round"/><path d="M33 58H67" stroke="${f}" stroke-width="3" stroke-linecap="round"/>`+star(74,25,6,a),
+ mirror:(f,a)=>`<path d="M29 84V44A21 21 0 0 1 71 44V84Z" fill="none" stroke="${f}" stroke-width="5" stroke-linejoin="round"/>`+T('a',50,74,'Fraunces',500,40,f)+star(63,36,6,a),
+ mirrorFig:(f,a)=>`<path d="M27 86V42A23 23 0 0 1 73 42V86Z" fill="${f}"/>`+star(50,52,14,a),
+ roundA:(f,a)=>T('a',48,73,'Nunito',900,78,f)+star(75,26,9,a),
+ ak:(f,a)=>T('ak',50,66,'DM Serif Display',400,56,f,'letter-spacing="-3"')+star(80,24,7,a),
+ italicA:(f,a)=>T('a',50,72,'Instrument Serif',400,96,f,'font-style="italic"')+star(72,28,8,a),
+ tag:(f,a)=>`<path d="M22 30Q22 24 28 24H62L80 50L62 76H28Q22 76 22 70Z" fill="${f}"/><circle cx="64" cy="50" r="5" fill="${a}"/>`+T('a',41,63,'Fraunces',600,38,a),
+ hourglass:(f,a)=>`<path d="M30 20H70C70 38 56 44 56 50C56 56 70 62 70 80H30C30 62 44 56 44 50C44 44 30 38 30 20Z" fill="none" stroke="${f}" stroke-width="5" stroke-linejoin="round"/>`+star(50,66,7,a),
+ thread:(f,a)=>`<path d="M30 74C30 40 70 40 70 60C70 80 40 80 40 60C40 36 64 22 78 20" fill="none" stroke="${f}" stroke-width="6" stroke-linecap="round"/>`+star(80,20,7,a),
+ sparkA:(f,a)=>`<path d="M50 14L80 84M50 14L20 84" fill="none" stroke="${f}" stroke-width="7" stroke-linecap="round"/>`+star(50,62,13,a),
+ dress:(f,a)=>`<path d="M42 18Q50 24 58 18L62 40Q56 46 60 50L76 84H24L40 50Q44 46 38 40Z" fill="${f}"/>`+star(70,26,7,a),
+ button:(f,a)=>`<circle cx="50" cy="50" r="30" fill="none" stroke="${f}" stroke-width="5"/>`+[[42,42],[58,42],[42,58],[58,58]].map(([x,y],i)=>i==1?star(x,y,6,a):`<circle cx="${x}" cy="${y}" r="4.5" fill="${f}"/>`).join(''),
+ unbA:(f,a)=>T('a',50,70,'Unbounded',700,64,f)+star(76,26,8,a),
+};
+const wm=(f,w,c,ls='0',extra='')=>`<span class="wm" style="font-family:'${f}';font-weight:${w};color:${c};letter-spacing:${ls};${extra}">akalie</span>`;
+// [nom, symbole, fond icône, couleur symbole, accent, police, poids, couleur texte, fond bande, couleur texte bande, ls, extra]
+const V=[
+ ['Cintre plein · prune','hangerA','#2E1A33','#FBF6F0','#FF7A5C','Outfit',600,'#2E1A33','#2E1A33','#FBF6F0','.02em'],
+ ['Cintre · noir & crème','hangerA','#141414','#F4EEE6','#E9C46A','Syne',800,'#141414','#141414','#F4EEE6','-.01em'],
+ ['Cintre plein · corail','hangerFill','#FF7A5C','#FFF6F0','#FF7A5C','Bricolage Grotesque',800,'#2E1A33','#FF7A5C','#fff','-.02em'],
+ ['Cintre fin · luxe','hangerThin','#F4EEE6','#1F1B1A','#B08D57','Cormorant Garamond',600,'#1F1B1A','#1F1B1A','#F4EEE6','.18em','text-transform:uppercase;font-size:34px'],
+ ['Maison · prune','serifA','#2E1A33','#FBF6F0','#FF7A5C','Fraunces',500,'#2E1A33','#2E1A33','#FBF6F0','-.01em'],
+ ['Italique · éditorial','italicA','#F2E3DA','#2B2B2B','#D9534F','Instrument Serif',400,'#2B2B2B','#2B2B2B','#F2E3DA','0','font-style:italic;font-size:54px'],
+ ['Monogramme ak','ak','#1E2A38','#F5EFE6','#E8A87C','DM Serif Display',400,'#1E2A38','#1E2A38','#F5EFE6','0'],
+ ['Didone · Vogue','serifA','#FFFFFF','#111111','#111111','Playfair Display',600,'#111111','#111111','#fff','.12em','text-transform:uppercase;font-size:36px'],
+ ['Miroir · rose','mirror','#F6DCD4','#2E1A33','#FF7A5C','Fraunces',500,'#2E1A33','#2E1A33','#F6DCD4','-.01em'],
+ ['Miroir plein · sauge','mirrorFig','#DDE5D8','#3F5443','#F4EEE6','Outfit',600,'#3F5443','#3F5443','#F4EEE6','.02em'],
+ ['Étiquette','tag','#FBF6F0','#2E1A33','#FBF6F0','Space Grotesk',600,'#2E1A33','#2E1A33','#FBF6F0','-.01em'],
+ ['Sablier · morpho','hourglass','#2E1A33','#F6DCD4','#FF7A5C','Outfit',400,'#2E1A33','#2E1A33','#F6DCD4','.08em'],
+ ['Fil & aiguille','thread','#FFF4EC','#C2185B','#FF7A5C','Bricolage Grotesque',600,'#C2185B','#C2185B','#FFF4EC','-.01em'],
+ ['A étoilé','sparkA','#111111','#F4EEE6','#FF7A5C','Syne',700,'#111111','#111111','#F4EEE6','.04em'],
+ ['Robe','dress','#F6DCD4','#2E1A33','#FF7A5C','Italiana',400,'#2E1A33','#2E1A33','#F6DCD4','.1em','font-size:44px'],
+ ['Bouton','button','#2E1A33','#F6DCD4','#FF7A5C','Fraunces',500,'#2E1A33','#2E1A33','#F6DCD4','0'],
+ ['TikTok pop','roundA','grad:#FF8A5C,#E8407A,#5B2367','#fff','#fff','Nunito',900,'#2E1A33','#2E1A33','#fff','-.01em'],
+ ['Pop · lilas','roundA','grad:#B9A7FF,#7C5CFF','#fff','#FFE36E','Nunito',900,'#3B2A8C','#3B2A8C','#fff','-.01em'],
+ ['Unbounded · fluo','unbA','#D7FF3A','#111111','#111111','Unbounded',700,'#111111','#111111','#D7FF3A','-.02em','font-size:40px'],
+ ['Terracotta','hangerA','#C8553D','#FFF3E6','#FFD8A8','Fraunces',500,'#7A2E1F','#C8553D','#FFF3E6','0'],
+];
+document.getElementById('g').innerHTML=V.map(([n,s,bg,fg,ac,f,w,tc,bb,bt,ls,ex=''],i)=>{const ic=S(sym[s](fg,ac),bg);
+return `<div class="card"><div class="num">${i+1} <span>· ${n}</span></div>
+<div class="row"><div class="icon">${ic}</div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div class="icon sm">${ic}</div><div class="icon xs">${ic}</div></div></div>
+<div>${wm(f,w,tc,ls,ex)}</div>
+<div class="band" style="background:${bb}"><div class="icon sm" style="box-shadow:0 0 0 1.5px ${bt}33">${ic}</div>${wm(f,w,bt,ls,ex).replace('class="wm"','class="wm" ').replace('font-size:','fs:')}</div></div>`}).join('');
+document.querySelectorAll('.band .wm').forEach(e=>e.style.fontSize='30px');
+</script></body></html>

@@ -1,0 +1,72 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=Sora:wght@600;700&family=Manrope:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Unbounded:wght@600&family=Onest:wght@600;700&family=Inter+Tight:wght@600;700&family=Space+Grotesk:wght@600&family=Outfit:wght@400;600&display=block" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#F2F1EF;font-family:Outfit,sans-serif;padding:28px;width:1500px;color:#0B0B0F}
+h1{font-size:24px;margin-bottom:6px}p.s{opacity:.65;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.num{font-weight:600;font-size:15px}.num span{font-weight:400;opacity:.6}
+.row{display:flex;align-items:center;gap:12px}
+.icon{width:120px;height:120px;border-radius:27px;overflow:hidden;flex:none}
+.sm{width:44px;height:44px;border-radius:10px}.xs{width:28px;height:28px;border-radius:6px}
+.wm{font-size:46px;line-height:1.05;white-space:nowrap}
+.band{border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.band .wm{font-size:30px}
+svg{display:block}
+</style></head><body>
+<h1>akalie : 16 pistes modernes</h1><p class="s">Dégradés, verre (style iOS 26), formes géométriques, grotesques serrées</p>
+<div class="grid" id="g"></div>
+<script>
+let id=0;const u=()=>'i'+(++id);
+const star=(x,y,s,f,o=1)=>`<path fill="${f}" opacity="${o}" d="M${x} ${y-s}C${x+s*.16} ${y-s*.16} ${x+s*.16} ${y-s*.16} ${x+s} ${y}C${x+s*.16} ${y+s*.16} ${x+s*.16} ${y+s*.16} ${x} ${y+s}C${x-s*.16} ${y+s*.16} ${x-s*.16} ${y+s*.16} ${x-s} ${y}C${x-s*.16} ${y-s*.16} ${x-s*.16} ${y-s*.16} ${x} ${y-s}Z"/>`;
+const lin=(id,cols,x2=1,y2=1)=>`<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${cols.map((c,i)=>`<stop offset="${i/(cols.length-1)}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+const S=(defs,inner)=>`<svg viewBox="0 0 100 100" width="100%" height="100%"><defs>${defs}</defs>${inner}</svg>`;
+// fond "maillage" : plusieurs taches floues
+const mesh=(base,blobs)=>{const f=u();return [`<filter id="${f}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>`,`<rect width="100" height="100" fill="${base}"/><g filter="url(#${f})">${blobs.map(([x,y,r,c])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('')}</g>`]};
+const geoA=(c,w=11)=>`<circle cx="43" cy="55" r="${20-w/2+5.5}" fill="none" stroke="${c}" stroke-width="${w}"/><rect x="${63-w/2+5.5}" y="30" width="${w}" height="${50-(11-w)}" rx="${w/2}" fill="${c}"/>`;
+const hanger=(c,w=6)=>`<path d="M50 34V29C50 25.5 57 24.5 57 18.5C57 14.3 53.8 11 50 11C46.2 11 43 14 43 18" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/><path d="M50 34L18 75Q16 80 22 80H78Q84 80 82 75Z" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
+const glass=(shape,blur)=>{const g=u(),f=u();return [`${lin(g,['rgba(255,255,255,.75)','rgba(255,255,255,.15)'],0.3,1)}<filter id="${f}"><feGaussianBlur stdDeviation="2.2"/></filter>`,`<g opacity=".35" transform="translate(1.5,3)" filter="url(#${f})">${shape('#000')}</g><g>${shape(`url(#${g})`)}</g>`]};
+
+const icons={
+ glassA:()=>{const [d1,b]=mesh('#5B2BFF',[[20,20,35,'#FF4D9D'],[85,30,30,'#FFB36B'],[60,95,40,'#3A1CFF']]);const [d2,g]=glass(c=>geoA(c,12));return S(d1+d2,b+g+star(78,22,7,'#fff'))},
+ glassHanger:()=>{const [d1,b]=mesh('#FF5C8A',[[15,85,40,'#7B2CFF'],[90,15,35,'#FFC46B'],[60,60,25,'#FF3D6E']]);const [d2,g]=glass(c=>hanger(c,7.5));return S(d1+d2,b+g+star(50,62,9,'#fff'))},
+ geoBlack:()=>{const g=u();return S(lin(g,['#FF7A5C','#FF3D8B','#8A3BFF']),`<rect width="100" height="100" fill="#0B0B0F"/>${geoA(`url(#${g})`)}${star(80,22,7,'#fff')}`)},
+ geoCoral:()=>S('',`<rect width="100" height="100" fill="#FF5A36"/>${geoA('#fff')}${star(80,22,7,'#FFE14D')}`),
+ aura:()=>{const [d,b]=mesh('#0B0B0F',[[50,55,26,'#FF4D9D'],[60,40,18,'#FFB36B'],[40,62,18,'#7B5CFF']]);return S(d,b+star(50,52,22,'#fff'))},
+ auraLight:()=>{const [d,b]=mesh('#FFF7F2',[[35,40,26,'#FFC2D1'],[65,62,26,'#C9B8FF'],[60,30,16,'#FFD9B0']]);return S(d,b+geoA('#0B0B0F',10)+star(80,22,7,'#FF3D8B'))},
+ split:()=>{const g=u();return S(lin(g,['#FF7A5C','#FF3D8B']),`<rect width="100" height="100" fill="#141218"/><rect x="20" y="22" width="40" height="56" rx="10" fill="none" stroke="#fff" stroke-width="5" stroke-opacity=".9"/><rect x="40" y="22" width="40" height="56" rx="10" fill="url(#${g})"/>${star(60,50,10,'#fff')}`)},
+ scan:()=>{const g=u();return S(lin(g,['#7B5CFF','#FF4D9D']),`<rect width="100" height="100" fill="url(#${g})"/><g fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"><path d="M22 36V28Q22 22 28 22H36M64 22H72Q78 22 78 28V36M78 64V72Q78 78 72 78H64M36 78H28Q22 78 22 72V64"/></g><g transform="translate(50 50) scale(.5) translate(-50 -48)">${hanger('#fff',9)}</g>`)},
+ morph:()=>S('',`<rect width="100" height="100" fill="#FFF4EE"/><g style="mix-blend-mode:multiply"><path d="M30 22H54L66 78H18Z" fill="#FF7A9C"/><path d="M46 22H82L70 78H58Z" fill="#8F7BFF"/></g>${star(76,18,0,'#000')}`),
+ ribbon:()=>{const g=u();return S(lin(g,['#FFB36B','#FF3D8B','#7B2CFF'],1,0),`<rect width="100" height="100" fill="#0B0B0F"/><path d="M24 70C24 40 70 30 70 52C70 72 34 74 40 50C44 34 66 26 80 30" fill="none" stroke="url(#${g})" stroke-width="10" stroke-linecap="round"/>`)},
+ lime:()=>S('',`<rect width="100" height="100" fill="#D7FF3A"/>${geoA('#0B0B0F')}${star(80,22,7,'#0B0B0F')}`),
+ chrome:()=>{const g=u(),h=u();return S(lin(g,['#F5F5F7','#9EA3AE','#FFFFFF','#6E7380','#E6E8EC'],0.4,1)+lin(h,['#1B1B22','#000']),`<rect width="100" height="100" fill="url(#${h})"/>${hanger(`url(#${g})`,8)}${star(50,62,8,'#FF4D9D')}`)},
+ dot:()=>S('',`<rect width="100" height="100" fill="#2B1BFF"/><circle cx="43" cy="55" r="20" fill="#fff"/><rect x="63" y="30" width="12" height="50" rx="6" fill="#fff"/><circle cx="43" cy="55" r="7" fill="#2B1BFF"/>${star(80,22,7,'#FF9AD5')}`),
+ peach:()=>{const g=u();return S(lin(g,['#FFD3B6','#FF8FA3']),`<rect width="100" height="100" fill="url(#${g})"/>${hanger('#fff',7)}${star(50,62,9,'#fff')}`)},
+ noir:()=>S('',`<rect width="100" height="100" fill="#0B0B0F"/><text x="50" y="66" text-anchor="middle" font-family="Unbounded" font-weight="600" font-size="46" fill="#fff" letter-spacing="-2">ak</text>${star(82,24,6,'#FF4D9D')}`),
+ holo:()=>{const g=u();return S(lin(g,['#A6FFF2','#C7B5FF','#FFB5E8','#FFF0B5']),`<rect width="100" height="100" fill="url(#${g})"/>${geoA('#16121F',11)}${star(80,22,7,'#16121F')}`)},
+};
+const V=[
+ ['Verre · violet','glassA','Geist',700,'#2A1470','#2A1470','#fff','-.04em'],
+ ['Verre · cintre','glassHanger','Sora',700,'#B8245A','#B8245A','#fff','-.03em'],
+ ['Géométrique · néon','geoBlack','Inter Tight',700,'#0B0B0F','#0B0B0F','#fff','-.05em'],
+ ['Géométrique · corail','geoCoral','Manrope',800,'#FF5A36','#FF5A36','#fff','-.04em'],
+ ['Aura IA','aura','Geist',600,'#0B0B0F','#0B0B0F','#fff','-.04em'],
+ ['Aura · pastel','auraLight','Onest',700,'#0B0B0F','#0B0B0F','#FFE3EC','-.04em'],
+ ['Avant / après','split','Sora',600,'#141218','#141218','#fff','-.03em'],
+ ['Scan IA','scan','Bricolage Grotesque',800,'#5B3BD9','#5B3BD9','#fff','-.04em'],
+ ['Silhouettes A + V','morph','Manrope',800,'#3A2A6B','#3A2A6B','#FFF4EE','-.04em'],
+ ['Ruban','ribbon','Geist',600,'#0B0B0F','#0B0B0F','#fff','-.04em'],
+ ['Lime','lime','Bricolage Grotesque',800,'#0B0B0F','#0B0B0F','#D7FF3A','-.05em'],
+ ['Chrome','chrome','Space Grotesk',600,'#0B0B0F','#0B0B0F','#E6E8EC','-.04em'],
+ ['Bleu électrique','dot','Inter Tight',700,'#2B1BFF','#2B1BFF','#fff','-.05em'],
+ ['Pêche','peach','Onest',700,'#E8667E','#E8667E','#fff','-.04em'],
+ ['Noir · ak','noir','Unbounded',600,'#0B0B0F','#0B0B0F','#fff','-.04em'],
+ ['Holographique','holo','Sora',700,'#16121F','#16121F','#E6DDFF','-.04em'],
+];
+document.getElementById('g').innerHTML=V.map(([n,k,f,w,tc,bb,bt,ls],i)=>{const ic=()=>icons[k]();
+const wm=c=>`<span class="wm" style="font-family:'${f}';font-weight:${w};color:${c};letter-spacing:${ls}">akalie</span>`;
+return `<div class="card"><div class="num">${i+1} <span>· ${n}</span></div>
+<div class="row"><div class="icon">${ic()}</div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div class="icon sm">${ic()}</div><div class="icon xs">${ic()}</div></div></div>
+<div>${wm(tc)}</div><div class="band" style="background:${bb}"><div class="icon sm" style="box-shadow:0 0 0 1.5px #ffffff40">${ic()}</div>${wm(bt)}</div></div>`}).join('');
+</script></body></html>

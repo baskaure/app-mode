@@ -1,0 +1,54 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Outfit:wght@500;600;700&family=Nunito:wght@800;900&display=block" rel="stylesheet">
+<style>
+:root{--plum:#2E1A33;--cream:#FBF6F0;--coral:#FF7A5C;--blush:#F6DCD4}
+*{box-sizing:border-box;margin:0}
+body{background:#ECE7E2;font-family:Outfit,sans-serif;padding:32px;width:1400px;color:var(--plum)}
+h1{font-size:22px;margin-bottom:20px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:#fff;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:22px}
+.tag{font-size:15px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.6}
+.row{display:flex;align-items:center;gap:26px}
+.icon{width:180px;height:180px;border-radius:40px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+.sm{width:60px;height:60px;border-radius:14px}
+.xs{width:36px;height:36px;border-radius:8px}
+.wm{font-size:72px;line-height:1}
+.dark{background:var(--plum);border-radius:14px;padding:18px 24px;display:flex;align-items:center;gap:18px}
+svg{display:block}
+</style></head><body>
+<h1>akalie : 4 pistes de logo</h1>
+<div class="grid" id="g"></div>
+<script>
+const P='#2E1A33',C='#FBF6F0',K='#FF7A5C',B='#F6DCD4';
+// étoile 4 branches
+const star=(x,y,s,f)=>`<path fill="${f}" d="M${x} ${y-s}C${x+s*.18} ${y-s*.18} ${x+s*.18} ${y-s*.18} ${x+s} ${y}C${x+s*.18} ${y+s*.18} ${x+s*.18} ${y+s*.18} ${x} ${y+s}C${x-s*.18} ${y+s*.18} ${x-s*.18} ${y+s*.18} ${x-s} ${y}C${x-s*.18} ${y-s*.18} ${x-s*.18} ${y-s*.18} ${x} ${y-s}Z"/>`;
+const svg=(inner,bg)=>`<svg viewBox="0 0 100 100" width="100%" height="100%">${bg?`<rect width="100" height="100" fill="${bg}"/>`:''}${inner}</svg>`;
+
+// A. Maison : "a" serif + étoile
+const A=(fg,bg,ac)=>svg(`<text x="47" y="71" text-anchor="middle" font-family="Fraunces" font-weight="500" font-size="74" fill="${fg}">a</text>${star(74,27,9,ac)}`,bg);
+// B. Cintre en A
+const Bi=(fg,bg,ac)=>svg(`<g fill="none" stroke="${fg}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M50 33V28.5C50 25 56.5 24 56.5 18.5C56.5 14.5 53.5 11.5 50 11.5C46.5 11.5 43.5 14 43.5 17.5"/>
+<path d="M50 33L19 73.5Q17 78 22 78H78Q83 78 81 73.5Z"/></g>${star(50,60,8.5,ac)}`,bg);
+// C. Miroir (arche) + a
+const Ci=(fg,bg,ac)=>svg(`<path d="M29 84V44A21 21 0 0 1 71 44V84Z" fill="none" stroke="${fg}" stroke-width="5" stroke-linejoin="round"/>
+<text x="50" y="74" text-anchor="middle" font-family="Fraunces" font-weight="500" font-size="40" fill="${fg}">a</text>${star(63,36,6,ac)}`,bg);
+// D. Gen-Z dégradé
+const Di=()=>`<svg viewBox="0 0 100 100" width="100%" height="100%"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A5C"/><stop offset=".55" stop-color="#E8407A"/><stop offset="1" stop-color="#5B2367"/></linearGradient></defs><rect width="100" height="100" fill="url(#gd)"/>
+<text x="48" y="73" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="78" fill="#fff">a</text>${star(75,26,9,'#fff')}</svg>`;
+
+const wmSerif=c=>`<span class="wm" style="font-family:Fraunces;font-weight:500;color:${c};letter-spacing:-.01em">akal<span style="position:relative">ı<svg viewBox="0 0 100 100" style="position:absolute;width:.32em;height:.32em;left:50%;top:.04em;transform:translateX(-50%)">${star(50,50,48,K)}</svg></span>e</span>`;
+const wmSans=(c,f='Outfit',w=600)=>`<span class="wm" style="font-family:${f};font-weight:${w};color:${c};letter-spacing:${f=='Outfit'?'.02em':'-.01em'}">akalie</span>`;
+
+const pistes=[
+ ['A · Maison de couture','Serif élégant, l\'étoile = l\'IA. Chic, « magazine ».',A(C,P,K),A(P,C,K),wmSerif(P),wmSerif(C)],
+ ['B · Le cintre en A','Le cintre dessine un « A » : la silhouette A, le vêtement, l\'initiale.',Bi(C,P,K),Bi(P,B,K),wmSans(P),wmSans(C)],
+ ['C · Le miroir','L\'arche de la cabine d\'essayage : on se voit avec la tenue.',Ci(C,P,K),Ci(P,B,K),wmSerif(P),wmSerif(C)],
+ ['D · TikTok pop','Dégradé vif, lettre ronde. Saute aux yeux dans l\'App Store.',Di(),Di(),wmSans(P,'Nunito',900),wmSans('#fff','Nunito',900)],
+];
+document.getElementById('g').innerHTML=pistes.map(([t,d,i1,i2,w1,w2])=>`<div class="card"><div class="tag">${t}</div>
+<div class="row"><div class="icon">${i1}</div><div class="icon">${i2}</div>
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center"><div class="icon sm">${i1}</div><div class="icon xs">${i1}</div></div></div>
+<div class="row">${w1}</div><div class="dark"><div class="icon sm">${i1}</div>${w2.replace('font-size:72px','')}</div>
+<div style="font-size:17px;opacity:.8">${d}</div></div>`).join('');
+</script></body></html>
