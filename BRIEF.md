@@ -63,6 +63,13 @@ Contre-vue : deux publics, c'est deux fois plus de contenu pour l'associé. Comm
 7. Build de test (EAS) sur ton téléphone.
 8. V2 : inspirations par catalogue d'affiliation, dressing, bonne taille.
 
+## Comptes stores (15 oct. 2026) : à ouvrir par l'utilisateur, dans cet ordre
+- [ ] ⚠️ **Google Play Console** (25 $ une fois). Un compte personnel créé après le 13 nov. 2023 doit faire un **test fermé avec au moins 12 testeurs pendant 14 jours d'affilée** avant d'ouvrir la production ([aide Google](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en-EN)). → À lancer au plus tôt : les testeurs peuvent venir de la liste d'attente akalie.app. Compte organisation (sans cette règle, selon des sources secondaires) : demande un numéro D-U-N-S, à confirmer pour une entreprise individuelle.
+- [ ] **Apple Developer Program** (99 $ par an). En compte individuel, le nom du vendeur affiché est ton nom ; un compte organisation demande une personne morale et un numéro D-U-N-S ([Apple](https://developer.apple.com/programs/enroll/)).
+- [ ] **RevenueCat** : gratuit jusqu'à 2 500 $ de revenus suivis par mois, puis 1 % (selon plusieurs sources, à confirmer sur leur page). Créer les produits (9,99 €/mois, 59,99 €/an) dans les deux stores, puis les relier.
+- [ ] **Sentry** : compte gratuit, région UE de préférence ; donner le DSN (`EXPO_PUBLIC_SENTRY_DSN`) et, pour les cartes de code lisibles, un jeton `SENTRY_AUTH_TOKEN` en secret EAS. Ajouter Sentry aux prestataires de la politique de confidentialité.
+- [ ] **Identifiant de l'app** : `app.akalie` (iOS et Android), projet EAS `@baskaure/akalie`. Définitif dès la première publication.
+
 ## À faire avant tout lancement public (bloquant)
 - [x] **Filtre lingerie / maillots / transparence** codé le 12 oct. 2026 (`supabase/functions/essayage/moderation.ts` + `regles.ts`, tests : `npm run test:filtre`). Claude Haiku 5.5 vérifie le vêtement **et** la photo de soi avant Kling ; en cas de doute ou de panne, l'essai est bloqué. Les images vérifiées sont figées (bucket `figes`) pour que Kling reçoive exactement ce qui a été vérifié ; l'app ne peut plus écrire le statut ni contourner le plafond (migration 000005, journal `essayages_journal`). Coût estimé : moins de 0,001 $ par essayage (à confirmer sur la facture).
 - [x] **Secrets `KLING_API_KEY` et `ANTHROPIC_API_KEY`** ajoutés le 12 oct. 2026. Vérifié par un vrai appel : le filtre répond, et Kling reconnaît la clé mais refuse faute de crédit (« Account balance not enough »).
