@@ -1,12 +1,12 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Chargement, Ecran, LienDiscret, MessageInfo, Puce, SurtitreEtincelle } from '@/components/ui';
-import { Aura, Police, Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { EnteteOffre } from '@/components/paywall/entete-offre';
+import { LigneFormule } from '@/components/paywall/ligne-formule';
+import { Bouton, Chargement, Ecran, LienDiscret, MessageInfo } from '@/components/ui';
+import { Espace } from '@/constants/theme';
 import {
   acheter,
   achatsDisponibles,
@@ -26,7 +26,6 @@ const PRIX_AFFICHES = {
 } as const;
 
 export default function Paywall() {
-  const theme = useTheme();
   const [formules, setFormules] = useState<Formule[]>([]);
   const [choix, setChoix] = useState<Formule['id']>('annuel');
   const [chargement, setChargement] = useState(achatsDisponibles());
@@ -78,72 +77,26 @@ export default function Paywall() {
     }
   };
 
-  const ligne = (id: Formule['id'], titre: string) => {
+  // Prix du store quand il répond, sinon les prix validés (affichage seulement : l'achat passe par le store).
+  const affichage = (id: Formule['id']) => {
     const duStore = formules.find((f) => f.id === id);
-    const prix = duStore?.prix ?? PRIX_AFFICHES[id].prix;
-    const parMois = duStore ? duStore.parMois : PRIX_AFFICHES[id].parMois;
-    const selectionne = choix === id;
-    return (
-      <Pressable
-        key={id}
-        accessibilityRole="radio"
-        accessibilityState={{ selected: selectionne }}
-        onPress={() => setChoix(id)}
-        style={[
-          styles.formule,
-          {
-            backgroundColor: theme.backgroundElement,
-            borderColor: selectionne ? theme.text : theme.border,
-          },
-        ]}>
-        <View style={[styles.radio, { borderColor: selectionne ? theme.text : theme.border }]}>
-          {selectionne && <View style={[styles.radioPlein, { backgroundColor: theme.text }]} />}
-        </View>
-        <View style={styles.formuleTexte}>
-          <View style={styles.entete}>
-            <ThemedText type="titreCarte">{titre}</ThemedText>
-            {id === 'annuel' && (
-              <View style={[styles.badge, { backgroundColor: theme.accentTexte }]}>
-                <ThemedText style={[styles.badgeTexte, { color: theme.surTexte }]}>Le plus choisi</ThemedText>
-              </View>
-            )}
-          </View>
-          <ThemedText>{duStore ? `${prix}${id === 'annuel' ? ' par an' : ' par mois'}` : prix}</ThemedText>
-          {parMois && (
-            <ThemedText type="small" themeColor="textSecondary">
-              soit {parMois}
-              {duStore ? ' par mois' : ''}
-            </ThemedText>
-          )}
-        </View>
-      </Pressable>
-    );
+    if (!duStore) return { prix: PRIX_AFFICHES[id].prix, detail: PRIX_AFFICHES[id].parMois && `soit ${PRIX_AFFICHES[id].parMois}` };
+    return {
+      prix: `${duStore.prix}${id === 'annuel' ? ' par an' : ' par mois'}`,
+      detail: duStore.parMois ? `soit ${duStore.parMois} par mois` : null,
+    };
   };
 
   return (
     <Ecran fermable>
-      <View style={styles.tete}>
-        <View style={styles.pastilles}>
-          {[Aura.rose, Aura.peche, Aura.lilas].map((c) => (
-            <View key={c} style={[styles.pastille, { backgroundColor: c, borderColor: theme.background }]} />
-          ))}
-        </View>
-        <SurtitreEtincelle>Offre complète</SurtitreEtincelle>
-        <ThemedText type="title">Essaie-le sur toi avant de l’acheter</ThemedText>
-      </View>
-
-      <View style={styles.liste}>
-        <Puce>Jusqu’à 30 essayages par mois sur ta propre photo</Puce>
-        <Puce>Pourquoi chaque vêtement va, ou pas, à ta morphologie</Puce>
-        <Puce>Ton dressing pour associer tes nouvelles pièces</Puce>
-      </View>
+      <EnteteOffre />
 
       <View style={styles.formules}>
-        {ligne('annuel', 'Annuel')}
-        {ligne('mensuel', 'Mensuel')}
+        <LigneFormule titre="Annuel" {...affichage('annuel')} badge="Le plus choisi" selectionnee={choix === 'annuel'} onPress={() => setChoix('annuel')} />
+        <LigneFormule titre="Mensuel" {...affichage('mensuel')} selectionnee={choix === 'mensuel'} onPress={() => setChoix('mensuel')} />
       </View>
 
-      {message && <MessageInfo>{message}</MessageInfo>}
+      <MessageInfo>{message}</MessageInfo>
 
       <View style={styles.actions}>
         {chargement ? (
@@ -156,9 +109,7 @@ export default function Paywall() {
             onPress={() => void sAbonner()}
           />
         )}
-        {achatsDisponibles() && !occupe && (
-          <LienDiscret label="Restaurer mes achats" onPress={() => void restaurerAchats()} />
-        )}
+        {achatsDisponibles() && !occupe && <LienDiscret label="Restaurer mes achats" onPress={() => void restaurerAchats()} />}
       </View>
 
       <ThemedText type="small" themeColor="textSecondary" style={styles.legal}>
@@ -183,19 +134,8 @@ export default function Paywall() {
 }
 
 const styles = StyleSheet.create({
-  tete: { gap: 12 },
-  pastilles: { flexDirection: 'row', marginBottom: 4 },
-  pastille: { width: 34, height: 34, borderRadius: 17, borderWidth: 3, marginRight: -10 },
-  liste: { gap: 10 },
-  formules: { gap: 10 },
-  formule: { flexDirection: 'row', gap: 14, alignItems: 'flex-start', borderRadius: Rayon.grand, borderWidth: 2, padding: 18 },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, marginTop: 2, alignItems: 'center', justifyContent: 'center' },
-  radioPlein: { width: 10, height: 10, borderRadius: 5 },
-  formuleTexte: { flex: 1, gap: 2 },
-  entete: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: Rayon.pilule },
-  badgeTexte: { fontFamily: Police.demiGras, fontSize: 11, lineHeight: 15 },
-  actions: { gap: 10 },
+  formules: { gap: Espace.m },
+  actions: { gap: Espace.s },
   legal: { fontSize: 12, lineHeight: 17 },
-  liens: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  liens: { flexDirection: 'row', flexWrap: 'wrap', gap: Espace.l },
 });

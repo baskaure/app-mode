@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ActionIcone, BadgeIA, BoutonFermer, ICONES, MessageInfo } from '@/components/ui';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { Espace, Gouttiere, MaxContentWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { AccesRefuse, enregistrerImage } from '@/lib/telecharger';
 
@@ -119,9 +119,9 @@ export default function VueImage() {
 const styles = StyleSheet.create({
   fond: { flex: 1 },
   zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  haut: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.two },
+  haut: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: Espace.m, paddingHorizontal: Gouttiere, paddingTop: Espace.l, paddingBottom: Espace.s },
   cadre: { flex: 1, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
-  bas: { paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.four, gap: 10 },
+  bas: { paddingHorizontal: Gouttiere, paddingTop: Espace.l, paddingBottom: Espace.xxl, gap: Espace.m },
   texte: { textAlign: 'center' },
 });

@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import { CarteArticle } from '@/components/carte-article';
-import { Bouton, Pastille } from '@/components/choix';
+import { CarteArticle } from '@/components/catalogue/carte-article';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, Chargement, Ecran, MessageErreur, Section } from '@/components/ui';
+import { Chargement, Ecran, EtatVide, Grille, Mention, MessageErreur, Pastille, Section } from '@/components/ui';
+import { Espace, Gouttiere } from '@/constants/theme';
 import { useInspirations } from '@/hooks/use-inspirations';
 import type { Categorie } from '@/lib/catalogue-regles';
 import { touche } from '@/lib/suggestions';
@@ -49,23 +49,19 @@ export default function Inspirations() {
       {chargement ? (
         <Chargement texte="Chargement du catalogue…" />
       ) : articles.length === 0 ? (
-        <Carte accent style={styles.vide}>
-          <ThemedText type="titreCarte">Le catalogue arrive bientôt</ThemedText>
-          <ThemedText themeColor="textSecondary">
-            Les premiers articles des boutiques partenaires apparaîtront ici. En attendant, partage un article depuis
-            n’importe quelle app pour l’essayer.
-          </ThemedText>
-        </Carte>
+        <EtatVide
+          titre="Le catalogue arrive bientôt"
+          texte="Les premiers articles des boutiques partenaires apparaîtront ici. En attendant, partage un article depuis n’importe quelle app pour l’essayer."
+        />
       ) : (
         <>
           <Section titre="Avec ton dressing" detail="Des pièces qui se portent avec ce que tu as déjà.">
             {pieces.length === 0 ? (
-              <Carte accent>
-                <ThemedText themeColor="textSecondary">
-                  Ajoute quelques pièces à ton dressing : je te propose ce qui va avec.
-                </ThemedText>
-                <Bouton variante="secondaire" label="Ouvrir mon dressing" onPress={() => router.push('/dressing')} />
-              </Carte>
+              <EtatVide
+                titre="Ton dressing est vide"
+                texte="Ajoute quelques pièces : Akalie te propose ce qui va avec."
+                action={{ label: 'Ouvrir mon dressing', onPress: () => router.push('/dressing') }}
+              />
             ) : dressing.length === 0 ? (
               enAnalyse > 0 ? (
                 <Chargement texte={`J’analyse ton dressing (${enAnalyse} pièce${enAnalyse > 1 ? 's' : ''})…`} />
@@ -89,20 +85,16 @@ export default function Inspirations() {
                 Rien dans cette catégorie pour l’instant.
               </ThemedText>
             ) : (
-              <View style={styles.grille}>
+              <Grille>
                 {style.map((r) => (
-                  <View key={r.article.id} style={styles.case}>
-                    <CarteArticle reco={r} raison={false} />
-                  </View>
+                  <CarteArticle key={r.article.id} reco={r} raison={false} />
                 ))}
-              </View>
+              </Grille>
             )}
           </Section>
 
           {affilies && (
-            <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
-              Liens affiliés : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.
-            </ThemedText>
+            <Mention>Liens affiliés : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.</Mention>
           )}
         </>
       )}
@@ -111,10 +103,6 @@ export default function Inspirations() {
 }
 
 const styles = StyleSheet.create({
-  filtres: { gap: 8, paddingRight: 20 },
-  vide: { paddingVertical: 28 },
-  rangee: { gap: 12, paddingRight: 20 },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  case: { width: '48%', flexGrow: 1, maxWidth: '48.5%' },
-  note: { fontSize: 12, lineHeight: 17, textAlign: 'center' },
+  filtres: { gap: Espace.s, paddingRight: Gouttiere },
+  rangee: { gap: Espace.m, paddingRight: Gouttiere },
 });

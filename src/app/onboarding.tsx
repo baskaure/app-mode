@@ -1,12 +1,9 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { Bouton, Choix } from '@/components/choix';
-import { ThemedText } from '@/components/themed-text';
-import { Carte, Ecran, Logo, Puce } from '@/components/ui';
-import { Police, Rayon, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { Question } from '@/components/onboarding/question';
+import { ResultatSilhouette } from '@/components/onboarding/resultat-silhouette';
+import { Ecran, Logo } from '@/components/ui';
 import { conseilPour, type EpaulesHanches, type ReponsesMorpho, type Taille, type Ventre, type Vestiaire } from '@/lib/morphologie';
 import { useProfil, type Style } from '@/state/profil';
 
@@ -17,7 +14,6 @@ type Etape = {
 };
 
 export default function Onboarding() {
-  const theme = useTheme();
   const { profil, pret, onboardingFini, majProfil, terminerOnboarding } = useProfil();
   const [index, setIndex] = useState(0);
   const [trop_jeune, setTropJeune] = useState(false);
@@ -106,37 +102,16 @@ export default function Onboarding() {
   if (pret && onboardingFini) return <Redirect href="/" />;
 
   if (trop_jeune) {
-    return (
-      <Ecran enTete={<Logo />} titre="Désolé" intro="Pour l’instant, l’app est réservée aux 15 ans et plus." centre>
-        {null}
-      </Ecran>
-    );
+    return <Ecran enTete={<Logo />} titre="Désolé" intro="Pour l’instant, l’app est réservée aux 15 ans et plus." centre>{null}</Ecran>;
   }
 
   if (index >= etapes.length && profil.silhouette) {
-    const conseil = conseilPour(profil.silhouette, profil.vestiaire ?? 'femme');
     return (
       <Ecran enTete={<Logo />}>
-        <Carte style={styles.resultat}>
-          <ThemedText type="eyebrow">Ta morphologie</ThemedText>
-          <View style={[styles.lettre, { backgroundColor: theme.accentDoux }]}>
-            <ThemedText style={styles.lettreTexte}>{profil.silhouette}</ThemedText>
-          </View>
-          <ThemedText type="subtitle">{conseil.nom}</ThemedText>
-          <ThemedText themeColor="textSecondary">{conseil.objectif}</ThemedText>
-        </Carte>
-        <View style={styles.liste}>
-          <ThemedText type="titreCarte">Ce qui te va</ThemedText>
-          {conseil.aPrivilegier.map((c) => (
-            <Puce key={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</Puce>
-          ))}
-        </View>
-        <ThemedText themeColor="textSecondary">
-          Prends 3 vêtements de ton placard en photo : je te compose tes premières tenues.
-        </ThemedText>
-        <Bouton
-          label="Ajouter mes 3 premières pièces"
-          onPress={() => {
+        <ResultatSilhouette
+          silhouette={profil.silhouette}
+          conseil={conseilPour(profil.silhouette, profil.vestiaire ?? 'femme')}
+          onContinuer={() => {
             void terminerOnboarding();
             router.replace('/dressing');
           }}
@@ -145,42 +120,21 @@ export default function Onboarding() {
     );
   }
 
-  const etape = etapes[Math.min(index, etapes.length - 1)];
-  const progression = (index + 1) / etapes.length;
+  const numero = Math.min(index, etapes.length - 1);
+  const etape = etapes[numero];
   return (
     <Ecran enTete={<Logo />}>
-      <View style={styles.progression}>
-        <View style={[styles.rail, { backgroundColor: theme.border }]}>
-          <View style={[styles.avance, { width: `${progression * 100}%`, backgroundColor: theme.text }]} />
-        </View>
-        <ThemedText type="eyebrow">
-          Question {index + 1} sur {etapes.length}
-        </ThemedText>
-      </View>
-      <ThemedText type="subtitle">{etape.question}</ThemedText>
-      <View style={styles.options}>
-        {etape.options.map((o) => (
-          <Choix
-            key={o.valeur}
-            label={o.label}
-            onPress={() => {
-              etape.appliquer(o.valeur);
-              setIndex((i) => i + 1);
-            }}
-          />
-        ))}
-      </View>
+      <Question
+        numero={numero + 1}
+        total={etapes.length}
+        question={etape.question}
+        options={etape.options}
+        onChoix={(valeur) => {
+          etape.appliquer(valeur);
+          setIndex((i) => i + 1);
+        }}
+        onRetour={numero > 0 ? () => setIndex((i) => Math.max(0, i - 1)) : undefined}
+      />
     </Ecran>
   );
 }
-
-const styles = StyleSheet.create({
-  progression: { gap: 10, marginTop: Spacing.two },
-  rail: { height: 4, borderRadius: 2, overflow: 'hidden' },
-  avance: { height: 4, borderRadius: 2 },
-  options: { gap: 10 },
-  resultat: { alignItems: 'flex-start', gap: 12, marginTop: Spacing.two },
-  lettre: { width: 72, height: 72, borderRadius: Rayon.moyen, alignItems: 'center', justifyContent: 'center' },
-  lettreTexte: { fontFamily: Police.tresGras, fontSize: 40, lineHeight: 46 },
-  liste: { gap: 10 },
-});

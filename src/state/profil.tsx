@@ -1,13 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { useCaptcha, type DemanderJeton } from '@/components/captcha-contexte';
-import { Bouton } from '@/components/choix';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { ConnexionRatee } from '@/components/connexion-ratee';
 import { changerUtilisateurAchats, configurerAchats } from '@/lib/abonnement';
 import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 import { supabase } from '@/lib/supabase';
@@ -172,31 +166,6 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     </Ctx.Provider>
   );
 }
-
-function ConnexionRatee({ message, onReessayer }: { message: string; onReessayer: () => void }) {
-  return (
-    <ThemedView style={styles.fond}>
-      <SafeAreaView style={styles.zone}>
-        <ThemedText type="subtitle">Connexion impossible</ThemedText>
-        <ThemedText>{message}</ThemedText>
-        <Bouton label="Réessayer" onPress={onReessayer} />
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  fond: { flex: 1 },
-  zone: {
-    flex: 1,
-    width: '100%',
-    maxWidth: MaxContentWidth,
-    alignSelf: 'center',
-    padding: Spacing.four,
-    gap: Spacing.three,
-    justifyContent: 'center',
-  },
-});
 
 export function useProfil() {
   const ctx = useContext(Ctx);

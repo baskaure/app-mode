@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Police, Rayon } from '@/constants/theme';
+import { Espace, Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { prixAffiche, type Recommandation } from '@/lib/catalogue-regles';
 import type { Piece } from '@/lib/dressing';
@@ -64,8 +64,8 @@ const styles = StyleSheet.create({
   photo: { width: '100%', aspectRatio: 3 / 4 },
   vignette: {
     position: 'absolute',
-    left: 8,
-    bottom: 8,
+    left: Espace.s,
+    bottom: Espace.s,
     width: 40,
     height: 52,
     borderRadius: 10,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   vignetteImage: { width: '100%', height: '100%' },
-  texte: { padding: 12, gap: 3 },
+  texte: { padding: Espace.m, gap: Espace.xxs },
   nom: { minHeight: 40 },
-  raison: { fontFamily: Police.moyen, fontSize: 12, lineHeight: 16, marginTop: 2 },
+  raison: { fontFamily: Police.moyen, fontSize: 12, lineHeight: 16, marginTop: Espace.xxs },
 });

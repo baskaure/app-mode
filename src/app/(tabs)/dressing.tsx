@@ -1,11 +1,8 @@
-import { Image } from 'expo-image';
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ActionIcone, Carte, Chargement, Ecran, ICONES, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
-import { Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { CartePiece } from '@/components/dressing/carte-piece';
+import { ObjectifPieces } from '@/components/dressing/objectif-pieces';
+import { Chargement, Ecran, Grille, ICONES, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
 import {
   ajouterPiece,
   analyserPiece,
@@ -20,7 +17,6 @@ import {
 const MINIMUM = 3;
 
 export default function Dressing() {
-  const theme = useTheme();
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [chargement, setChargement] = useState(true);
   const [envoi, setEnvoi] = useState(false);
@@ -84,29 +80,13 @@ export default function Dressing() {
     }
   };
 
-  const restantes = Math.max(0, MINIMUM - pieces.length);
-
   return (
     <Ecran
       onglet
       eyebrow={pieces.length > 0 ? `${pieces.length} pièce${pieces.length > 1 ? 's' : ''}` : 'Dressing'}
       titre="Ton dressing"
       intro="Pose un vêtement à plat, à la lumière du jour, et prends-le en photo. Une IA (Anthropic, États-Unis) reconnaît son type et sa couleur pour te proposer ce qui va avec.">
-      {restantes > 0 && (
-        <Carte accent style={styles.objectif}>
-          <View style={styles.points}>
-            {Array.from({ length: MINIMUM }, (_, i) => (
-              <View
-                key={i}
-                style={[styles.point, { backgroundColor: i < pieces.length ? theme.text : theme.backgroundElement }]}
-              />
-            ))}
-          </View>
-          <ThemedText type="smallBold">
-            Encore {restantes} pièce{restantes > 1 ? 's' : ''} pour tes premières tenues.
-          </ThemedText>
-        </Carte>
-      )}
+      <ObjectifPieces nombre={pieces.length} objectif={MINIMUM} />
 
       <RangeeTuiles>
         <TuileAction nom={ICONES.photo} label="Photo" desactive={envoi} onPress={() => void ajouter('camera')} />
@@ -119,41 +99,12 @@ export default function Dressing() {
       {chargement ? (
         <Chargement />
       ) : (
-        <View style={styles.grille}>
+        <Grille>
           {pieces.map((piece) => (
-            <View key={piece.id} style={[styles.carte, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-              {piece.url ? (
-                <Image source={{ uri: piece.url }} style={styles.photo} contentFit="cover" />
-              ) : (
-                <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
-              )}
-              <View style={styles.retirer}>
-                <ActionIcone nom={ICONES.supprimer} label="Retirer cette pièce" surPhoto onPress={() => void supprimer(piece)} />
-              </View>
-              <View style={styles.legende}>
-                <ThemedText type="small" numberOfLines={1} themeColor={piece.description ? 'text' : 'textSecondary'}>
-                  {piece.description
-                    ? piece.description.replace(/^(ton|ta|tes) /, '').replace(/^./, (c) => c.toUpperCase())
-                    : piece.analyse_at
-                      ? 'Pièce non reconnue'
-                      : 'Analyse en cours…'}
-                </ThemedText>
-              </View>
-            </View>
+            <CartePiece key={piece.id} piece={piece} onRetirer={() => void supprimer(piece)} />
           ))}
-        </View>
+        </Grille>
       )}
     </Ecran>
   );
 }
-
-const styles = StyleSheet.create({
-  objectif: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16 },
-  points: { flexDirection: 'row', gap: 6 },
-  point: { width: 10, height: 10, borderRadius: 5 },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
-  photo: { width: '100%', aspectRatio: 3 / 4 },
-  legende: { paddingHorizontal: 12, paddingVertical: 10 },
-  retirer: { position: 'absolute', top: 8, right: 8 },
-});

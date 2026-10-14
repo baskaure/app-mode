@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Police, Rayon, Spacing } from '@/constants/theme';
+import { Espace, Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type Props = { label: string; detail?: string; selectionne?: boolean; onPress: () => void };
@@ -117,19 +117,19 @@ const styles = StyleSheet.create({
   choix: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
+    gap: Espace.l,
+    paddingVertical: Espace.l,
+    paddingHorizontal: Espace.xl,
     borderRadius: Rayon.moyen,
     borderWidth: 1.5,
   },
-  texteChoix: { flex: 1, gap: 2 },
+  texteChoix: { flex: 1, gap: Espace.xxs },
   labelChoix: { fontFamily: Police.moyen },
   rond: { width: 20, height: 20, borderRadius: 10, borderWidth: 1.5 },
-  pastille: { paddingVertical: 9, paddingHorizontal: 18, borderRadius: Rayon.pilule, borderWidth: 1 },
+  pastille: { minHeight: 40, justifyContent: 'center', paddingHorizontal: Espace.l, borderRadius: Rayon.pilule, borderWidth: 1 },
   bouton: {
     minHeight: 56,
-    paddingHorizontal: Spacing.four,
+    paddingHorizontal: Espace.xxl,
     borderRadius: Rayon.pilule,
     borderWidth: 1,
     alignItems: 'center',

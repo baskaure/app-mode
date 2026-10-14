@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, CaseACocher, Ecran, LienDiscret, MessageErreur, Puce } from '@/components/ui';
+import { Bouton, Carte, CaseACocher, Ecran, LienDiscret, ListePuces, MessageErreur } from '@/components/ui';
+import { Espace } from '@/constants/theme';
 import { achatsDisponibles, gererAbonnement } from '@/lib/abonnement';
 import { AbonnementActif, monIdentifiant, supprimerToutesMesDonnees } from '@/lib/compte';
 import { useProfil } from '@/state/profil';
@@ -48,11 +48,7 @@ export default function SupprimerDonnees() {
   return (
     <Ecran fermable eyebrow="Tes données" titre="Supprimer toutes mes données" intro="Tout sera effacé de nos serveurs, définitivement :">
       <Carte>
-        <View style={styles.liste}>
-          {CE_QUI_EST_EFFACE.map((ligne) => (
-            <Puce key={ligne}>{ligne}</Puce>
-          ))}
-        </View>
+        <ListePuces elements={CE_QUI_EST_EFFACE} />
       </Carte>
       <ThemedText type="small" themeColor="textSecondary">
         Les images déjà envoyées à nos prestataires d’IA sont effacées chez eux selon leurs propres délais (voir la
@@ -101,7 +97,6 @@ export default function SupprimerDonnees() {
 }
 
 const styles = StyleSheet.create({
-  liste: { gap: 10 },
-  actions: { gap: 10 },
+  actions: { gap: Espace.s },
   identifiant: { textAlign: 'center', fontSize: 12 },
 });

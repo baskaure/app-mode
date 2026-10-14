@@ -1,13 +1,11 @@
-import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
+import { PhotoCadree } from '@/components/essayage/photo-cadree';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, Chargement, Ecran, LienDiscret, MessageErreur, SurtitreEtincelle } from '@/components/ui';
-import { Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { Bouton, Carte, Chargement, Ecran, LienDiscret, MessageErreur, SurtitreEtincelle } from '@/components/ui';
+import { Espace } from '@/constants/theme';
 import { ouvrirAchat } from '@/lib/achat';
 import { lireArticle } from '@/lib/catalogue';
 import { prixAffiche, type Article } from '@/lib/catalogue-regles';
@@ -15,7 +13,6 @@ import { essaiDepuisArticle } from '@/lib/essais';
 
 // Fiche d'un article du catalogue, ouverte avec `?id=<article>&raison=<pourquoi il est proposé>`.
 export default function FicheArticle() {
-  const theme = useTheme();
   const { id, raison } = useLocalSearchParams<{ id?: string; raison?: string }>();
   const [article, setArticle] = useState<Article | null>(null);
   const [chargement, setChargement] = useState(true);
@@ -63,9 +60,7 @@ export default function FicheArticle() {
   const prix = prixAffiche(article);
   return (
     <Ecran fermable>
-      <View style={[styles.cadre, { backgroundColor: theme.backgroundElement }]}>
-        <Image source={{ uri: article.image_url }} style={styles.photo} contentFit="cover" transition={150} />
-      </View>
+      <PhotoCadree uri={article.image_url} remplir />
       <View style={styles.titres}>
         <ThemedText type="eyebrow">{article.marque ?? article.marchand}</ThemedText>
         <ThemedText type="subtitle">{article.nom}</ThemedText>
@@ -92,10 +87,8 @@ export default function FicheArticle() {
 }
 
 const styles = StyleSheet.create({
-  cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
-  photo: { width: '100%', aspectRatio: 3 / 4 },
-  titres: { gap: 6 },
-  raison: { gap: 8 },
-  actions: { gap: 10 },
+  titres: { gap: Espace.s },
+  raison: { gap: Espace.s },
+  actions: { gap: Espace.s },
   note: { fontSize: 12, lineHeight: 17, textAlign: 'center' },
 });

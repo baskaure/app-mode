@@ -1,27 +1,10 @@
-import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
-import { ThemedText } from '@/components/themed-text';
-import { AttenteEssayage } from '@/components/attente-essayage';
-import {
-  ActionIcone,
-  BadgeIA,
-  BarreActions,
-  Carte,
-  Chargement,
-  Ecran,
-  ICONES,
-  LienDiscret,
-  MessageErreur,
-  RangeeTuiles,
-  Section,
-  TuileAction,
-} from '@/components/ui';
-import { Police, Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { ChoixVetement } from '@/components/essayage/choix-vetement';
+import { ResultatEssayage } from '@/components/essayage/resultat-essayage';
+import { VetementPret } from '@/components/essayage/vetement-pret';
+import { Chargement, Ecran, MessageErreur } from '@/components/ui';
 import { listerPieces, type Piece } from '@/lib/dressing';
 import {
   AbonnementRequis,
@@ -46,9 +29,7 @@ import { enregistrerImage } from '@/lib/telecharger';
 // Un partage depuis une autre app (écran partage) ou l'historique arrive ici avec `?essai=<id>` déjà créé.
 // Un essai déjà fait s'ouvre directement sur son résultat.
 export default function Vetement() {
-  const theme = useTheme();
   const { essai: essaiPartage } = useLocalSearchParams<{ essai?: string }>();
-  const [lien, setLien] = useState('');
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -172,70 +153,28 @@ export default function Vetement() {
   };
 
   if (resultat) {
-    const autreVetement = () => {
-      setResultat(null);
-      setEssai(null);
-      setEnregistrement(null);
-    };
     return (
       <Ecran fermable eyebrow="Résultat" titre="Sur toi">
-        <Pressable
-          accessibilityRole="imagebutton"
-          accessibilityLabel="Agrandir l’image"
-          onPress={() =>
+        <ResultatEssayage
+          url={resultat}
+          aime={essai ? essai.avis === 'aime' : null}
+          onAime={() => void choisirAvis('aime')}
+          onAgrandir={() =>
             router.push({ pathname: '/image', params: { url: resultat, nom: `essayage-${essai?.id ?? 'image'}.png` } })
           }
-          style={({ pressed }) => [styles.cadre, { backgroundColor: theme.backgroundElement }, pressed && { opacity: 0.9 }]}>
-          <Image source={{ uri: resultat }} style={styles.apercu} contentFit="contain" />
-          <BadgeIA />
-        </Pressable>
-
-        <BarreActions>
-          {essai && (
-            <ActionIcone
-              nom={essai.avis === 'aime' ? ICONES.aimeActif : ICONES.aime}
-              label="J’aime"
-              actif={essai.avis === 'aime'}
-              onPress={() => void choisirAvis('aime')}
-            />
-          )}
-          {Platform.OS !== 'web' && (
-            <ActionIcone
-              nom={ICONES.partager}
-              label="Story"
-              onPress={() => router.push({ pathname: '/partager', params: { url: resultat } })}
-            />
-          )}
-          <ActionIcone
-            nom={ICONES.telecharger}
-            label={enregistrement === 'fait' ? 'Enregistrée' : 'Enregistrer'}
-            actif={enregistrement === 'fait'}
-            chargement={enregistrement === 'en_cours'}
-            onPress={() => void telechargerResultat()}
-          />
-        </BarreActions>
-
-        {conseil && (
-          <Carte accent style={styles.conseil}>
-            <ThemedText type="eyebrow">{conseil.nom}</ThemedText>
-            <ThemedText>{conseil.objectif}</ThemedText>
-          </Carte>
-        )}
-
+          onStory={() => router.push({ pathname: '/partager', params: { url: resultat } })}
+          enregistrement={enregistrement}
+          onEnregistrer={() => void telechargerResultat()}
+          conseil={conseil}
+          achat={achat}
+          onAcheter={() => achat && void ouvrirAchat(achat.url)}
+          onAutre={() => {
+            setResultat(null);
+            setEssai(null);
+            setEnregistrement(null);
+          }}
+        />
         <MessageErreur>{erreur}</MessageErreur>
-        {achat ? (
-          <View style={styles.groupe}>
-            <Bouton label="Voir l’article" onPress={() => void ouvrirAchat(achat.url)} />
-            {achat.affilie && (
-              <ThemedText type="small" themeColor="textSecondary" style={styles.centre}>
-                Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.
-              </ThemedText>
-            )}
-            <LienDiscret label="Essayer un autre vêtement" onPress={autreVetement} />
-          </View>
-        ) : (
-          <Bouton label="Essayer un autre vêtement" onPress={autreVetement} />
-        )}
       </Ecran>
     );
   }
@@ -243,100 +182,31 @@ export default function Vetement() {
   if (essai) {
     return (
       <Ecran fermable eyebrow="Vêtement prêt" titre="On l’essaie ?">
-        {essai.url && (
-          <View style={[styles.cadre, { backgroundColor: theme.backgroundElement }]}>
-            <Image source={{ uri: essai.url }} style={styles.apercu} contentFit="contain" />
-          </View>
-        )}
-        {etape && (
-          <AttenteEssayage
-            etape={etape}
-            messages={messagesAttente(conseil?.objectif ?? null, conseil?.aPrivilegier ?? [])}
-          />
-        )}
-        <MessageErreur>{erreur}</MessageErreur>
-        <Bouton
-          label={essai.statut === 'en_cours' ? 'Voir le résultat' : 'M’essayer ce vêtement'}
-          chargement={occupe}
-          onPress={() => void lancerEssayage(essai.id)}
+        <VetementPret
+          url={essai.url}
+          dejaLance={essai.statut === 'en_cours'}
+          etape={etape}
+          messages={messagesAttente(conseil?.objectif ?? null, conseil?.aPrivilegier ?? [])}
+          occupe={occupe}
+          onEssayer={() => void lancerEssayage(essai.id)}
+          onAutre={() => setEssai(null)}
         />
-        {!occupe && <LienDiscret label="Choisir un autre vêtement" onPress={() => setEssai(null)} />}
+        <MessageErreur>{erreur}</MessageErreur>
       </Ecran>
     );
   }
 
-  const lienValide = /^https?:\/\/\S+\.\S+/.test(lien.trim());
   return (
     <Ecran fermable eyebrow="Nouvel essayage" titre="Quel vêtement essayer ?">
-      <Carte>
-        <Section titre="Une photo du vêtement" detail="Une capture d’écran de l’article, ou une photo prise en magasin.">
-          <RangeeTuiles>
-            <TuileAction nom={ICONES.photo} label="Photo" desactive={occupe} onPress={() => void depuisPhoto('camera')} />
-            <TuileAction nom={ICONES.galerie} label="Galerie" desactive={occupe} onPress={() => void depuisPhoto('galerie')} />
-          </RangeeTuiles>
-        </Section>
-      </Carte>
-
-      <Carte>
-        <Section titre="Le lien de l’article">
-          <View style={[styles.champLigne, { backgroundColor: theme.background, borderColor: theme.border }]}>
-          <TextInput
-            value={lien}
-            onChangeText={setLien}
-            placeholder="https://www.zara.com/fr/…"
-            placeholderTextColor={theme.textSecondary}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="url"
-            inputMode="url"
-            returnKeyType="go"
-            onSubmitEditing={() => lienValide && !occupe && void lancer(() => essaiDepuisLien(lien))}
-            style={[styles.champ, { color: theme.text }]}
-          />
-          <ActionIcone
-            nom={ICONES.valider}
-            label="Utiliser ce lien"
-            surPhoto
-            desactive={occupe || !lienValide}
-            onPress={() => void lancer(() => essaiDepuisLien(lien))}
-          />
-          </View>
-        </Section>
-      </Carte>
-
-      {pieces.length > 0 && (
-        <Section titre="Une pièce de ton dressing">
-          <ScrollView horizontal contentContainerStyle={styles.rangee} showsHorizontalScrollIndicator={false}>
-            {pieces.map((piece) => (
-              <Pressable
-                key={piece.id}
-                accessibilityRole="button"
-                accessibilityLabel="Essayer cette pièce"
-                disabled={occupe}
-                onPress={() => void lancer(() => essaiDepuisPiece(piece))}
-                style={({ pressed }) => [styles.vignetteCadre, { borderColor: theme.border }, pressed && { opacity: 0.7 }]}>
-                {piece.url && <Image source={{ uri: piece.url }} style={styles.vignette} contentFit="cover" />}
-              </Pressable>
-            ))}
-          </ScrollView>
-        </Section>
-      )}
-
+      <ChoixVetement
+        pieces={pieces}
+        occupe={occupe}
+        onPhoto={(source) => void depuisPhoto(source)}
+        onLien={(lien) => void lancer(() => essaiDepuisLien(lien))}
+        onPiece={(piece) => void lancer(() => essaiDepuisPiece(piece))}
+      />
       {occupe && <Chargement texte="Préparation du vêtement…" />}
       <MessageErreur>{erreur}</MessageErreur>
     </Ecran>
   );
 }
-
-const styles = StyleSheet.create({
-  groupe: { gap: 10 },
-  centre: { textAlign: 'center' },
-  champLigne: { flexDirection: 'row', alignItems: 'center', borderRadius: Rayon.moyen, borderWidth: 1, paddingRight: 6 },
-  champ: { flex: 1, paddingHorizontal: 18, paddingVertical: 16, fontSize: 16, fontFamily: Police.normal },
-  rangee: { gap: 10 },
-  vignetteCadre: { borderRadius: Rayon.petit + 2, borderWidth: 1, overflow: 'hidden' },
-  vignette: { width: 104, height: 138 },
-  cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
-  apercu: { width: '100%', aspectRatio: 3 / 4 },
-  conseil: { gap: 6 },
-});

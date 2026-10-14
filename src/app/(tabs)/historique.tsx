@@ -1,21 +1,17 @@
-import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Bouton, Pastille } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
-import { ActionIcone, BadgeIA, Carte, Chargement, Ecran, Etincelle, ICONES, MessageErreur } from '@/components/ui';
-import { Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { CarteEssai } from '@/components/historique/carte-essai';
+import { Chargement, Ecran, EtatVide, Grille, MessageErreur, Pastille } from '@/components/ui';
+import { Espace } from '@/constants/theme';
 import { filtrerParAvis, type Filtre } from '@/lib/avis';
 import { listerEssais, supprimerEssai, type EssaiHistorique } from '@/lib/historique';
-import { dateCourte, libelleStatut, supprimable } from '@/lib/historique-regles';
 
 // Onglet « Essayages » : les essayages passés, du plus récent au plus ancien. Toucher une carte rouvre l'essai
 // (le résultat s'il est fait, sinon l'écran pour le lancer).
 export default function Historique() {
-  const theme = useTheme();
   const [essais, setEssais] = useState<EssaiHistorique[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -65,13 +61,11 @@ export default function Historique() {
       {chargement ? (
         <Chargement />
       ) : essais.length === 0 ? (
-        <Carte accent style={styles.vide}>
-          <ThemedText type="titreCarte">Rien pour l’instant</ThemedText>
-          <ThemedText themeColor="textSecondary">
-            Tes essayages apparaîtront ici. Choisis un vêtement pour commencer.
-          </ThemedText>
-          <Bouton label="Choisir un vêtement à essayer" onPress={() => router.push('/vetement')} />
-        </Carte>
+        <EtatVide
+          titre="Rien pour l’instant"
+          texte="Tes essayages apparaîtront ici. Choisis un vêtement pour commencer."
+          action={{ label: 'Choisir un vêtement à essayer', onPress: () => router.push('/vetement') }}
+        />
       ) : (
         <>
           <View style={styles.filtres}>
@@ -79,60 +73,20 @@ export default function Historique() {
             <Pastille label="J’aime" selectionne={filtre === 'aime'} onPress={() => setFiltre('aime')} />
           </View>
           {affiches.length === 0 && (
-            <ThemedText themeColor="textSecondary">
-              Aucun essayage aimé pour l’instant. Touche « J’aime » sous un résultat.
-            </ThemedText>
+            <ThemedText themeColor="textSecondary">Aucun essayage aimé pour l’instant. Touche « J’aime » sous un résultat.</ThemedText>
           )}
-          <View style={styles.grille}>
-            {affiches.map((essai) => {
-              const image = essai.urlResultat ?? essai.urlVetement;
-              const confirmer = aConfirmer === essai.id;
-              return (
-                <View key={essai.id} style={[styles.carte, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Ouvrir l’essayage : ${libelleStatut(essai.statut)}`}
-                    onPress={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}
-                    style={({ pressed }) => pressed && { opacity: 0.85 }}>
-                    {image ? (
-                      <Image source={{ uri: image }} style={styles.photo} contentFit="cover" />
-                    ) : (
-                      <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
-                    )}
-                    {essai.urlResultat && <BadgeIA />}
-                    {essai.avis === 'aime' && (
-                      <View
-                        style={[styles.coeur, { backgroundColor: theme.backgroundElement }]}
-                        accessible
-                        accessibilityLabel="J’aime">
-                        <Etincelle taille={9} />
-                      </View>
-                    )}
-                    <View style={styles.legende}>
-                      <ThemedText type="smallBold">
-                        {libelleStatut(essai.statut)}
-                        {essai.avis === 'aime_pas' ? ' · J’aime pas' : ''}
-                      </ThemedText>
-                      <ThemedText type="small" themeColor="textSecondary">
-                        {confirmer ? 'Toucher encore pour supprimer' : dateCourte(essai.created_at, maintenant)}
-                      </ThemedText>
-                    </View>
-                  </Pressable>
-                  {supprimable(essai) && (
-                    <View style={styles.supprimer}>
-                      <ActionIcone
-                        nom={ICONES.supprimer}
-                        label={confirmer ? 'Toucher encore pour supprimer' : 'Supprimer cet essayage'}
-                        surPhoto
-                        danger={confirmer}
-                        onPress={() => void supprimer(essai)}
-                      />
-                    </View>
-                  )}
-                </View>
-              );
-            })}
-          </View>
+          <Grille>
+            {affiches.map((essai) => (
+              <CarteEssai
+                key={essai.id}
+                essai={essai}
+                maintenant={maintenant}
+                aConfirmer={aConfirmer === essai.id}
+                onOuvrir={() => router.push({ pathname: '/vetement', params: { essai: essai.id } })}
+                onSupprimer={() => void supprimer(essai)}
+              />
+            ))}
+          </Grille>
         </>
       )}
     </Ecran>
@@ -140,21 +94,5 @@ export default function Historique() {
 }
 
 const styles = StyleSheet.create({
-  vide: { paddingVertical: 28 },
-  filtres: { flexDirection: 'row', gap: 8 },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
-  photo: { width: '100%', aspectRatio: 3 / 4 },
-  coeur: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  legende: { paddingHorizontal: 12, paddingVertical: 10, paddingRight: 54, gap: 1 },
-  supprimer: { position: 'absolute', right: 8, bottom: 8 },
+  filtres: { flexDirection: 'row', gap: Espace.s },
 });

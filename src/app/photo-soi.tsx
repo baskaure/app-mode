@@ -1,12 +1,8 @@
-import { Image } from 'expo-image';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { Bouton } from '@/components/choix';
+import { PhotoCadree } from '@/components/essayage/photo-cadree';
 import { ThemedText } from '@/components/themed-text';
-import { Carte, CaseACocher, Ecran, ICONES, MessageErreur, Puce, RangeeTuiles, TuileAction } from '@/components/ui';
-import { Rayon } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { Bouton, Carte, CaseACocher, Ecran, ICONES, ListePuces, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
 import { choisirPhoto, type Photo, type Source } from '@/lib/photos';
 import { enregistrerSilhouette, verifierCadrage } from '@/lib/silhouette';
 import { fermer } from '@/lib/navigation';
@@ -19,7 +15,6 @@ const CONSEILS = [
 ];
 
 export default function PhotoSoi() {
-  const theme = useTheme();
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [consentement, setConsentement] = useState(false);
   const [envoi, setEnvoi] = useState(false);
@@ -58,17 +53,11 @@ export default function PhotoSoi() {
   return (
     <Ecran fermable eyebrow="Ta photo" titre="Ta photo pour l’essayage">
       {photo ? (
-        <View style={[styles.cadre, { backgroundColor: theme.backgroundElement }]}>
-          <Image source={{ uri: photo.uri }} style={styles.apercu} contentFit="contain" />
-        </View>
+        <PhotoCadree uri={photo.uri} />
       ) : (
         <Carte>
           <ThemedText type="titreCarte">Pour un bon résultat</ThemedText>
-          <View style={styles.liste}>
-            {CONSEILS.map((c) => (
-              <Puce key={c}>{c}</Puce>
-            ))}
-          </View>
+          <ListePuces elements={CONSEILS} />
         </Carte>
       )}
 
@@ -96,9 +85,3 @@ export default function PhotoSoi() {
     </Ecran>
   );
 }
-
-const styles = StyleSheet.create({
-  liste: { gap: 10 },
-  cadre: { borderRadius: Rayon.grand, overflow: 'hidden' },
-  apercu: { width: '100%', aspectRatio: 3 / 4 },
-});
