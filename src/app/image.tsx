@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ActionIcone, BadgeIA, BoutonFermer, ICONES, MessageInfo } from '@/components/ui';
@@ -18,6 +18,9 @@ const ZOOM_DOUBLE_TAP = 2.5;
 // Image d'essayage en plein écran : pincer pour zoomer, glisser pour se déplacer, double-toucher pour zoomer ou revenir.
 // Ouverte depuis le résultat avec `?url=<lien signé>&nom=<fichier>`.
 export default function VueImage() {
+  // Plein écran (fullScreenModal) : marges lues directement sur l'écran du téléphone. Avec SafeAreaView, la barre
+  // d'état n'était pas toujours comptée et les boutons passaient sous l'heure et l'encoche (15 oct. 2026).
+  const marges = useSafeAreaInsets();
   const theme = useTheme();
   const { url, nom } = useLocalSearchParams<{ url?: string; nom?: string }>();
   const [message, setMessage] = useState<string | null>(null);
@@ -87,7 +90,7 @@ export default function VueImage() {
 
   return (
     <View style={[styles.fond, { backgroundColor: theme.background }]}>
-      <SafeAreaView style={styles.zone}>
+      <View style={[styles.zone, { paddingTop: marges.top, paddingBottom: marges.bottom }]}>
         <View style={styles.haut}>
           <ActionIcone nom={ICONES.telecharger} label="Enregistrer l’image" surPhoto desactive={!url} chargement={occupe} onPress={() => void telecharger()} />
           <BoutonFermer />
@@ -108,7 +111,7 @@ export default function VueImage() {
           </ThemedText>
           {message && <MessageInfo>{message}</MessageInfo>}
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
@@ -116,7 +119,7 @@ export default function VueImage() {
 const styles = StyleSheet.create({
   fond: { flex: 1 },
   zone: { flex: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' },
-  haut: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingTop: Spacing.two },
+  haut: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.two },
   cadre: { flex: 1, overflow: 'hidden' },
   image: { width: '100%', height: '100%' },
   bas: { paddingHorizontal: 20, paddingTop: Spacing.three, paddingBottom: Spacing.four, gap: 10 },
