@@ -215,6 +215,11 @@ export default function Vetement() {
         <View style={styles.groupe}>
           <Bouton
             variante={achat ? 'secondaire' : 'principal'}
+            label="Partager en story (avant / après)"
+            onPress={() => router.push({ pathname: '/partager', params: { url: resultat } })}
+          />
+          <Bouton
+            variante="secondaire"
             label={enregistrement === 'fait' ? 'Image enregistrée ✓' : 'Télécharger l’image'}
             chargement={enregistrement === 'en_cours'}
             onPress={() => void telechargerResultat()}
