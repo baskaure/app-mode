@@ -21,6 +21,11 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon sf="sparkles" md="auto_awesome" />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="inspirations">
+        <NativeTabs.Trigger.Label>Inspirations</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'bag', selected: 'bag.fill' }} md="shopping_bag" />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="historique">
         <NativeTabs.Trigger.Label>Essayages</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'photo.on.rectangle', selected: 'photo.fill.on.rectangle.fill' }} md="photo_library" />

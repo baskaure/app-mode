@@ -1,0 +1,167 @@
+[
+  {
+    "lien": "https://www.nike.com/fr/t/chaussure-nike-air-force-1-shadow-pour-femme-1TNBqJ7A",
+    "image_url": "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/odhlk8ksqmstmdcjjyn0/W+AF1+SHADOW.png",
+    "nom": "Chaussure Nike Air Force 1 Shadow pour femme",
+    "marque": "Nike",
+    "prix": 129.99,
+    "categorie": "chaussures",
+    "couleur": "blanc",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.nike.com/fr/t/chaussure-nike-air-force-1-07-pour-femme-7uQT9hBg",
+    "image_url": "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/742c059b-c974-4791-8ea6-d1cefc000a6a/W+AIR+FORCE+1+%2707+LOW+CRSNT.png",
+    "nom": "Chaussure Nike Air Force 1 '07 pour femme",
+    "marque": "Nike",
+    "prix": 119.99,
+    "categorie": "chaussures",
+    "couleur": "beige",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/w-og-detroit-jacket-black-black-rinsed-1146",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I032236_00E_02-ST-01?$facebook$",
+    "nom": "OG Detroit Jacket (Winter) pour femme",
+    "marque": "Carhartt WIP",
+    "prix": 199,
+    "categorie": "veste",
+    "couleur": "noir",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/w-og-active-jacket-black-rinsed-1522",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I034321_89_02-ST-01?$facebook$",
+    "nom": "OG Active Jacket pour femme",
+    "marque": "Carhartt WIP",
+    "prix": 199,
+    "categorie": "veste",
+    "couleur": "noir",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/w-jet-cargo-pant-black-rinsed-1481",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I032260_89_02-ST-01?$facebook$",
+    "nom": "Jet Cargo Pant pour femme",
+    "marque": "Carhartt WIP",
+    "prix": 129,
+    "categorie": "bas",
+    "couleur": "noir",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/w-carhartt-sweat-black-white-111",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I033647_0D2_XX-ST-01?$facebook$",
+    "nom": "Carhartt Sweatshirt pour femme",
+    "marque": "Carhartt WIP",
+    "prix": 89,
+    "categorie": "haut",
+    "couleur": "noir",
+    "styles": ["streetwear"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/robe-loasia-choco",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260516_02V-CHOCO-1.jpg?v=1780064934",
+    "nom": "Robe Loasia Choco",
+    "marque": "Des Petits Hauts",
+    "prix": 160,
+    "categorie": "robe",
+    "couleur": "marron",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/robe-lazarie-mid-stone",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260544_044-MID_STONE-1_00f32956-6697-4dd7-a91e-24dd980dcfeb.jpg?v=1783603179",
+    "nom": "Robe Lazarie Mid Stone",
+    "marque": "Des Petits Hauts",
+    "prix": 165,
+    "categorie": "robe",
+    "couleur": "beige",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/robe-satine-prune",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260481_00E-PRUNE-1.jpg?v=1785227724",
+    "nom": "Robe Satine Prune",
+    "marque": "Des Petits Hauts",
+    "prix": 175,
+    "categorie": "robe",
+    "couleur": "violet",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/chemise-rosaline-roseraie",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260466_02J-ROSERAIE-1.jpg?v=1784736806",
+    "nom": "Chemise Rosaline Roseraie",
+    "marque": "Des Petits Hauts",
+    "prix": 140,
+    "categorie": "haut",
+    "couleur": "motif",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/veste-laina-argile",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260512_02U-ARGILE-1.jpg?v=1785227913",
+    "nom": "Veste Laina Argile",
+    "marque": "Des Petits Hauts",
+    "prix": 195,
+    "categorie": "veste",
+    "couleur": "beige",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/jean-louisa-mid-stone",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260539_044-MID_STONE-1.jpg?v=1785228035",
+    "nom": "Jean Louisa Mid Stone",
+    "marque": "Des Petits Hauts",
+    "prix": 160,
+    "categorie": "bas",
+    "couleur": "beige",
+    "styles": ["boheme"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/sweat-shirt-jacinthe-leopard",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260229_01R-LEOPARD-1.jpg?v=1784736785",
+    "nom": "Sweat-shirt Jacinthe Leopard",
+    "marque": "Des Petits Hauts",
+    "prix": 130,
+    "categorie": "haut",
+    "couleur": "motif",
+    "styles": ["alternatif"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/tee-shirt-flora-leopard",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260211_01R-LEOPARD-1.jpg?v=1783604741",
+    "nom": "T-shirt Flora Leopard",
+    "marque": "Des Petits Hauts",
+    "prix": 130,
+    "categorie": "haut",
+    "couleur": "motif",
+    "styles": ["alternatif"],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://despetitshauts.com/en/products/veste-maille-isadora-leopard",
+    "image_url": "https://despetitshauts.com/cdn/shop/files/1H260236_01R-LEOPARD-1.jpg?v=1784736813",
+    "nom": "Veste maille Isadora Leopard",
+    "marque": "Des Petits Hauts",
+    "prix": 230,
+    "categorie": "veste",
+    "couleur": "motif",
+    "styles": ["alternatif"],
+    "vestiaire": "femme"
+  }
+]

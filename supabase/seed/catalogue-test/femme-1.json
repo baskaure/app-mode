@@ -1,0 +1,236 @@
+[
+  {
+    "lien": "https://www.promod.fr/robe-en-velours-cotele-femme-beige--p255480/",
+    "image_url": "https://asset.promod.com/product/255480-gz-1790170436.jpg",
+    "nom": "Robe en velours côtelé Femme",
+    "marque": "Promod",
+    "prix": 45.99,
+    "categorie": "robe",
+    "couleur": "beige",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/robe-courte-en-suedine-noir--p255475/",
+    "image_url": "https://asset.promod.com/product/255475-gz-1787751184.jpg",
+    "nom": "Robe courte en suédine",
+    "marque": "Promod",
+    "prix": 49.99,
+    "categorie": "robe",
+    "couleur": "noir",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/veste-blazer-croise-femme-ecru--p253419/",
+    "image_url": "https://asset.promod.com/product/253419-gz-1784801075.jpg",
+    "nom": "Veste blazer croisé Femme",
+    "marque": "Promod",
+    "prix": 69.99,
+    "categorie": "veste",
+    "couleur": "beige",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/veste-blazer-croise-femme-noir--p253417/",
+    "image_url": "https://asset.promod.com/product/253417-gz-1784801075.jpg",
+    "nom": "Veste blazer croisé Femme",
+    "marque": "Promod",
+    "prix": 69.99,
+    "categorie": "veste",
+    "couleur": "noir",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/escarpins-a-bout-rond-noir--p256542/",
+    "image_url": "https://asset.promod.com/product/256542-lb1-1789059578.jpg",
+    "nom": "Escarpins à bout rond",
+    "marque": "Promod",
+    "prix": 49.99,
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/chemise-col-victorien-femme-blanc--p254905/",
+    "image_url": "https://asset.promod.com/product/254905-gz-1790252272.jpg",
+    "nom": "Chemise col Victorien Femme",
+    "marque": "Promod",
+    "prix": 45.99,
+    "categorie": "haut",
+    "couleur": "blanc",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/pull-col-rond-femme-rose-pale--p254481/",
+    "image_url": "https://asset.promod.com/product/254481-gz-1788431010.jpg",
+    "nom": "Pull col rond Femme",
+    "marque": "Promod",
+    "prix": 29.99,
+    "categorie": "haut",
+    "couleur": "rose",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/cardigan-col-rond-femme-ecru--p256462/",
+    "image_url": "https://asset.promod.com/product/256462-gz-1790764352.jpg",
+    "nom": "Cardigan col rond Femme",
+    "marque": "Promod",
+    "prix": 39.99,
+    "categorie": "haut",
+    "couleur": "beige",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/jean-slim-taille-mi-haute-jeans-gris--p253970/",
+    "image_url": "https://asset.promod.com/product/253970-gz-1789654186.jpg",
+    "nom": "Jean slim taille mi-haute",
+    "marque": "Promod",
+    "prix": 27.99,
+    "categorie": "bas",
+    "couleur": "gris",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/robe-courte-a-noeud-femme-gris--p255490/",
+    "image_url": "https://asset.promod.com/product/255490-gz-1790861692.jpg",
+    "nom": "Robe courte à noeud Femme",
+    "marque": "Promod",
+    "prix": 39.99,
+    "categorie": "robe",
+    "couleur": "gris",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/baskets-en-cuir-et-toile-femme-ecru--p255960/",
+    "image_url": "https://asset.promod.com/product/255960-lb1-1786610405.jpg",
+    "nom": "Baskets en cuir et toile Femme",
+    "marque": "Promod",
+    "prix": 49.99,
+    "categorie": "chaussures",
+    "couleur": "beige",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/veste-sans-manches-femme-ecru--p258022/",
+    "image_url": "https://asset.promod.com/product/258022-gz-1791384314.jpg",
+    "nom": "Veste sans manches Femme",
+    "marque": "Promod",
+    "prix": 39.99,
+    "categorie": "veste",
+    "couleur": "beige",
+    "styles": [
+      "clean_girl"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/sweat-shirt-a-effet-superpose-gris--p254718/",
+    "image_url": "https://asset.promod.com/product/254718-lb1-1790783431.jpg",
+    "nom": "Sweat-shirt à effet superposé",
+    "marque": "Promod",
+    "prix": 29.99,
+    "categorie": "haut",
+    "couleur": "gris",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/marcel-jean-mom-taille-haute-jean-noir--p253935/",
+    "image_url": "https://asset.promod.com/product/253935-lb1-1788169372.jpg",
+    "nom": "MARCEL jean mom taille haute",
+    "marque": "Promod",
+    "prix": 35.99,
+    "categorie": "bas",
+    "couleur": "noir",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/robe-sweat-shirt-femme-gris--p255503/",
+    "image_url": "https://asset.promod.com/product/255503-gz-1790861692.jpg",
+    "nom": "Robe sweat-shirt Femme",
+    "marque": "Promod",
+    "prix": 49.99,
+    "categorie": "robe",
+    "couleur": "gris",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/blouson-simili-effet-graine-kaki--p253454/",
+    "image_url": "https://asset.promod.com/product/253454-gz-1791971584.jpg",
+    "nom": "Blouson simili effet grainé",
+    "marque": "Promod",
+    "prix": 59.99,
+    "categorie": "veste",
+    "couleur": "kaki",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/baskets-en-cuir-et-toile-femme-marron--p255136/",
+    "image_url": "https://asset.promod.com/product/255136-gz-1782747899.jpg",
+    "nom": "Baskets en cuir et toile Femme",
+    "marque": "Promod",
+    "prix": 49.99,
+    "categorie": "chaussures",
+    "couleur": "marron",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  },
+  {
+    "lien": "https://www.promod.fr/pull-oversize-col-rond-femme-marron-fonce--p259143/",
+    "image_url": "https://asset.promod.com/product/259143-gz-1788431010.jpg",
+    "nom": "Pull oversize col rond Femme",
+    "marque": "Promod",
+    "prix": 29.99,
+    "categorie": "haut",
+    "couleur": "marron",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "femme"
+  }
+]

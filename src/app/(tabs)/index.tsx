@@ -1,12 +1,14 @@
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { CarteArticle } from '@/components/carte-article';
 import { Bouton } from '@/components/choix';
 import { ThemedText } from '@/components/themed-text';
 import { Carte, Chargement, Ecran, Logo, MessageErreur, Section, SurtitreEtincelle } from '@/components/ui';
 import { Rayon, Spacing } from '@/constants/theme';
+import { useInspirations } from '@/hooks/use-inspirations';
 import { useTheme } from '@/hooks/use-theme';
 import { conseilPour } from '@/lib/morphologie';
 import { lireSilhouette, supprimerSilhouette, type Silhouette } from '@/lib/silhouette';
@@ -21,6 +23,13 @@ export default function Essayer() {
   // Idées de pièces (version rapide, sans catalogue) : règles de la silhouette + mot-clé du style.
   const idees =
     conseil && profil.style ? suggestions(conseil.aPrivilegier, profil.style, profil.vestiaire ?? 'femme') : [];
+  // Catalogue : ce qui va avec le dressing d'abord, puis le style ; sans article visible, on garde les idées de recherche.
+  const inspirations = useInspirations();
+  const vus = new Set<string>();
+  const apercu = [...inspirations.avecDressing, ...inspirations.pourStyle]
+    .filter((r) => !vus.has(r.article.id) && vus.add(r.article.id))
+    .slice(0, 8);
+  const piecesParId = new Map(inspirations.pieces.map((p) => [p.id, p]));
   const [silhouette, setSilhouette] = useState<Silhouette | null>(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -93,7 +102,16 @@ export default function Essayer() {
 
       <MessageErreur>{erreur}</MessageErreur>
 
-      {idees.length > 0 && profil.style && (
+      {apercu.length > 0 ? (
+        <Section titre="Pour toi" detail="De vrais articles choisis pour ton style et ton dressing.">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rangeeArticles}>
+            {apercu.map((r) => (
+              <CarteArticle key={r.article.id} reco={r} piece={r.pieceId ? piecesParId.get(r.pieceId) : null} largeur={156} />
+            ))}
+          </ScrollView>
+          <Bouton variante="secondaire" label="Voir toutes les inspirations" onPress={() => router.push('/inspirations')} />
+        </Section>
+      ) : idees.length > 0 && profil.style && (
         <Section
           titre="Idées pour toi"
           detail={`Pour ta silhouette et ton style (${touche(profil.style)}). Trouve un article, puis partage-le vers l’app, ou fais une capture et choisis-la pour l’essayer.`}>
@@ -160,6 +178,7 @@ const styles = StyleSheet.create({
   moitie: { flex: 1 },
   carteVide: { paddingVertical: 28 },
   idees: { gap: 8 },
+  rangeeArticles: { gap: 12, paddingRight: 20 },
   idee: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingLeft: 18, paddingRight: 10, borderRadius: Rayon.moyen, borderWidth: 1 },
   ideeNom: { flex: 1 },
   lien: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: Rayon.pilule },

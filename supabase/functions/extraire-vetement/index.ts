@@ -1,5 +1,6 @@
 // Edge Function : à partir du lien d'un article (Zara, Vinted…), récupère l'image principale de la page
 // (balises og:image / twitter:image), la range dans vetements/<uid>/ et crée un essai.
+// Avec `article_id` (catalogue, 14 oct. 2026) : l'image et le lien viennent de la table articles, sans lire la page.
 // Tout passe avec le JWT de l'utilisateur : les règles RLS limitent l'écriture à son propre dossier.
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -102,23 +103,35 @@ Deno.serve(async (req) => {
   const uid = utilisateur.user.id;
 
   let lien: URL;
+  let imageArticle: URL | null = null;
   try {
-    const { url } = await req.json();
-    lien = new URL(String(url));
+    const { url, article_id } = await req.json();
+    if (article_id) {
+      // Article du catalogue : lu avec les droits de l'utilisateur (RLS : actif, et « test » pour les testeurs).
+      const article = await supabase.from('articles').select('lien, image_url').eq('id', String(article_id)).maybeSingle();
+      if (article.error || !article.data) return reponse(404, { erreur: 'Cet article n’est plus disponible.' });
+      lien = new URL(article.data.lien);
+      imageArticle = new URL(article.data.image_url);
+    } else {
+      lien = new URL(String(url));
+    }
   } catch {
     return reponse(400, { erreur: 'Ce lien n’est pas valide.' });
   }
   if (!adresseAutorisee(lien)) return reponse(400, { erreur: 'Ce lien n’est pas autorisé.' });
 
   try {
-    const page = await telecharger(lien);
-    if (!page.ok) {
-      return reponse(422, {
-        erreur: 'Ce site bloque la lecture de sa page. Fais une capture d’écran de l’article et envoie-la en photo.',
-      });
+    let urlImage: URL | null = imageArticle;
+    if (!urlImage) {
+      const page = await telecharger(lien);
+      if (!page.ok) {
+        return reponse(422, {
+          erreur: 'Ce site bloque la lecture de sa page. Fais une capture d’écran de l’article et envoie-la en photo.',
+        });
+      }
+      const html = new TextDecoder().decode(await lireLimite(page, PAGE_MAX));
+      urlImage = trouverImage(html, new URL(page.url));
     }
-    const html = new TextDecoder().decode(await lireLimite(page, PAGE_MAX));
-    const urlImage = trouverImage(html, new URL(page.url));
     if (!urlImage || !adresseAutorisee(urlImage)) {
       return reponse(422, { erreur: 'Pas d’image trouvée sur cette page. Envoie plutôt une capture d’écran.' });
     }

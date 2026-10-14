@@ -45,3 +45,8 @@ test('pas de lien d’article (photo, capture) : pas de bouton', () => {
   assert.equal(lienAchat(null, marchands, '9999'), null);
   assert.equal(lienAchat('pas une adresse', marchands, '9999'), null);
 });
+
+test('un lien Awin du catalogue est déjà affilié : ouvert tel quel', () => {
+  const lien = 'https://www.awin1.com/pclick.php?p=123&a=456&m=789';
+  assert.deepEqual(lienAchat(lien, [], undefined), { url: lien, affilie: true });
+});

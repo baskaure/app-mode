@@ -1,0 +1,236 @@
+[
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/pond-corps-sweat-black-1414",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036371_89_XX-ST-01?$facebook$",
+    "nom": "Pond Corps Sweatshirt",
+    "marque": "Carhartt WIP",
+    "prix": 49.5,
+    "categorie": "haut",
+    "couleur": "noir",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/s-s-spoiled-t-shirt-white-1611",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036260_02_XX-ST-01?$facebook$",
+    "nom": "S/S Spoiled T-Shirt",
+    "marque": "Carhartt WIP",
+    "prix": 27.5,
+    "categorie": "haut",
+    "couleur": "blanc",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/eightynine-coach-jacket-jupiter-white-704",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036134_3CC_XX-ST-01?$facebook$",
+    "nom": "Eightynine Coach Jacket",
+    "marque": "Carhartt WIP",
+    "prix": 74.5,
+    "categorie": "veste",
+    "couleur": "blanc",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/evan-pant-black-rinsed-37",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036622_89_02-ST-01?$facebook$",
+    "nom": "Evan Pant",
+    "marque": "Carhartt WIP",
+    "prix": 49.5,
+    "categorie": "bas",
+    "couleur": "noir",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.nike.com/fr/t/chaussure-nike-air-force-1-07-pour-homme-H7b17STt/IX7257-133",
+    "image_url": "https://static.nike.com/a/images/t_default/u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/8b56b771-d7cf-4879-8e53-d14372b896cf/AIR+FORCE+1+%2707.png",
+    "nom": "Air Force 1 '07",
+    "marque": "Nike",
+    "prix": 119.99,
+    "categorie": "chaussures",
+    "couleur": "blanc",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.nike.com/fr/t/chaussure-nike-air-max-90-pour-homme-RP2bvT/FN8005-100",
+    "image_url": "https://static.nike.com/a/images/t_default/d5e6380d-af13-4c8a-829f-7177b94d100a/NIKE+AIR+MAX+90.png",
+    "nom": "Air Max 90",
+    "marque": "Nike",
+    "prix": 149.99,
+    "categorie": "chaussures",
+    "couleur": "blanc",
+    "styles": [
+      "streetwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/og-detroit-jacket-blue-rigid-513",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036259_01_01-ST-01?$facebook$",
+    "nom": "OG Detroit Jacket",
+    "marque": "Carhartt WIP",
+    "prix": 114.5,
+    "categorie": "veste",
+    "couleur": "bleu",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/floyde-pant-blue-river-garment-dyed-1158",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I034816_3IM_GD-ST-01?$facebook$",
+    "nom": "Floyde Pant",
+    "marque": "Carhartt WIP",
+    "prix": 54.5,
+    "categorie": "bas",
+    "couleur": "bleu",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://dickies.eu/fr-fr/products/pantalon-everyday-dk0a867qk151-kaki",
+    "image_url": "https://cdn.shopify.com/s/files/1/0753/4749/3050/files/DK0A867QK15-2_ec2f930f-31d6-4e50-a961-a78549711eab.jpg?v=1779221245",
+    "nom": "Pantalon Everyday",
+    "marque": "Dickies",
+    "prix": 35.0,
+    "categorie": "bas",
+    "couleur": "kaki",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://dickies.eu/fr-fr/products/pantalon-redhawk-pro-dk0a867vt2g1-gris",
+    "image_url": "https://cdn.shopify.com/s/files/1/0753/4749/3050/files/DK0A867VT2G-1_b2bafc16-cc03-41ff-92f4-009c613eec4a.jpg?v=1779221375",
+    "nom": "Pantalon Redhawk Pro",
+    "marque": "Dickies",
+    "prix": 50.0,
+    "categorie": "bas",
+    "couleur": "gris",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/kelly-shirt-jac-leaf-rinsed-494",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036271_11_02-ST-01?$facebook$",
+    "nom": "Kelly Shirt Jac",
+    "marque": "Carhartt WIP",
+    "prix": 79.5,
+    "categorie": "veste",
+    "couleur": "vert",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.drmartens.com/fr/fr/boots-1460-pascal-floral-deboss-en-cuir-crazy-horse-a-8-oillets-marron-fonce/p/43276200",
+    "image_url": "https://cdn.media.amplience.net/i/drmartens/NX_43276200.80",
+    "nom": "Boots 1460 Pascal Floral Deboss",
+    "marque": "Dr. Martens",
+    "prix": 210.0,
+    "categorie": "chaussures",
+    "couleur": "marron",
+    "styles": [
+      "workwear"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/snake-landon-pant-snake-camo-black-heavy-stone-wash-76",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036589_3R2_60-ST-01?$facebook$",
+    "nom": "Snake Landon Pant",
+    "marque": "Carhartt WIP",
+    "prix": 69.5,
+    "categorie": "bas",
+    "couleur": "motif",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/s-s-barbwire-c-t-shirt-dollar-green-1665",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036237_667_XX-ST-01?$facebook$",
+    "nom": "S/S Barbwire C T-Shirt",
+    "marque": "Carhartt WIP",
+    "prix": 22.5,
+    "categorie": "haut",
+    "couleur": "vert",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/s-s-moving-letterpress-t-shirt-velvet-blue-3176",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I035998_3GG_XX-ST-01?$facebook$",
+    "nom": "S/S Moving Letterpress T-Shirt",
+    "marque": "Carhartt WIP",
+    "prix": 24.5,
+    "categorie": "haut",
+    "couleur": "bleu",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.carhartt-wip.com/fr-fr/p/s-s-royce-shirt-royce-stripe-icaria-260",
+    "image_url": "https://cdn.media.amplience.net/i/carhartt_wip/I036202_3JT_XX-ST-01?$facebook$",
+    "nom": "S/S Royce Shirt",
+    "marque": "Carhartt WIP",
+    "prix": 44.5,
+    "categorie": "haut",
+    "couleur": "motif",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.drmartens.com/fr/fr/chaussures-1461-en-cuir-smooth-noir/p/11838002",
+    "image_url": "https://cdn.media.amplience.net/i/drmartens/NX_11838002.80",
+    "nom": "1461 Smooth Leather Oxford Shoes",
+    "marque": "Dr. Martens",
+    "prix": 185.0,
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "lien": "https://www.drmartens.com/fr/fr/boots-1b99-whimsigoth-en-cuir-arcadia-et-velours-a-14-oillets/p/43114001",
+    "image_url": "https://cdn.media.amplience.net/i/drmartens/NX_43114001.80",
+    "nom": "Boots 1B99 Whimsigoth",
+    "marque": "Dr. Martens",
+    "prix": 270.0,
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "alternatif"
+    ],
+    "vestiaire": "homme"
+  }
+]

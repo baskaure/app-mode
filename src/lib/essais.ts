@@ -59,6 +59,22 @@ export async function essaiDepuisLien(lien: string): Promise<string> {
   return data.essai_id;
 }
 
+// Article du catalogue : le serveur récupère son image et garde son lien pour le bouton « Voir l'article ».
+export async function essaiDepuisArticle(articleId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke<{ essai_id: string }>('extraire-vetement', {
+    body: { article_id: articleId },
+  });
+  if (error) {
+    if (error instanceof FunctionsHttpError) {
+      const corps = await error.context.json().catch(() => null);
+      throw new Error(corps?.erreur ?? 'Impossible de préparer cet article.');
+    }
+    throw new Error('Impossible de joindre le serveur. Vérifie ta connexion.');
+  }
+  if (!data?.essai_id) throw new Error('Réponse inattendue du serveur.');
+  return data.essai_id;
+}
+
 export async function essaiDepuisPiece(piece: Piece): Promise<string> {
   const { data, error } = await supabase
     .from('essais')

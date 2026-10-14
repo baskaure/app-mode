@@ -1,0 +1,236 @@
+[
+  {
+    "nom": "Veste de costume en laine",
+    "marque": "Sandro",
+    "prix": 565.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/veste-de-costume-large-en-laine/SHPVE01334_125.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwea7717e8/images/hi-res/Sandro_SHPVE01334-125_H_1.jpg",
+    "categorie": "veste",
+    "couleur": "marine",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Pantalon de costume en laine",
+    "marque": "Sandro",
+    "prix": 295.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/pantalon-de-costume-en-laine/SHPPA01950_125.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw53cf7cfa/images/hi-res/Sandro_SHPPA01950-125_H_1.jpg",
+    "categorie": "bas",
+    "couleur": "marine",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Derbies en cuir glacé",
+    "marque": "Sandro",
+    "prix": 395.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/derbies-en-cuir-glace/SHACH01446_20.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw111623e8/images/hi-res/Sandro_SHACH01446-20_H_1.jpg",
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Chemise fluide",
+    "marque": "Sandro",
+    "prix": 195.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/chemise-fluide/SHPCM01121_125.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwa6137733/images/hi-res/Sandro_SHPCM01121-125_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "marine",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Chaussures à lacets en cuir noires",
+    "marque": "The Kooples",
+    "prix": 195.0,
+    "lien": "https://www.thekooples.com/fr/fr/p/chaussures-a-lacets-en-cuir-noires-84.html",
+    "image_url": "https://www.thekooples.com/fr/fr/phototheque/thekooples.com/250/medium/01W000084A.jpg",
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Pantalon large en laine",
+    "marque": "Sandro",
+    "prix": 285.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/pantalon-large-en-laine-a-plis/SHPPA02035_23.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw0c0a8e38/images/hi-res/Sandro_SHPPA02035-23_H_1.jpg",
+    "categorie": "bas",
+    "couleur": "gris",
+    "styles": [
+      "chic"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Blouson en coton zippé",
+    "marque": "Sandro",
+    "prix": 365.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/blouson-en-coton-zippe/SHPBL01135_14.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwab7f96a1/images/hi-res/Sandro_SHPBL01135-14_H_1.jpg",
+    "categorie": "veste",
+    "couleur": "beige",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Short en coton effet délavé",
+    "marque": "Sandro",
+    "prix": 215.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/short-en-coton-delave-elastique/SHPBE00136_4709.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwafdee5ac/images/hi-res/Sandro_SHPBE00136-4709_H_1.jpg",
+    "categorie": "bas",
+    "couleur": "bleu",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "T-shirt en tricot",
+    "marque": "Sandro",
+    "prix": 185.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/t-shirt-en-tricot/SHPTR00805_11.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw15e3b932/images/hi-res/Sandro_SHPTR00805-11_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "beige",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Baskets basses en cuir et suède",
+    "marque": "Sandro",
+    "prix": 141.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/baskets-basses-en-cuir-et-suede/SHACH01365_20.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwdc056440/images/hi-res/Sandro_SHACH01365-20_H_1.jpg",
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Pantalon large",
+    "marque": "Sandro",
+    "prix": 275.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/pantalon-large/SHPPA00893_11.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw734209a2/images/hi-res/Sandro_SHPPA00893-11_H_2.jpg",
+    "categorie": "bas",
+    "couleur": "beige",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "T-shirt oversize",
+    "marque": "Sandro",
+    "prix": 115.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/t-shirt-oversize/SHPTS01855_10.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw73dd10f0/images/hi-res/Sandro_SHPTS01855-10_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "blanc",
+    "styles": [
+      "casual"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Pantalon droit élastiqué",
+    "marque": "Sandro",
+    "prix": 225.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/pantalon-droit-elastique/SHPPA01116_1611.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw022e0296/images/hi-res/Sandro_SHPPA01116-1611_H_1.jpg",
+    "categorie": "bas",
+    "couleur": "beige",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "T-shirt en lin certifié",
+    "marque": "Sandro",
+    "prix": 115.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/t-shirt-en-lin-certifie/SHPTS00222_20.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw1f34fd56/images/hi-res/Sandro_SHPTS00222-20_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "noir",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Manteau droit en laine mélangée",
+    "marque": "Sandro",
+    "prix": 575.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/manteau-droit-en-laine-melangee/SHPMA00373_44.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dwf4b684c7/images/hi-res/Sandro_SHPMA00373-44_H_1.jpg",
+    "categorie": "veste",
+    "couleur": "marine",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Chelsea Boots en cuir lisse",
+    "marque": "Sandro",
+    "prix": 395.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/chelsea-boots-en-cuir-lisse/SHACH01505_20.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw6a92b9dd/images/hi-res/Sandro_SHACH01505-20_H_1.jpg",
+    "categorie": "chaussures",
+    "couleur": "noir",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Pull col roulé en cachemire",
+    "marque": "Sandro",
+    "prix": 365.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/pull-en-cachemire-a-col-roule/SHPTR00825_560.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw5bbc811b/images/hi-res/Sandro_SHPTR00825-560_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "jaune",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  },
+  {
+    "nom": "Cardigan en alpaga et laine",
+    "marque": "Sandro",
+    "prix": 295.0,
+    "lien": "https://fr.sandro-paris.com/fr/p/cardigan-en-alpaga-et-laine-texture/SHPTR00845_50.html",
+    "image_url": "https://fr.sandro-paris.com/on/demandware.static/-/Sites-master-catalog/default/dw9c7171ed/images/hi-res/Sandro_SHPTR00845-50_H_1.jpg",
+    "categorie": "haut",
+    "couleur": "jaune",
+    "styles": [
+      "minimaliste"
+    ],
+    "vestiaire": "homme"
+  }
+]

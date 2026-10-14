@@ -52,6 +52,7 @@ export default function RootLayout() {
               <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
               <Stack.Screen name="photo-soi" options={{ presentation: 'modal' }} />
               <Stack.Screen name="vetement" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="article" options={{ presentation: 'modal' }} />
               <Stack.Screen name="image" options={{ presentation: 'fullScreenModal' }} />
               <Stack.Screen name="partage" options={{ presentation: 'modal' }} />
               <Stack.Screen name="supprimer-donnees" options={{ presentation: 'modal' }} />

@@ -25,6 +25,8 @@ export function lienAchat(urlArticle: string | null, marchands: Marchand[], idEd
   const hote = hoteDe(urlArticle);
   if (!hote) return null;
   const url = urlArticle.trim();
+  // Lien déjà affilié (deep link d'un flux produits Awin, catalogue) : on l'ouvre tel quel.
+  if (hote === 'awin1.com') return { url, affilie: true };
   const marchand = trouverMarchand(hote, marchands);
   if (!marchand || !idEditeur) return { url, affilie: false };
   const parametres = [

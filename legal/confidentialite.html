@@ -111,7 +111,7 @@
     </tr>
     <tr>
       <td data-label="Donnée">Ton dressing : photos de tes pièces, catégorie, couleur, coupe, matière, description</td>
-      <td data-label="À quoi elle sert">Essayer et associer tes propres vêtements</td>
+      <td data-label="À quoi elle sert">Essayer et associer tes propres vêtements, et te proposer dans « Inspirations » des articles qui vont avec. Une IA (Anthropic, section 4) reconnaît la catégorie et la couleur de chaque pièce ajoutée.</td>
       <td data-label="Base légale">Exécution du service</td>
       <td data-label="Durée de conservation">Jusqu’à ce que tu supprimes la pièce dans l’app</td>
     </tr>
@@ -158,8 +158,9 @@
 <h3>Kie.ai et OpenAI : création de l’image d’essayage</h3>
 <p>À chaque essayage, ta photo et la photo du vêtement sont transmises à Kie.ai, qui les fait traiter par le modèle d’image d’OpenAI (États-Unis) pour créer l’image. Kie.ai lit les photos par des liens temporaires, valables 15 minutes. D’après sa documentation, il efface les images créées au bout de 14 jours. Nous gardons une copie de l’image créée chez notre hébergeur pour te la montrer. <span class="trou">[À CONFIRMER : société, pays et durée de conservation chez Kie.ai ; contrat de traitement (DPA) avec Kie.ai ; conditions de conservation chez OpenAI pour ce service]</span></p>
 
-<h3>Anthropic : vérification automatique des images</h3>
+<h3>Anthropic : vérification automatique des images et reconnaissance des pièces du dressing</h3>
 <p>Avant chaque essayage, ta photo et celle du vêtement sont vérifiées automatiquement par une IA d’Anthropic (États-Unis). Elle refuse la lingerie, les maillots de bain, les vêtements transparents et la nudité. Après l’essayage, l’image créée est vérifiée de la même façon : si elle montre de la nudité, elle n’est ni enregistrée ni affichée. Anthropic indique effacer les données reçues par son API sous 30 jours. Une image signalée comme contraire à ses règles d’usage peut être gardée jusqu’à 2 ans. Si un vêtement est refusé à tort, écris-nous.</p>
+<p>Chaque photo ajoutée à ton dressing est aussi envoyée à Anthropic pour reconnaître la catégorie et la couleur de la pièce (par exemple « jean bleu »), avec les mêmes délais d’effacement.</p>
 
 <h3>RevenueCat : gestion des abonnements</h3>
 <p>RevenueCat (États-Unis, serveurs aux États-Unis) reçoit les informations d’achat transmises par Apple ou Google, pour savoir si ton abonnement est actif.</p>
@@ -200,7 +201,8 @@
   <li>Les échanges entre l’app et nos serveurs sont chiffrés.</li>
 </ul>
 
-<h2>9. Décision automatique</h2>
+<h2>9. Recommandations et décision automatique</h2>
+<p><strong>Recommandations.</strong> L’onglet « Inspirations » te propose des articles de boutiques à partir de tes réponses au questionnaire (style, morphologie) et des pièces de ton dressing. C’est une personnalisation que tu peux arrêter : supprime les pièces de ton dressing, ou toutes tes données. Elle n’utilise ni tes achats, ni ta navigation hors de l’app. <span class="trou">[À CONFIRMER AVEC LE JURISTE : base légale (exécution du service ou consentement) pour cette personnalisation fondée sur le dressing]</span></p>
 <p>Le refus d’une image par la vérification automatique (section 4) est une décision prise par une machine. Elle n’a pas d’autre effet que d’empêcher cet essayage. Tu peux demander qu’une personne réexamine ce refus en nous écrivant.</p>
 
 <h2>10. Modifications</h2>

@@ -7,7 +7,16 @@ import { ThemedText } from '@/components/themed-text';
 import { Carte, Chargement, Ecran, MessageErreur } from '@/components/ui';
 import { Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { ajouterPiece, choisirPhoto, listerPieces, supprimerPiece, type Piece, type Source } from '@/lib/dressing';
+import {
+  ajouterPiece,
+  analyserPiece,
+  analyserPiecesEnAttente,
+  choisirPhoto,
+  listerPieces,
+  supprimerPiece,
+  type Piece,
+  type Source,
+} from '@/lib/dressing';
 
 const MINIMUM = 3;
 
@@ -29,10 +38,20 @@ export default function Dressing() {
 
   useEffect(() => {
     let annule = false;
-    listerPieces()
-      .then((liste) => !annule && setPieces(liste))
-      .catch((e: unknown) => !annule && setErreur(e instanceof Error ? e.message : String(e)))
-      .finally(() => !annule && setChargement(false));
+    void (async () => {
+      try {
+        const liste = await listerPieces();
+        if (annule) return;
+        setPieces(liste);
+        setChargement(false);
+        // Pièces jamais analysées (ajoutées avant le catalogue, ou analyse en échec) : on les reprend ici.
+        if ((await analyserPiecesEnAttente(liste)) > 0 && !annule) setPieces(await listerPieces());
+      } catch (e) {
+        if (!annule) setErreur(e instanceof Error ? e.message : String(e));
+      } finally {
+        if (!annule) setChargement(false);
+      }
+    })();
     return () => {
       annule = true;
     };
@@ -44,8 +63,12 @@ export default function Dressing() {
       const photo = await choisirPhoto(source);
       if (!photo) return;
       setEnvoi(true);
-      await ajouterPiece(photo);
+      const id = await ajouterPiece(photo);
       await recharger();
+      // L'IA reconnaît la pièce (catégorie, couleur) pour les inspirations ; la carte se met à jour ensuite.
+      void analyserPiece(id).then((ok) => {
+        if (ok) void recharger();
+      });
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -69,7 +92,7 @@ export default function Dressing() {
       onglet
       eyebrow={pieces.length > 0 ? `${pieces.length} pièce${pieces.length > 1 ? 's' : ''}` : 'Dressing'}
       titre="Ton dressing"
-      intro="Pose un vêtement à plat, à la lumière du jour, et prends-le en photo.">
+      intro="Pose un vêtement à plat, à la lumière du jour, et prends-le en photo. Une IA (Anthropic, États-Unis) reconnaît son type et sa couleur pour te proposer ce qui va avec.">
       {restantes > 0 && (
         <Carte accent style={styles.objectif}>
           <View style={styles.points}>
@@ -105,6 +128,15 @@ export default function Dressing() {
               ) : (
                 <View style={[styles.photo, { backgroundColor: theme.backgroundSelected }]} />
               )}
+              <View style={styles.legende}>
+                <ThemedText type="small" numberOfLines={1} themeColor={piece.description ? 'text' : 'textSecondary'}>
+                  {piece.description
+                    ? piece.description.replace(/^(ton|ta|tes) /, '').replace(/^./, (c) => c.toUpperCase())
+                    : piece.analyse_at
+                      ? 'Pièce non reconnue'
+                      : 'Analyse en cours…'}
+                </ThemedText>
+              </View>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Supprimer cette pièce"
@@ -130,5 +162,6 @@ const styles = StyleSheet.create({
   grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   carte: { width: '48%', flexGrow: 1, maxWidth: '48.5%', borderRadius: Rayon.moyen, borderWidth: 1, overflow: 'hidden' },
   photo: { width: '100%', aspectRatio: 3 / 4 },
+  legende: { paddingHorizontal: 12, paddingTop: 10, paddingBottom: 2 },
   supprimer: { paddingVertical: 10, alignItems: 'center' },
 });
