@@ -21,7 +21,19 @@ type Props = {
 };
 
 // Le résultat : l'image, trois icônes (j'aime, story, enregistrer), le conseil, et une seule grosse action.
-export function ResultatEssayage({ url, aime, onAime, onAgrandir, onStory, enregistrement, onEnregistrer, conseil, achat, onAcheter, onAutre }: Props) {
+export function ResultatEssayage({
+  url,
+  aime,
+  onAime,
+  onAgrandir,
+  onStory,
+  enregistrement,
+  onEnregistrer,
+  conseil,
+  achat,
+  onAcheter,
+  onAutre,
+}: Props) {
   return (
     <>
       <PhotoCadree uri={url} ia onPress={onAgrandir} label="Agrandir l’image" />
@@ -51,7 +63,9 @@ export function ResultatEssayage({ url, aime, onAime, onAgrandir, onStory, enreg
       {achat ? (
         <View style={styles.groupe}>
           <Bouton label="Voir l’article" onPress={onAcheter} />
-          {achat.affilie && <Mention>Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.</Mention>}
+          {achat.affilie && (
+            <Mention>Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.</Mention>
+          )}
           <LienDiscret label="Essayer un autre vêtement" onPress={onAutre} />
         </View>
       ) : (
@@ -61,7 +75,4 @@ export function ResultatEssayage({ url, aime, onAime, onAgrandir, onStory, enreg
   );
 }
 
-const styles = StyleSheet.create({
-  conseil: { gap: Espace.s },
-  groupe: { gap: Espace.s },
-});
+const styles = StyleSheet.create({ conseil: { gap: Espace.s }, groupe: { gap: Espace.s } });

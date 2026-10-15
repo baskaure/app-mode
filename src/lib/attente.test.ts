@@ -25,3 +25,11 @@ test('les conseils de la silhouette passent avant les astuces', () => {
   assert.equal(m[1], 'À privilégier pour toi : jeans droits ou évasés.');
   assert.equal(m.length, 4);
 });
+
+test('étapes de la génération : dans l’ordre, la dernière tient jusqu’à l’image', async () => {
+  const { etapeEnCours, ETAPES_GENERATION } = await import('./attente.ts');
+  assert.equal(etapeEnCours(0), 0);
+  assert.equal(etapeEnCours(30_000), 1);
+  assert.equal(etapeEnCours(105_000), 2);
+  assert.equal(etapeEnCours(400_000), ETAPES_GENERATION.length - 1);
+});

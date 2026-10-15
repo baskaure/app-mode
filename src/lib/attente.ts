@@ -30,3 +30,20 @@ export function messagesAttente(objectif: string | null, aPrivilegier: string[])
     'Astuce : ajoute tes pièces au dressing, l’onglet Inspirations te propose ce qui va avec.',
   ];
 }
+
+// Étapes réelles du serveur (fonction essayage), montrées pendant l'attente (15 oct. 2026) : vérification des
+// photos (Claude Haiku), génération (Kie.ai), vérification du résultat, enregistrement. Seuils en part du
+// temps attendu, estimés sur les mesures du 15 oct. : la génération prend l'essentiel.
+export const ETAPES_GENERATION = [
+  { libelle: 'Vérification de tes photos', jusqua: 0.06 },
+  { libelle: 'L’IA crée ton image', jusqua: 0.88 },
+  { libelle: 'Vérification du résultat', jusqua: 0.96 },
+  { libelle: 'Enregistrement', jusqua: Infinity },
+] as const;
+
+// Index de l'étape en cours (la dernière reste affichée tant que l'image n'est pas là).
+export function etapeEnCours(ecouleMs: number, attenduMs = DUREE_ATTENDUE_MS): number {
+  const t = ecouleMs / attenduMs;
+  const i = ETAPES_GENERATION.findIndex((e) => t < e.jusqua);
+  return i === -1 ? ETAPES_GENERATION.length - 1 : i;
+}

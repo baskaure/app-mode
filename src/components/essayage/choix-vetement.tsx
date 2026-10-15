@@ -28,7 +28,9 @@ export function ChoixVetement({ pieces, occupe, onPhoto, onLien, onPiece }: Prop
   return (
     <>
       <Carte>
-        <Section titre="Une photo du vêtement" detail="Une capture d’écran de l’article, ou une photo prise en magasin.">
+        <Section
+          titre="Une photo du vêtement"
+          detail="Une capture d’écran de l’article, ou une photo prise en magasin.">
           <RangeeTuiles>
             <TuileAction nom={ICONES.photo} label="Photo" desactive={occupe} onPress={() => onPhoto('camera')} />
             <TuileAction nom={ICONES.galerie} label="Galerie" desactive={occupe} onPress={() => onPhoto('galerie')} />
@@ -53,7 +55,13 @@ export function ChoixVetement({ pieces, occupe, onPhoto, onLien, onPiece }: Prop
               accessibilityLabel="Lien de l’article"
               style={[styles.champ, { color: theme.text }]}
             />
-            <ActionIcone nom={ICONES.valider} label="Utiliser ce lien" surPhoto desactive={occupe || !valide} onPress={envoyer} />
+            <ActionIcone
+              nom={ICONES.valider}
+              label="Utiliser ce lien"
+              surPhoto
+              desactive={occupe || !valide}
+              onPress={envoyer}
+            />
           </View>
         </Section>
       </Carte>
@@ -80,7 +88,13 @@ export function ChoixVetement({ pieces, occupe, onPhoto, onLien, onPiece }: Prop
 }
 
 const styles = StyleSheet.create({
-  champLigne: { flexDirection: 'row', alignItems: 'center', borderRadius: Rayon.moyen, borderWidth: 1, paddingRight: Espace.xs },
+  champLigne: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: Rayon.moyen,
+    borderWidth: 1,
+    paddingRight: Espace.xs,
+  },
   champ: { flex: 1, minHeight: 52, paddingHorizontal: Espace.l, fontSize: 16, fontFamily: Police.normal },
   rangee: { gap: Espace.m, paddingRight: Espace.xl },
   vignette: { width: 104, height: 138, borderRadius: Rayon.petit, borderWidth: 1, overflow: 'hidden' },

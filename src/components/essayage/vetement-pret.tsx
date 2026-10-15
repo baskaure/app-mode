@@ -1,6 +1,5 @@
 import { AttenteEssayage } from '@/components/essayage/attente-essayage';
 import { PhotoCadree } from '@/components/essayage/photo-cadree';
-import { ScanIA } from '@/components/essayage/scan-ia';
 import { Bouton, LienDiscret } from '@/components/ui';
 
 type Props = {
@@ -18,7 +17,7 @@ type Props = {
 export function VetementPret({ url, dejaLance, etape, messages, occupe, onEssayer, onAutre }: Props) {
   return (
     <>
-      <PhotoCadree uri={url}>{etape && <ScanIA />}</PhotoCadree>
+      <PhotoCadree uri={url} />
       {etape && <AttenteEssayage etape={etape} messages={messages} />}
       <Bouton
         label={dejaLance ? 'Voir le résultat' : 'M’essayer ce vêtement'}

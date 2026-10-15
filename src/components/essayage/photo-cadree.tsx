@@ -23,7 +23,9 @@ export function PhotoCadree({ uri, ia = false, remplir = false, onPress, label, 
   const theme = useTheme();
   const contenu = (
     <>
-      {uri && <Image source={{ uri }} style={styles.image} contentFit={remplir ? 'cover' : 'contain'} transition={150} />}
+      {uri && (
+        <Image source={{ uri }} style={styles.image} contentFit={remplir ? 'cover' : 'contain'} transition={150} />
+      )}
       {ia && <BadgeIA />}
       {children}
     </>
@@ -34,7 +36,11 @@ export function PhotoCadree({ uri, ia = false, remplir = false, onPress, label, 
       accessibilityRole="imagebutton"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => [styles.cadre, { backgroundColor: theme.backgroundElement }, pressed && { opacity: 0.9 }]}>
+      style={({ pressed }) => [
+        styles.cadre,
+        { backgroundColor: theme.backgroundElement },
+        pressed && { opacity: 0.9 },
+      ]}>
       {contenu}
     </Pressable>
   );
