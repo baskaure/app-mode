@@ -15,12 +15,14 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { CaptchaProvider } from '@/components/captcha';
 import { Colors } from '@/constants/theme';
 import { preparerNotifications, useOuvrirDepuisNotification } from '@/lib/notifications';
+import { suivreSession } from '@/lib/sauvegarde-session';
 import { demarrerSuiviErreurs, avecSuiviErreurs } from '@/lib/suivi-erreurs';
 import { ProfilProvider } from '@/state/profil';
 
 SplashScreen.preventAutoHideAsync();
 demarrerSuiviErreurs();
 preparerNotifications();
+suivreSession();
 
 // Thèmes de navigation aux couleurs Akalie (fond des modales, transitions).
 const themeClair = {

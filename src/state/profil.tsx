@@ -5,8 +5,10 @@ import { ConnexionRatee } from '@/components/connexion-ratee';
 import { changerUtilisateurAchats, configurerAchats } from '@/lib/abonnement';
 import { deduireSilhouette, type ReponsesMorpho, type Silhouette, type Vestiaire } from '@/lib/morphologie';
 import { supabase } from '@/lib/supabase';
+import { reprendreSession } from '@/lib/sauvegarde-session';
 
-export type Style = 'casual' | 'chic' | 'streetwear' | 'clean_girl' | 'minimaliste' | 'boheme' | 'workwear' | 'alternatif';
+export type Style =
+  'casual' | 'chic' | 'streetwear' | 'clean_girl' | 'minimaliste' | 'boheme' | 'workwear' | 'alternatif';
 
 export type Profil = {
   vestiaire: Vestiaire | null;
@@ -57,6 +59,9 @@ function depuisLigne(l: LigneProfil): Profil {
 async function utilisateurCourant(demanderJeton: DemanderJeton): Promise<string> {
   const { data } = await supabase.auth.getSession();
   if (data.session) return data.session.user.id;
+  // App réinstallée : on reprend le compte d'avant si son jeton est encore dans le trousseau.
+  const repris = await reprendreSession();
+  if (repris) return repris;
   const captchaToken = await demanderJeton();
   const { data: anonyme, error } = await supabase.auth.signInAnonymously({ options: { captchaToken } });
   if (error || !anonyme.user) throw new Error(error?.message ?? 'Connexion anonyme impossible');
@@ -124,18 +129,20 @@ export function ProfilProvider({ children }: { children: ReactNode }) {
     setOnboardingFini(true);
     try {
       const id = await utilisateurCourant(demanderJeton);
-      const { error } = await supabase.from('profils').upsert({
-        id,
-        vestiaire: profil.vestiaire,
-        age: profil.age,
-        style: profil.style,
-        gene: profil.gene,
-        epaules_hanches: profil.morpho?.epaulesHanches ?? null,
-        taille: profil.morpho?.taille ?? null,
-        ventre: profil.morpho?.ventre ?? null,
-        silhouette: profil.silhouette,
-        onboarding_fini: true,
-      });
+      const { error } = await supabase
+        .from('profils')
+        .upsert({
+          id,
+          vestiaire: profil.vestiaire,
+          age: profil.age,
+          style: profil.style,
+          gene: profil.gene,
+          epaules_hanches: profil.morpho?.epaulesHanches ?? null,
+          taille: profil.morpho?.taille ?? null,
+          ventre: profil.morpho?.ventre ?? null,
+          silhouette: profil.silhouette,
+          onboarding_fini: true,
+        });
       if (error) throw error;
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));

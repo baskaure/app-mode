@@ -12,3 +12,7 @@ const exports = (fichier: string) =>
 test('notifications.web.ts et notifications.ts exportent les mêmes fonctions', () => {
   assert.deepEqual(exports('./notifications.web.ts'), exports('./notifications.ts'));
 });
+
+test('sauvegarde-session.web.ts et sauvegarde-session.ts exportent les mêmes fonctions', () => {
+  assert.deepEqual(exports('./sauvegarde-session.web.ts'), exports('./sauvegarde-session.ts'));
+});
