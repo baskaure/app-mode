@@ -12,7 +12,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { type Image, verifierImages, verifierResultat } from './moderation.ts';
 import { corpsCreation, essaiAbandonne, KIE, lireCreation, lireTache } from './kie.ts';
 import { MESSAGE_RESULTAT_REFUSE } from './regles.ts';
-import { droitActif, type Quota, verifierQuota } from './quota.ts';
+import { droitActif, ESSAIS_OFFERTS, OFFERTS_PAR_JOUR, type Quota, verifierQuota } from './quota.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -24,9 +24,9 @@ const DUREE_LIEN_KIE_S = 15 * 60;
 // Plafond d'essayages par abonné et par mois (budget : environ 1 € de génération par abonné et par mois).
 const MAX_PAR_MOIS = Number(Deno.env.get('ESSAIS_MAX_PAR_MOIS') ?? '30');
 // Essayages offerts sans abonnement, au total (le « moment waouh » avant le paywall).
-const ESSAIS_GRATUITS = Number(Deno.env.get('ESSAIS_GRATUITS') ?? '1');
+const ESSAIS_GRATUITS = Number(Deno.env.get('ESSAIS_GRATUITS') ?? String(ESSAIS_OFFERTS));
 // Essayages offerts par jour, tous comptes confondus : borne le coût si quelqu'un recrée des comptes anonymes.
-const ESSAIS_GRATUITS_JOUR = Number(Deno.env.get('ESSAIS_GRATUITS_JOUR') ?? '50');
+const ESSAIS_GRATUITS_JOUR = Number(Deno.env.get('ESSAIS_GRATUITS_JOUR') ?? String(OFFERTS_PAR_JOUR));
 // Droit d'accès RevenueCat qui ouvre l'abonnement (identifiant de l'« entitlement » dans le tableau de bord).
 const DROIT_ABONNEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
 

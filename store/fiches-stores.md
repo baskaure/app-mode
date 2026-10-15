@@ -47,7 +47,7 @@ Ton dressing compte aussi. Prends en photo quelques pièces que tu as déjà : A
 
 Dans l'app, tu retrouves aussi tous tes essayages, avec j'aime / j'aime pas pour faire le tri, le lien vers l'article quand il vient d'une boutique, et une story avant / après à partager si le résultat te plaît.
 
-Le premier essayage est offert. L'abonnement donne ensuite 30 essayages par mois.
+Les 2 premiers essayages sont offerts. L'abonnement donne ensuite 30 essayages par mois.
 
 CE QU'ON REFUSE DE FAIRE
 L'essayage marche uniquement sur ta propre photo. Pas de photo de quelqu'un d'autre, pas de lingerie, pas de maillot de bain. Chaque image est créée par IA et marquée comme telle : elle donne une très bonne idée du rendu, mais ce n'est pas une photo, et la coupe peut varier un peu. Ta photo n'est jamais publiée. Tu peux effacer toutes tes données depuis l'app, d'un seul bouton.
@@ -99,7 +99,7 @@ Définitions d'Apple : [App Privacy Details](https://developer.apple.com/app-sto
 
 Akalie crée un compte anonyme au premier lancement : pas d'identifiant ni de mot de passe à fournir.
 
-Parcours : répondre aux 7 questions, ajouter une photo de soi en pied (une personne, de face), puis choisir un vêtement (capture d'écran, lien ou pièce du dressing) et toucher « M'essayer ». La création de l'image prend environ 2 minutes. Le premier essayage est offert ; les suivants demandent l'abonnement (bac à sable Apple).
+Parcours : répondre aux 7 questions, ajouter une photo de soi en pied (une personne, de face), puis choisir un vêtement (capture d'écran, lien ou pièce du dressing) et toucher « M'essayer ». La création de l'image prend environ 2 minutes. Les 2 premiers essayages sont offerts ; les suivants demandent l'abonnement (bac à sable Apple).
 
 Les images d'essayage sont créées par IA et marquées « Créée par IA ». Une vérification automatique refuse la nudité, la lingerie et les maillots de bain.
 
@@ -127,7 +127,7 @@ Dans l'app, tu retrouves aussi :
 • le lien vers l'article quand le vêtement vient d'une boutique en ligne ;
 • ton dressing, si tu veux essayer tes propres pièces.
 
-Le premier essayage est offert. L'abonnement donne ensuite 30 essayages par mois.
+Les 2 premiers essayages sont offerts. L'abonnement donne ensuite 30 essayages par mois.
 
 CE QU'ON REFUSE DE FAIRE
 L'essayage marche uniquement sur ta propre photo. Pas de photo de quelqu'un d'autre, pas de lingerie, pas de maillot de bain. Chaque image est créée par IA et indiquée comme telle : elle donne une très bonne idée du rendu, mais ce n'est pas une photo, et la coupe peut varier un peu. Tu peux effacer toutes tes données depuis l'app, d'un seul bouton.

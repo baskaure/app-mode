@@ -1,5 +1,5 @@
 // Qui a droit à un essayage. Sans dépendance : testé par quota.test.ts (npm test).
-//   - sans abonnement : ESSAIS_GRATUITS essayages offerts au total (1 par défaut, « moment waouh ») ;
+//   - sans abonnement : ESSAIS_GRATUITS essayages offerts au total (ESSAIS_OFFERTS par défaut, « moment waouh ») ;
 //   - abonné : MAX_PAR_MOIS essayages par mois civil (plafond de coût de génération) ;
 //   - tous comptes confondus : GRATUITS_JOUR essayages offerts par jour (un compte anonyme se recrée à volonté).
 
@@ -18,6 +18,13 @@ export function droitActif(droit: unknown, maintenant: Date): boolean {
   if (d.expires_date === null) return true;
   return apres(d.expires_date) || apres(d.grace_period_expires_date);
 }
+
+// 2 essayages offerts (décidé le 15 oct. 2026, au lieu d'1) : le premier peut rater à cause d'une mauvaise photo,
+// et la vente se joue sur le « waouh ». Coût : environ 0,03 € de plus par nouveau compte.
+export const ESSAIS_OFFERTS = 2;
+// Offerts par jour, tous comptes confondus (comptes anonymes recréés à volonté) : 600, soit 300 nouveaux comptes
+// par jour et au plus ~18 € de génération. L'ancien 50 bloquait une vidéo TikTok qui marche dès 25 inscrits.
+export const OFFERTS_PAR_JOUR = 600;
 
 export type Quota = { ok: true } | { ok: false; code: 'abonnement' | 'plafond' | 'offerts_du_jour' };
 

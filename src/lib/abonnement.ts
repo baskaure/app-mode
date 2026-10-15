@@ -47,7 +47,7 @@ export function estAbonne(info: CustomerInfo): boolean {
   return info.entitlements.active[DROIT_ABONNEMENT] !== undefined;
 }
 
-export type Formule = { id: 'annuel' | 'mensuel'; prix: string; parMois: string | null; paquet: PurchasesPackage };
+export type Formule = { id: 'annuel' | 'mensuel'; prix: string; montant: number; parMois: string | null; paquet: PurchasesPackage };
 
 // Les deux formules de l'offre courante, prix affichés par le store (devise et taxes du pays).
 export async function chargerFormules(): Promise<Formule[]> {
@@ -58,9 +58,9 @@ export async function chargerFormules(): Promise<Formule[]> {
   const annuel = paquets.find((p) => p.packageType === PACKAGE_TYPE.ANNUAL);
   const mensuel = paquets.find((p) => p.packageType === PACKAGE_TYPE.MONTHLY);
   if (annuel) {
-    formules.push({ id: 'annuel', prix: annuel.product.priceString, parMois: annuel.product.pricePerMonthString, paquet: annuel });
+    formules.push({ id: 'annuel', prix: annuel.product.priceString, montant: annuel.product.price, parMois: annuel.product.pricePerMonthString, paquet: annuel });
   }
-  if (mensuel) formules.push({ id: 'mensuel', prix: mensuel.product.priceString, parMois: null, paquet: mensuel });
+  if (mensuel) formules.push({ id: 'mensuel', prix: mensuel.product.priceString, montant: mensuel.product.price, parMois: null, paquet: mensuel });
   return formules;
 }
 

@@ -34,7 +34,7 @@ const COUPLES: [Cle, Cle, string][] = [
   ['accentTexte', 'backgroundElement', 'raisons sous les articles'],
   ['accentTexte', 'accentDoux', 'surtitre « Pourquoi pour toi »'],
   ['surTexte', 'text', 'boutons principaux, pastilles choisies'],
-  ['surTexte', 'accentTexte', 'badge « Le plus choisi »'],
+  ['surTexte', 'accentTexte', 'badge « -50 % » du paywall'],
   ['accentInverse', 'text', 'surtitre de la carte « Offre complète »'],
   ['erreur', 'erreurFond', 'messages d’erreur'],
 ];

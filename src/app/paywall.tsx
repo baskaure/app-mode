@@ -18,12 +18,13 @@ import {
 } from '@/lib/abonnement';
 import { fermer } from '@/lib/navigation';
 import { noter } from '@/lib/mesure';
+import { economieAnnuel } from '@/lib/prix';
 
 // Paywall (étape 6 du BRIEF), affiché après l'essayage offert. Prix validés le 12 oct. 2026 : 59,99 €/an ou
 // 9,99 €/mois. Les prix affichés viennent du store quand il répond ; le serveur vérifie l'abonnement lui-même.
 const PRIX_AFFICHES = {
-  annuel: { prix: '59,99 € par an', parMois: '5,00 € par mois' },
-  mensuel: { prix: '9,99 € par mois', parMois: null },
+  annuel: { prix: '59,99 € par an', montant: 59.99, parMois: '5,00 € par mois' },
+  mensuel: { prix: '9,99 € par mois', montant: 9.99, parMois: null },
 } as const;
 
 export default function Paywall() {
@@ -94,12 +95,15 @@ export default function Paywall() {
     };
   };
 
+  const montant = (id: Formule['id']) => formules.find((f) => f.id === id)?.montant ?? PRIX_AFFICHES[id].montant;
+  const economie = economieAnnuel(montant('annuel'), montant('mensuel'));
+
   return (
     <Ecran fermable>
       <EnteteOffre />
 
       <View style={styles.formules}>
-        <LigneFormule titre="Annuel" {...affichage('annuel')} badge="Le plus choisi" selectionnee={choix === 'annuel'} onPress={() => setChoix('annuel')} />
+        <LigneFormule titre="Annuel" {...affichage('annuel')} badge={economie ? `-${economie} %` : undefined} selectionnee={choix === 'annuel'} onPress={() => setChoix('annuel')} />
         <LigneFormule titre="Mensuel" {...affichage('mensuel')} selectionnee={choix === 'mensuel'} onPress={() => setChoix('mensuel')} />
       </View>
 

@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { droitActif, verifierQuota } from './quota.ts';
+import { droitActif, ESSAIS_OFFERTS, OFFERTS_PAR_JOUR, verifierQuota } from './quota.ts';
 
 const maintenant = new Date('2026-10-12T12:00:00Z');
 
@@ -34,6 +34,14 @@ const base = {
   maxOffertsJour: 50,
   inclus: false,
 };
+
+test('décision du 15 oct. 2026 : 2 essayages offerts, 600 offerts par jour au plus', () => {
+  assert.equal(ESSAIS_OFFERTS, 2);
+  assert.equal(OFFERTS_PAR_JOUR, 600);
+  const offerts = { ...base, gratuits: ESSAIS_OFFERTS };
+  assert.deepEqual(verifierQuota({ ...offerts, total: 1 }), { ok: true });
+  assert.deepEqual(verifierQuota({ ...offerts, total: 2 }), { ok: false, code: 'abonnement' });
+});
 
 test('sans abonnement : 1 essayage offert, puis le paywall', () => {
   assert.deepEqual(verifierQuota(base), { ok: true });
