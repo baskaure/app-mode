@@ -1,0 +1,30 @@
+# Import du catalogue Awin chaque nuit (16 oct. 2026). Ne fait rien tant que le secret AWIN_FLUX_URL n'existe pas.
+# Secrets GitHub à créer (Settings > Secrets and variables > Actions) : AWIN_FLUX_URL, SUPABASE_SERVICE_ROLE_KEY.
+name: Catalogue Awin
+
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  importer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AWIN_FLUX_URL: ${{ secrets.AWIN_FLUX_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      EXPO_PUBLIC_SUPABASE_URL: https://ccqlylvpqugdixqojjxk.supabase.co
+    steps:
+      - name: Flux pas encore configuré
+        if: env.AWIN_FLUX_URL == ''
+        run: echo "AWIN_FLUX_URL absent : rien à importer."
+      - uses: actions/checkout@v4
+        if: env.AWIN_FLUX_URL != ''
+      - uses: actions/setup-node@v4
+        if: env.AWIN_FLUX_URL != ''
+        with:
+          node-version: 24
+      - name: Importer le flux
+        if: env.AWIN_FLUX_URL != ''
+        run: node scripts/importer-awin.mjs
