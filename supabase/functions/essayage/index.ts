@@ -133,7 +133,7 @@ async function estTesteur(admin: SupabaseClient, uid: string): Promise<boolean> 
 
 function refusQuota(quota: Exclude<Quota, { ok: true }>) {
   if (quota.code === 'abonnement') {
-    return reponse(402, { erreur: 'Ton essayage offert est utilisé. Abonne-toi pour continuer.', code: 'abonnement' });
+    return reponse(402, { erreur: 'Tes essayages offerts sont utilisés. Abonne-toi pour continuer.', code: 'abonnement' });
   }
   if (quota.code === 'offerts_du_jour') {
     return reponse(402, {
