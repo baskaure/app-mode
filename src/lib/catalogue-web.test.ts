@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { couleurDuTitre, requetesCatalogue, versArticle } from './catalogue-web.ts';
+import { couleurDuTitre, nettoyerTitre, PRIX_MAX, requetesCatalogue, versArticle } from './catalogue-web.ts';
 
 test('54 recherches génériques, sans donnée personnelle', () => {
   const r = requetesCatalogue();
@@ -42,4 +42,30 @@ test('résultat SerpApi → article ; incomplet ou non https → écarté', () =
   assert.deepEqual(a?.styles, ['boheme']);
   assert.equal(versArticle({ title: 'x', product_id: '1', product_link: 'http://a', thumbnail: 'https://b' }, q), null);
   assert.equal(versArticle({ title: 'x', product_id: '1', product_link: 'https://a' }, q), null);
+});
+
+test('titres nettoyés, prix au-dessus du plafond écartés', () => {
+  assert.equal(
+    nettoyerTitre('Humility Robe chemise en popeline de coton Femme Taille'),
+    'Humility Robe chemise en popeline de coton',
+  );
+  assert.equal(nettoyerTitre('Acne Studios, Top en coton, femme, gris, FR 34, tops'), 'Acne Studios, Top en coton');
+  assert.equal(nettoyerTitre('Diesel Leamer Veste misaison, Femme, Taille: 48, Blue'), 'Diesel Leamer Veste misaison');
+  assert.equal(nettoyerTitre('Jean droit bleu'), 'Jean droit bleu');
+  const q = {
+    requete: 'veste chic femme',
+    vestiaire: 'femme' as const,
+    style: 'chic' as const,
+    categorie: 'veste' as const,
+  };
+  const cher = {
+    title: 'Veste',
+    product_id: '9',
+    product_link: 'https://g.co/x',
+    thumbnail: 'https://g.co/i',
+    extracted_price: PRIX_MAX + 1,
+  };
+  assert.equal(versArticle(cher, q), null);
+  const securite = { ...cher, title: 'Chaussures de sécurité légères', extracted_price: 40 };
+  assert.equal(versArticle(securite, q), null);
 });

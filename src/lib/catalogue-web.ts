@@ -110,15 +110,30 @@ export type LigneArticle = {
 
 const texte = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
 
+// Au-delà, hors de la cible (18-40 ans, achats en ligne courants) : réglé le 15 oct. 2026 après le 1er import.
+export const PRIX_MAX = 150;
+
+// « Robe chemise en popeline Femme Taille » → « Robe chemise en popeline » ;
+// « Acne Studios, Top en coton, femme, gris, FR 34, tops » → « Acne Studios, Top en coton ».
+export function nettoyerTitre(titre: string): string {
+  return titre
+    .replace(/,\s*(femme|homme)\b.*$/i, '')
+    .replace(/[\s,-]*\b(femme|homme)?\s*(taille\b.*)?$/i, (m) => (/taille|femme|homme/i.test(m) ? '' : m))
+    .trim();
+}
+
 // Résultat incomplet (pas d'image, de lien ou de titre en https) : écarté.
 export function versArticle(r: ResultatShopping, q: Requete): LigneArticle | null {
-  const nom = texte(r.title).slice(0, 200);
+  const nom = nettoyerTitre(texte(r.title)).slice(0, 200);
   const image = texte(r.thumbnail);
   const lien = texte(r.product_link);
   const id = texte(r.product_id) || lien;
   if (!nom || !id || !/^https:\/\//.test(image) || !/^https:\/\//.test(lien)) return null;
   const prix =
     typeof r.extracted_price === 'number' && r.extracted_price >= 0 ? Math.round(r.extracted_price * 100) / 100 : null;
+  if (prix !== null && prix > PRIX_MAX) return null;
+  // « baskets workwear » remonte des chaussures de sécurité : hors sujet pour la mode.
+  if (/s[ée]curit[ée]/i.test(nom)) return null;
   return {
     source: 'web',
     id_source: id.slice(0, 300),
