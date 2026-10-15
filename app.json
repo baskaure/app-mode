@@ -56,8 +56,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "L'app accède à tes photos pour ajouter des vêtements à ton dressing.",
-          "cameraPermission": "L'app utilise l'appareil photo pour photographier tes vêtements.",
+          "photosPermission": "Akalie accède à tes photos pour choisir ta photo d'essayage, les vêtements à essayer et les pièces de ton dressing.",
+          "cameraPermission": "Akalie utilise l'appareil photo pour te prendre en photo et photographier les vêtements à essayer.",
           "microphonePermission": false
         }
       ],
@@ -85,7 +85,7 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "L'app accède à tes photos pour ajouter des vêtements à ton dressing.",
+          "photosPermission": "Akalie accède à tes photos pour choisir ta photo d'essayage, les vêtements à essayer et les pièces de ton dressing.",
           "savePhotosPermission": "L'app enregistre tes essayages dans ta galerie quand tu le demandes.",
           "isAccessMediaLocationEnabled": false,
           "granularPermissions": [
