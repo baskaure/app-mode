@@ -1,11 +1,12 @@
 import { Redirect, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Question } from '@/components/onboarding/question';
 import { ResultatSilhouette } from '@/components/onboarding/resultat-silhouette';
 import { Ecran, Logo } from '@/components/ui';
 import { conseilPour, type EpaulesHanches, type ReponsesMorpho, type Taille, type Ventre, type Vestiaire } from '@/lib/morphologie';
 import { useProfil, type Style } from '@/state/profil';
+import { noter } from '@/lib/mesure';
 
 type Etape = {
   question: string;
@@ -16,6 +17,7 @@ type Etape = {
 export default function Onboarding() {
   const { profil, pret, onboardingFini, majProfil, terminerOnboarding } = useProfil();
   const [index, setIndex] = useState(0);
+  useEffect(() => noter('questionnaire_ouvert'), []);
   const [trop_jeune, setTropJeune] = useState(false);
   const [morpho, setMorpho] = useState<Partial<ReponsesMorpho>>({});
 
@@ -113,6 +115,7 @@ export default function Onboarding() {
           conseil={conseilPour(profil.silhouette, profil.vestiaire ?? 'femme')}
           onContinuer={() => {
             void terminerOnboarding();
+            noter('questionnaire_fini');
             router.replace('/dressing');
           }}
         />

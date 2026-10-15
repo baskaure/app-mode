@@ -10,6 +10,7 @@ import { ouvrirAchat } from '@/lib/achat';
 import { lireArticle } from '@/lib/catalogue';
 import { prixAffiche, type Article } from '@/lib/catalogue-regles';
 import { essaiDepuisArticle } from '@/lib/essais';
+import { noter } from '@/lib/mesure';
 
 // Fiche d'un article du catalogue, ouverte avec `?id=<article>&raison=<pourquoi il est proposé>`.
 export default function FicheArticle() {
@@ -26,7 +27,8 @@ export default function FicheArticle() {
       .then((a) => {
         if (annule) return;
         setArticle(a);
-        if (!a) setErreur('Cet article n’est plus disponible.');
+        if (a) noter('article_ouvert');
+        else setErreur('Cet article n’est plus disponible.');
       })
       .catch((e: unknown) => !annule && setErreur(e instanceof Error ? e.message : String(e)))
       .finally(() => !annule && setChargement(false));

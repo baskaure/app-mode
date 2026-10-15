@@ -24,6 +24,7 @@ import { conseilPour } from '@/lib/morphologie';
 import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
 import { enregistrerImage } from '@/lib/telecharger';
+import { noter } from '@/lib/mesure';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
 // Un partage depuis une autre app (écran partage) ou l'historique arrive ici avec `?essai=<id>` déjà créé.
@@ -89,6 +90,7 @@ export default function Vetement() {
     setErreur(null);
     try {
       setEssai(await lireEssai(await creer()));
+      noter('vetement_choisi');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {
@@ -110,7 +112,9 @@ export default function Vetement() {
     setErreur(null);
     setOccupe(true);
     try {
+      noter('essai_lance');
       setResultat(await essayer(id, setEtape));
+      noter('essai_reussi');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
       // Essayage offert déjà utilisé : on montre l'offre ; au retour, le même bouton relance l'essai.

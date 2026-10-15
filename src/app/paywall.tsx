@@ -17,6 +17,7 @@ import {
   type Formule,
 } from '@/lib/abonnement';
 import { fermer } from '@/lib/navigation';
+import { noter } from '@/lib/mesure';
 
 // Paywall (étape 6 du BRIEF), affiché après l'essayage offert. Prix validés le 12 oct. 2026 : 59,99 €/an ou
 // 9,99 €/mois. Les prix affichés viennent du store quand il répond ; le serveur vérifie l'abonnement lui-même.
@@ -31,6 +32,9 @@ export default function Paywall() {
   const [chargement, setChargement] = useState(achatsDisponibles());
   const [occupe, setOccupe] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Compté même sans achats disponibles (web, Expo Go) : c'est l'arrivée sur l'offre qu'on mesure.
+  useEffect(() => noter('paywall_vu'), []);
 
   useEffect(() => {
     if (!achatsDisponibles()) return;
@@ -53,7 +57,10 @@ export default function Paywall() {
     setMessage(null);
     try {
       const resultat = await acheter(formuleChoisie);
-      if (resultat === 'actif') fermer();
+      if (resultat === 'actif') {
+        noter('abonnement');
+        fermer();
+      }
       else if (resultat === 'en_attente') {
         setMessage('Achat enregistré, activation en cours. Si rien ne change d’ici quelques minutes, touche « Restaurer mes achats ».');
       }

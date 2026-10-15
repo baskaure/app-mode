@@ -13,6 +13,7 @@ import {
   type Piece,
   type Source,
 } from '@/lib/dressing';
+import { noter } from '@/lib/mesure';
 
 const MINIMUM = 3;
 
@@ -59,6 +60,7 @@ export default function Dressing() {
       if (!photo) return;
       setEnvoi(true);
       const id = await ajouterPiece(photo);
+      noter('piece_ajoutee');
       await recharger();
       // L'IA reconnaît la pièce (catégorie, couleur) pour les inspirations ; la carte se met à jour ensuite.
       void analyserPiece(id).then((ok) => {

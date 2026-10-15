@@ -8,6 +8,7 @@ import { StoryAvantApres } from '@/components/partage/story-avant-apres';
 import { Bouton, Chargement, Ecran, Mention, MessageErreur } from '@/components/ui';
 import { Gouttiere } from '@/constants/theme';
 import { lireSilhouette } from '@/lib/silhouette';
+import { noter } from '@/lib/mesure';
 
 // Image produite : 1080 × 1920 px (story Instagram, TikTok, Snapchat).
 const SORTIE = { largeur: 1080, hauteur: 1920 };
@@ -54,6 +55,7 @@ export default function Partager() {
       });
       if (!(await Sharing.isAvailableAsync())) throw new Error('Le partage n’est pas disponible sur cet appareil.');
       await Sharing.shareAsync(fichier, { mimeType: 'image/png', UTI: 'public.png', dialogTitle: 'Partager ton essayage' });
+      noter('story_partagee');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
     } finally {

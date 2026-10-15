@@ -6,6 +6,7 @@ import { Bouton, Carte, CaseACocher, Ecran, ICONES, ListePuces, MessageErreur, R
 import { choisirPhoto, type Photo, type Source } from '@/lib/photos';
 import { enregistrerSilhouette, verifierCadrage } from '@/lib/silhouette';
 import { fermer } from '@/lib/navigation';
+import { noter } from '@/lib/mesure';
 
 const CONSEILS = [
   'De la tête aux pieds, de face, bras légèrement écartés.',
@@ -42,6 +43,7 @@ export default function PhotoSoi() {
     setErreur(null);
     try {
       await enregistrerSilhouette(photo);
+      noter('photo_ajoutee');
       fermer();
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e));
