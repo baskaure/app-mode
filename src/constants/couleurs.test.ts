@@ -48,3 +48,11 @@ for (const theme of ['light', 'dark'] as const) {
     assert.deepEqual(echecs, []);
   });
 }
+
+test('mode sombre : fonds des cartes mises en avant sans teinte rose (15 oct. 2026)', () => {
+  for (const nom of ['accentDoux', 'backgroundSelected'] as const) {
+    const hex = Colors.dark[nom].slice(1);
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    assert.ok(Math.max(r, g, b) - Math.min(r, g, b) <= 12, `${nom} trop coloré : ${Colors.dark[nom]}`);
+  }
+});

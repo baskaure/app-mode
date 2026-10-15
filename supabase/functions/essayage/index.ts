@@ -111,10 +111,11 @@ async function compterEssayages(admin: SupabaseClient, uid: string) {
 }
 
 // L'app ne dit pas elle-même si on est abonné : on le demande à RevenueCat avec la clé secrète.
-// Sans clé (pas encore branché), personne n'est abonné : seuls les essayages offerts passent.
 async function estAbonne(uid: string): Promise<boolean> {
   const cle = Deno.env.get('REVENUECAT_SECRET_KEY');
-  if (!cle) return false;
+  // Sans clé, un abonné payant était traité comme gratuit sans aucune alerte (15 oct. 2026 : secret mal nommé).
+  // On échoue donc bruyamment : l'app affiche « Vérification de l'abonnement impossible ».
+  if (!cle) throw new Error('abonnement:cle_absente');
   const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(uid)}`, {
     headers: { Authorization: `Bearer ${cle}` },
     signal: AbortSignal.timeout(10000),
