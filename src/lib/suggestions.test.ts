@@ -26,3 +26,18 @@ test('les parenthèses et les « ou » des règles ne finissent pas dans la rech
 test('chaque style a sa touche', () => {
   assert.match(touche('boheme'), /fluides/);
 });
+
+test('idées du dressing : une pièce qui accompagne chaque pièce reconnue, couleur facile', async () => {
+  const { ideesDressing } = await import('./suggestions.ts');
+  const pieces = [
+    { id: '1', categorie: 'bas' as const, couleur: 'marine' as const, description: 'ton jean bleu foncé' },
+    { id: '2', categorie: 'chaussures' as const, couleur: 'blanc' as const, description: 'tes baskets blanches' },
+    { id: '3', categorie: null, couleur: null, description: null },
+  ];
+  const s = ideesDressing(pieces, 'casual', 'femme');
+  assert.equal(s.length, 2);
+  assert.equal(s[0].avec, 'Avec ton jean bleu foncé');
+  assert.equal(s[0].piece, 'Chemise blanche');
+  assert.equal(s[1].piece, 'Jean droit bleu marine');
+  assert.ok(s[0].vinted.includes('chemise%20blanche%20casual%20femme'));
+});
