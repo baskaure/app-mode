@@ -41,11 +41,11 @@ Tu as repéré un jean en ligne. Sur le mannequin, il est parfait. Sur toi ? Auc
 
 Akalie règle ça. Tu prends une photo de toi en pied, une seule fois. Ensuite tu choisis le vêtement : une capture d'écran, une photo prise en magasin, le lien d'un article, ou une pièce de ton propre placard. L'IA t'habille avec, sur ta vraie photo. Ton corps à toi, pas un avatar. Ça marche aussi avec les chaussures.
 
-Et l'app te dit pourquoi ça marche, ou pourquoi ça ne marche pas. Au départ, 7 questions sur ta silhouette et ce que tu veux mettre en valeur. Chaque essayage arrive ensuite avec une phrase claire, du genre « la taille haute allonge tes jambes » ou « cette coupe élargit tes épaules ».
+Au départ, 7 questions sur ta silhouette. Akalie te dit ce qui la met en valeur, coupe par coupe (« jeans droits ou évasés », « encolures bateau »), et te le rappelle à chaque essayage.
 
-Ton dressing compte aussi. Prends en photo quelques pièces que tu as déjà : Akalie reconnaît chacune (« ton jean droit bleu », « tes baskets blanches ») et te propose, dans Inspirations, des articles qui vont avec. Tu les essaies sur toi avant d'acheter quoi que ce soit.
+Ton dressing compte aussi. Prends en photo quelques pièces que tu as déjà : Akalie reconnaît chacune (« ton jean bleu foncé », « tes baskets blanches ») et tu peux les essayer sur toi comme n'importe quel article.
 
-Dans l'app, tu retrouves aussi tous tes essayages, avec j'aime / j'aime pas pour faire le tri, le lien vers l'article quand il vient d'une boutique, et une story avant / après à partager si le résultat te plaît.
+Dans l'app, tu retrouves tous tes essayages, un cœur pour garder tes préférés, le lien vers l'article quand il vient d'une boutique, et une story avant / après à partager si le résultat te plaît.
 
 Les 2 premiers essayages sont offerts. L'abonnement donne ensuite 30 essayages par mois.
 
