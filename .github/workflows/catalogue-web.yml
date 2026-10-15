@@ -1,0 +1,31 @@
+# Catalogue « Trouvé sur le web » (Google Shopping via SerpApi), le 1er et le 15 de chaque mois (16 oct. 2026).
+# Ne fait rien tant que le secret SERPAPI_KEY n'existe pas.
+# Secrets GitHub (Settings > Secrets and variables > Actions) : SERPAPI_KEY, SUPABASE_SERVICE_ROLE_KEY.
+name: Catalogue web
+
+on:
+  schedule:
+    - cron: '15 3 1,15 * *'
+  workflow_dispatch:
+
+jobs:
+  importer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      EXPO_PUBLIC_SUPABASE_URL: https://ccqlylvpqugdixqojjxk.supabase.co
+    steps:
+      - name: Clé pas encore configurée
+        if: env.SERPAPI_KEY == ''
+        run: echo "SERPAPI_KEY absent : rien à importer."
+      - uses: actions/checkout@v4
+        if: env.SERPAPI_KEY != ''
+      - uses: actions/setup-node@v4
+        if: env.SERPAPI_KEY != ''
+        with:
+          node-version: 24
+      - name: Importer
+        if: env.SERPAPI_KEY != ''
+        run: node scripts/importer-web.mjs

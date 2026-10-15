@@ -13,7 +13,7 @@ export type Couleur =
 
 export type Article = {
   id: string;
-  source: 'awin' | 'test';
+  source: 'awin' | 'test' | 'web';
   marchand: string;
   marque: string | null;
   nom: string;

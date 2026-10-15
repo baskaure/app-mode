@@ -77,8 +77,18 @@ export default function FicheArticle() {
       <MessageErreur>{erreur}</MessageErreur>
       <View style={styles.actions}>
         <Bouton label="M’essayer cet article" chargement={occupe} onPress={() => void essayer()} />
-        {!occupe && <LienDiscret label={`Voir sur ${article.marchand}`} onPress={() => void ouvrirAchat(article.lien)} />}
+        {!occupe && (
+          <LienDiscret
+            label={article.source === 'web' ? 'Voir les offres' : `Voir sur ${article.marchand}`}
+            onPress={() => void ouvrirAchat(article.lien)}
+          />
+        )}
       </View>
+      {article.source === 'web' && (
+        <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
+          Trouvé sur le web chez {article.marchand}. Prix et disponibilité à vérifier sur le site du vendeur.
+        </ThemedText>
+      )}
       {article.source === 'awin' && (
         <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
           Lien affilié : si tu achètes, nous touchons une petite commission, sans surcoût pour toi.
