@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Clé pas encore configurée
         if: env.SERPAPI_KEY == ''
-        run: echo "SERPAPI_KEY absent : rien à importer."
+        run: echo 'SERPAPI_KEY absent, rien à importer.'
       - uses: actions/checkout@v4
         if: env.SERPAPI_KEY != ''
       - uses: actions/setup-node@v4

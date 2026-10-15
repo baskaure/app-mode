@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Flux pas encore configuré
         if: env.AWIN_FLUX_URL == ''
-        run: echo "AWIN_FLUX_URL absent : rien à importer."
+        run: echo 'AWIN_FLUX_URL absent, rien à importer.'
       - uses: actions/checkout@v4
         if: env.AWIN_FLUX_URL != ''
       - uses: actions/setup-node@v4
