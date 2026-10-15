@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 const AVANTAGES = [
   'Jusqu’à 30 essayages par mois sur ta propre photo',
-  'Pourquoi chaque vêtement va, ou pas, à ta morphologie',
+  'Ce qui met ta silhouette en valeur, rappelé à chaque essayage',
   'Ton dressing pour associer tes nouvelles pièces',
 ];
 
