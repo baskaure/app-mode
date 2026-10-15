@@ -62,6 +62,8 @@ Confidentialité : https://akalie.app/confidentialite-app
 
 ## Classement par âge (questionnaire App Store Connect)
 
+**Saisi le 15 oct. 2026 :** tout à « Non » / « Aucun », contrôle de l'âge intégré : Non (simple déclaration, pas une vérification), classement calculé 4+, **remplacé par 16+** (Brésil 16+, Corée du Sud 15+).
+
 Catégories d'Apple : 4+, 9+, 13+, 16+, 18+ ([Apple](https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions)).
 
 Réponses proposées :
@@ -76,6 +78,8 @@ Contre-vue : 16+ ferme l'app aux 15 ans, alors que notre politique les accepte. 
 ---
 
 ## Confidentialité de l'app (« App Privacy » dans App Store Connect)
+
+**Saisi le 15 oct. 2026** tel que le tableau ci-dessous (sans les données de plantage, Sentry étant inactif). **Pas encore publié** : Apple exige d'abord l'adresse de la politique de confidentialité.
 
 Définitions d'Apple : [App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/).
 
