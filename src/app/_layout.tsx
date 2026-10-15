@@ -14,20 +14,32 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { CaptchaProvider } from '@/components/captcha';
 import { Colors } from '@/constants/theme';
+import { preparerNotifications, useOuvrirDepuisNotification } from '@/lib/notifications';
 import { demarrerSuiviErreurs, avecSuiviErreurs } from '@/lib/suivi-erreurs';
 import { ProfilProvider } from '@/state/profil';
 
 SplashScreen.preventAutoHideAsync();
 demarrerSuiviErreurs();
+preparerNotifications();
 
 // Thèmes de navigation aux couleurs Akalie (fond des modales, transitions).
 const themeClair = {
   ...DefaultTheme,
-  colors: { ...DefaultTheme.colors, background: Colors.light.background, card: Colors.light.background, primary: Colors.light.accent },
+  colors: {
+    ...DefaultTheme.colors,
+    background: Colors.light.background,
+    card: Colors.light.background,
+    primary: Colors.light.accent,
+  },
 };
 const themeSombre = {
   ...DarkTheme,
-  colors: { ...DarkTheme.colors, background: Colors.dark.background, card: Colors.dark.background, primary: Colors.dark.accent },
+  colors: {
+    ...DarkTheme.colors,
+    background: Colors.dark.background,
+    card: Colors.dark.background,
+    primary: Colors.dark.accent,
+  },
 };
 
 function RootLayout() {
@@ -60,11 +72,18 @@ function RootLayout() {
               <Stack.Screen name="partage" options={{ presentation: 'modal' }} />
               <Stack.Screen name="supprimer-donnees" options={{ presentation: 'modal' }} />
             </Stack>
+            <OuvertureNotification />
           </ProfilProvider>
         </CaptchaProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
+}
+
+// Notification « essayage prêt » touchée : ouvre l'essai (monté à côté du navigateur, une fois prêt).
+function OuvertureNotification() {
+  useOuvrirDepuisNotification();
+  return null;
 }
 
 export default avecSuiviErreurs(RootLayout);

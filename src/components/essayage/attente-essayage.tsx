@@ -41,7 +41,8 @@ export function AttenteEssayage({ etape, messages }: { etape: string; messages: 
         </View>
       )}
       <ThemedText type="small" themeColor="textSecondary">
-        Tu peux fermer cet écran : l’essayage continue. Tu le retrouveras dans l’onglet Essayages.
+        Tu peux fermer l’app : l’essayage continue et on te prévient quand c’est prêt. Il sera aussi dans l’onglet
+        Essayages.
       </ThemedText>
     </Carte>
   );
@@ -49,7 +50,13 @@ export function AttenteEssayage({ etape, messages }: { etape: string; messages: 
 
 const styles = StyleSheet.create({
   carte: { gap: Espace.l },
-  ligne: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: Espace.m, flexWrap: 'wrap' },
+  ligne: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: Espace.m,
+    flexWrap: 'wrap',
+  },
   conseil: { flexDirection: 'row', gap: Espace.m, alignItems: 'flex-start', minHeight: 48 },
   etoile: { height: 24, justifyContent: 'center', paddingLeft: Espace.xxs },
   texteConseil: { flex: 1 },

@@ -10,14 +10,8 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "app.akalie",
-      "entitlements": {
-        "com.apple.security.application-groups": [
-          "group.app.akalie"
-        ]
-      },
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+      "entitlements": { "com.apple.security.application-groups": ["group.app.akalie"] },
+      "infoPlist": { "ITSAppUsesNonExemptEncryption": false }
     },
     "android": {
       "adaptiveIcon": {
@@ -35,10 +29,7 @@
         "android.permission.READ_MEDIA_IMAGES"
       ]
     },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
+    "web": { "output": "static", "favicon": "./assets/images/favicon.png" },
     "plugins": [
       "expo-router",
       [
@@ -47,10 +38,7 @@
           "backgroundColor": "#FFF7F2",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "dark": {
-            "backgroundColor": "#0B0B0F",
-            "image": "./assets/images/splash-icon.png"
-          }
+          "dark": { "backgroundColor": "#0B0B0F", "image": "./assets/images/splash-icon.png" }
         }
       ],
       [
@@ -73,13 +61,7 @@
               "supportsText": true
             }
           },
-          "android": {
-            "enabled": true,
-            "singleShareMimeTypes": [
-              "image/*",
-              "text/plain"
-            ]
-          }
+          "android": { "enabled": true, "singleShareMimeTypes": ["image/*", "text/plain"] }
         }
       ],
       [
@@ -88,17 +70,13 @@
           "photosPermission": "Akalie accède à tes photos pour choisir ta photo d'essayage, les vêtements à essayer et les pièces de ton dressing.",
           "savePhotosPermission": "L'app enregistre tes essayages dans ta galerie quand tu le demandes.",
           "isAccessMediaLocationEnabled": false,
-          "granularPermissions": [
-            "photo"
-          ]
+          "granularPermissions": ["photo"]
         }
       ],
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-notifications"
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    },
+    "experiments": { "typedRoutes": true, "reactCompiler": true },
     "extra": {
       "router": {},
       "eas": {
@@ -109,11 +87,7 @@
                 {
                   "targetName": "expo-sharing-extension",
                   "bundleIdentifier": "app.akalie.expo-sharing-extension",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.app.akalie"
-                    ]
-                  }
+                  "entitlements": { "com.apple.security.application-groups": ["group.app.akalie"] }
                 }
               ]
             }

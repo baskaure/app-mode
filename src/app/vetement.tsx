@@ -25,6 +25,7 @@ import { useProfil } from '@/state/profil';
 import { choisirPhoto, type Source } from '@/lib/photos';
 import { enregistrerImage } from '@/lib/telecharger';
 import { noter } from '@/lib/mesure';
+import { activerNotifications } from '@/lib/notifications';
 
 // Choisir le vêtement à essayer : photo, lien d'article ou pièce du dressing.
 // Un partage depuis une autre app (écran partage) ou l'historique arrive ici avec `?essai=<id>` déjà créé.
@@ -113,6 +114,8 @@ export default function Vetement() {
     setOccupe(true);
     try {
       noter('essai_lance');
+      // Premier essayage : on propose d'être prévenu quand l'image est prête (sans bloquer le lancement).
+      void activerNotifications();
       setResultat(await essayer(id, setEtape));
       noter('essai_reussi');
     } catch (e) {

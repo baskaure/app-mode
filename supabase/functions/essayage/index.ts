@@ -13,6 +13,7 @@ import { type Image, verifierImages, verifierResultat } from './moderation.ts';
 import { corpsCreation, essaiAbandonne, KIE, lireCreation, lireTache } from './kie.ts';
 import { MESSAGE_RESULTAT_REFUSE } from './regles.ts';
 import { droitActif, ESSAIS_OFFERTS, OFFERTS_PAR_JOUR, type Quota, verifierQuota } from './quota.ts';
+import { type Fin, jetonRetour, memeJeton, messagesPush } from './retour.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -31,7 +32,10 @@ const ESSAIS_GRATUITS_JOUR = Number(Deno.env.get('ESSAIS_GRATUITS_JOUR') ?? Stri
 const DROIT_ABONNEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
 
 function reponse(statut: number, corps: Record<string, unknown>) {
-  return new Response(JSON.stringify(corps), { status: statut, headers: { ...CORS, 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify(corps), {
+    status: statut,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
 }
 
 // La clé Kie a d'abord été rangée sous OPENAI_API_KEY (12 oct. 2026) : on accepte les deux noms.
@@ -134,11 +138,15 @@ async function estTesteur(admin: SupabaseClient, uid: string): Promise<boolean> 
 
 function refusQuota(quota: Exclude<Quota, { ok: true }>) {
   if (quota.code === 'abonnement') {
-    return reponse(402, { erreur: 'Tes essayages offerts sont utilisés. Abonne-toi pour continuer.', code: 'abonnement' });
+    return reponse(402, {
+      erreur: 'Tes essayages offerts sont utilisés. Abonne-toi pour continuer.',
+      code: 'abonnement',
+    });
   }
   if (quota.code === 'offerts_du_jour') {
     return reponse(402, {
-      erreur: 'Les essayages offerts du jour sont tous partis. Reviens demain, ou abonne-toi pour essayer tout de suite.',
+      erreur:
+        'Les essayages offerts du jour sont tous partis. Reviens demain, ou abonne-toi pour essayer tout de suite.',
       code: 'abonnement',
     });
   }
@@ -168,14 +176,16 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   // Droit à un essayage (offert ou abonnement) : on s'arrête avant de payer la vérification.
   const testeur = await estTesteur(admin, uid);
   const abonne = testeur || (await estAbonne(uid));
-  const quotaAvant: Quota = testeur ? { ok: true } : verifierQuota({
-    abonne,
-    ...(await compterEssayages(admin, uid)),
-    maxParMois: MAX_PAR_MOIS,
-    gratuits: ESSAIS_GRATUITS,
-    maxOffertsJour: ESSAIS_GRATUITS_JOUR,
-    inclus: false,
-  });
+  const quotaAvant: Quota = testeur
+    ? { ok: true }
+    : verifierQuota({
+        abonne,
+        ...(await compterEssayages(admin, uid)),
+        maxParMois: MAX_PAR_MOIS,
+        gratuits: ESSAIS_GRATUITS,
+        maxOffertsJour: ESSAIS_GRATUITS_JOUR,
+        inclus: false,
+      });
   if (!quotaAvant.ok) return refusQuota(quotaAvant);
 
   // Réservation atomique : deux appels simultanés ne lancent qu'un seul essayage.
@@ -222,14 +232,16 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
       .select('id')
       .single();
     if (erreurJournal || !ligne) throw new Error(`Journal indisponible : ${erreurJournal?.message}`);
-    const quotaApres: Quota = testeur ? { ok: true } : verifierQuota({
-      abonne,
-      ...(await compterEssayages(admin, uid)),
-      maxParMois: MAX_PAR_MOIS,
-      gratuits: ESSAIS_GRATUITS,
-      maxOffertsJour: ESSAIS_GRATUITS_JOUR,
-      inclus: true,
-    });
+    const quotaApres: Quota = testeur
+      ? { ok: true }
+      : verifierQuota({
+          abonne,
+          ...(await compterEssayages(admin, uid)),
+          maxParMois: MAX_PAR_MOIS,
+          gratuits: ESSAIS_GRATUITS,
+          maxOffertsJour: ESSAIS_GRATUITS_JOUR,
+          inclus: true,
+        });
     if (!quotaApres.ok) {
       await admin.from('essayages_journal').delete().eq('id', ligne.id);
       await nettoyerFiges(admin, uid, essai.id);
@@ -240,7 +252,10 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     let tacheId: string;
     try {
       tacheId = lireCreation(
-        await kie('/createTask', { method: 'POST', body: JSON.stringify(corpsCreation(personne.url, vetement.url)) }),
+        await kie('/createTask', {
+          method: 'POST',
+          body: JSON.stringify(corpsCreation(personne.url, vetement.url, await adresseRetour(essai.id))),
+        }),
       );
     } catch (e) {
       // Kie n'a rien pris en charge : l'essai ne compte pas dans le plafond.
@@ -260,20 +275,67 @@ async function lancer(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   }
 }
 
-async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: string, essaiId: string) {
-  const { data: essai, error } = await supabase
-    .from('essais')
-    .select('id, statut, tache_id, lance_at, resultat_path, message')
-    .eq('id', essaiId)
-    .single();
-  if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
-  if (essai.statut !== 'en_cours' || !essai.tache_id) {
-    return reponse(200, { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message });
+type EssaiSuivi = {
+  id: string;
+  user_id: string;
+  statut: string;
+  tache_id: string | null;
+  lance_at: string | null;
+  resultat_path: string | null;
+  message: string | null;
+};
+type Etat = { statut: string; resultat_path?: string | null; message?: string | null };
+const COLONNES_SUIVI = 'id, user_id, statut, tache_id, lance_at, resultat_path, message';
+
+// Clé du jeton de retour : la clé serveur du projet, que seules les Edge Functions connaissent.
+function cleRetour() {
+  return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+}
+
+async function adresseRetour(essaiId: string) {
+  const base = `${Deno.env.get('SUPABASE_URL')}/functions/v1/essayage`;
+  return `${base}?retour=${encodeURIComponent(essaiId)}&jeton=${await jetonRetour(essaiId, cleRetour())}`;
+}
+
+// Notification « prêt » ou « pas abouti » à chaque appareil du compte. Un échec d'envoi ne casse pas l'essayage.
+async function notifier(admin: SupabaseClient, uid: string, essaiId: string, fin: Fin) {
+  try {
+    const { data } = await admin.from('appareils').select('jeton_push').eq('user_id', uid);
+    const jetons = (data ?? []).map((a) => a.jeton_push as string);
+    if (!jetons.length) return;
+    const r = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(messagesPush(jetons, essaiId, fin)),
+      signal: AbortSignal.timeout(10000),
+    });
+    // Appareil désinstallé : son jeton ne servira plus.
+    const corps = await r.json().catch(() => null);
+    const morts = jetons.filter((_, i) => corps?.data?.[i]?.details?.error === 'DeviceNotRegistered');
+    if (morts.length) await admin.from('appareils').delete().in('jeton_push', morts);
+  } catch {
+    // Pas de notification : l'utilisateur retrouvera le résultat dans l'onglet Essayages.
   }
+}
+
+// Appelé par l'app (suivre) ou par Kie à la fin de la tâche (retour). Seul l'appel qui fait passer l'essai
+// à son état final envoie la notification : deux appels simultanés n'en envoient pas deux.
+async function avancer(admin: SupabaseClient, essai: EssaiSuivi): Promise<Etat> {
+  if (essai.statut !== 'en_cours' || !essai.tache_id) {
+    return { statut: essai.statut, resultat_path: essai.resultat_path, message: essai.message };
+  }
+  const uid = essai.user_id;
 
   // Ne passe à l'état final qu'un essai encore « en cours » : deux suivis simultanés ne s'écrasent pas.
-  const finir = (statut: string, champs: Record<string, unknown>) =>
-    admin.from('essais').update({ statut, ...champs }).eq('id', essai.id).eq('statut', 'en_cours');
+  const finir = async (statut: Fin, champs: Record<string, unknown>) => {
+    const { data } = await admin
+      .from('essais')
+      .update({ statut, ...champs })
+      .eq('id', essai.id)
+      .eq('statut', 'en_cours')
+      .select('id');
+    if (data?.length) await notifier(admin, uid, essai.id, statut);
+  };
   // Le journal garde les crédits Kie consommés, pour vérifier le budget (environ 1 € par abonné et par mois).
   const noterCredits = (credits: number | null) =>
     admin
@@ -287,13 +349,13 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   const tache = lireTache(await kie(`/recordInfo?taskId=${encodeURIComponent(essai.tache_id)}`, { method: 'GET' }));
 
   if (tache.etat === 'en_cours') {
-    if (!essaiAbandonne(essai.lance_at, new Date())) return reponse(200, { statut: 'en_cours' });
+    if (!essaiAbandonne(essai.lance_at, new Date())) return { statut: 'en_cours' };
     // File d'attente bloquée : on libère l'essai et on rend l'essayage.
     const message = 'L’essayage a pris trop de temps. Réessaie.';
     await rendreEssayage();
     await nettoyerFiges(admin, uid, essai.id);
     await finir('erreur', { message, erreur_technique: 'délai dépassé chez Kie' });
-    return reponse(200, { statut: 'erreur', message });
+    return { statut: 'erreur', message };
   }
 
   if (tache.etat === 'echec') {
@@ -303,7 +365,7 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
     const message = 'L’IA n’a pas pu créer l’image. Réessaie dans un instant.';
     await nettoyerFiges(admin, uid, essai.id);
     await finir('erreur', { message, erreur_technique: tache.raison.slice(0, 500) });
-    return reponse(200, { statut: 'erreur', message });
+    return { statut: 'erreur', message };
   }
 
   await noterCredits(tache.credits);
@@ -316,7 +378,7 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
   if (!TYPES_IMAGE.includes(type) || !(await verifierResultat({ octets, type }))) {
     await nettoyerFiges(admin, uid, essai.id);
     await finir('refuse', { message: MESSAGE_RESULTAT_REFUSE });
-    return reponse(200, { statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE });
+    return { statut: 'refuse', message: MESSAGE_RESULTAT_REFUSE };
   }
   const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
   const chemin = `${uid}/${essai.id}.${extension}`;
@@ -325,12 +387,45 @@ async function suivre(supabase: SupabaseClient, admin: SupabaseClient, uid: stri
 
   await nettoyerFiges(admin, uid, essai.id);
   await finir('fait', { resultat_path: chemin, message: null, erreur_technique: null });
-  return reponse(200, { statut: 'fait', resultat_path: chemin });
+  return { statut: 'fait', resultat_path: chemin };
+}
+
+async function suivre(supabase: SupabaseClient, admin: SupabaseClient, essaiId: string) {
+  // Lecture avec le JWT de l'utilisateur (RLS) : on ne suit que ses propres essais.
+  const { data: essai, error } = await supabase.from('essais').select(COLONNES_SUIVI).eq('id', essaiId).single();
+  if (error || !essai) return reponse(404, { erreur: 'Essai introuvable.' });
+  return reponse(200, await avancer(admin, essai as EssaiSuivi));
+}
+
+// Appel de Kie à la fin de la tâche, sans session : l'adresse porte l'essai et son jeton HMAC.
+// Le corps envoyé par Kie est ignoré : l'état est relu chez Kie avec notre clé.
+async function retour(url: URL, admin: SupabaseClient) {
+  const essaiId = url.searchParams.get('retour') ?? '';
+  const jeton = url.searchParams.get('jeton') ?? '';
+  if (!/^[0-9a-f-]{36}$/i.test(essaiId) || !memeJeton(jeton, await jetonRetour(essaiId, cleRetour()))) {
+    return reponse(403, { erreur: 'Accès refusé.' });
+  }
+  const { data: essai } = await admin.from('essais').select(COLONNES_SUIVI).eq('id', essaiId).maybeSingle();
+  if (!essai) return reponse(404, { erreur: 'Essai introuvable.' });
+  return reponse(200, await avancer(admin, essai as EssaiSuivi));
 }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return reponse(405, { erreur: 'Méthode non autorisée.' });
+
+  const adresse = new URL(req.url);
+  if (adresse.searchParams.has('retour')) {
+    const serveur = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
+      auth: { persistSession: false },
+    });
+    try {
+      return await retour(adresse, serveur);
+    } catch {
+      // Kie réessaie ; sinon l'app finira l'essai à sa prochaine ouverture.
+      return reponse(500, { erreur: 'Fin d’essayage impossible pour le moment.' });
+    }
+  }
 
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
     global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
@@ -354,7 +449,7 @@ Deno.serve(async (req) => {
 
   try {
     if (action === 'lancer') return await lancer(supabase, admin, utilisateur.user.id, essaiId);
-    if (action === 'suivre') return await suivre(supabase, admin, utilisateur.user.id, essaiId);
+    if (action === 'suivre') return await suivre(supabase, admin, essaiId);
     return reponse(400, { erreur: 'Action inconnue.' });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);

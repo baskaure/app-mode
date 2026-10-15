@@ -22,9 +22,11 @@ Replace only what the garment replaces: a top replaces the top, trousers or a sk
 Photorealistic result. No text, no logo added, no watermark.`;
 
 // Corps de la création de tâche. `auto` garde le format de la photo de la personne ; 1K suffit pour un téléphone.
-export function corpsCreation(urlPersonne: string, urlVetement: string) {
+// `retour` : adresse que Kie appelle à la fin de la tâche (l'app peut être fermée entre-temps).
+export function corpsCreation(urlPersonne: string, urlVetement: string, retour?: string) {
   return {
     model: MODELE_IMAGE,
+    ...(retour ? { callBackUrl: retour } : {}),
     input: {
       prompt: CONSIGNE_ESSAYAGE,
       input_urls: [urlPersonne, urlVetement],
@@ -39,7 +41,8 @@ type Reponse = { code?: unknown; msg?: unknown; data?: Record<string, unknown> |
 // Lève 'kie:…' si la réponse n'est pas un succès.
 function verifier(corps: unknown): Record<string, unknown> {
   const c = corps as Reponse;
-  if (!c || c.code !== 200 || !c.data) throw new Error(`kie:${typeof c?.msg === 'string' ? c.msg : 'réponse invalide'}`);
+  if (!c || c.code !== 200 || !c.data)
+    throw new Error(`kie:${typeof c?.msg === 'string' ? c.msg : 'réponse invalide'}`);
   return c.data;
 }
 
