@@ -1,4 +1,4 @@
-# Catalogue « Trouvé sur le web » (Google Shopping via SerpApi), le 1er et le 15 de chaque mois (16 oct. 2026).
+# Catalogue « Trouvé sur le web » (Google Shopping via SerpApi), le 1er et le 15 de chaque mois (15 oct. 2026).
 # Ne fait rien tant que le secret SERPAPI_KEY n'existe pas.
 # Secrets GitHub (Settings > Secrets and variables > Actions) : SERPAPI_KEY, SUPABASE_SERVICE_ROLE_KEY.
 name: Catalogue web

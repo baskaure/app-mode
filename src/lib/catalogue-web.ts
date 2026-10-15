@@ -1,4 +1,4 @@
-// Catalogue « Trouvé sur le web » (16 oct. 2026) : de vrais articles Google Shopping, via SerpApi, en attendant
+// Catalogue « Trouvé sur le web » (15 oct. 2026) : de vrais articles Google Shopping, via SerpApi, en attendant
 // les marques partenaires (Awin). Recherches génériques (vestiaire × style × type de pièce) : aucune donnée
 // d'utilisateur n'est envoyée à SerpApi. Sans import de valeur : testé par catalogue-web.test.ts (npm test),
 // utilisé par scripts/importer-web.mjs.
@@ -81,7 +81,7 @@ export function couleurDuTitre(titre: string): Couleur | null {
   return null;
 }
 
-// Un résultat « shopping_results » de SerpApi (moteur google_shopping), champs lus sur serpapi.com le 16 oct. 2026.
+// Un résultat « shopping_results » de SerpApi (moteur google_shopping), champs lus sur serpapi.com le 15 oct. 2026.
 export type ResultatShopping = {
   title?: unknown;
   product_id?: unknown;

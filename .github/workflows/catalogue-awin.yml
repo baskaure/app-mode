@@ -1,4 +1,4 @@
-# Import du catalogue Awin chaque nuit (16 oct. 2026). Ne fait rien tant que le secret AWIN_FLUX_URL n'existe pas.
+# Import du catalogue Awin chaque nuit (15 oct. 2026). Ne fait rien tant que le secret AWIN_FLUX_URL n'existe pas.
 # Secrets GitHub à créer (Settings > Secrets and variables > Actions) : AWIN_FLUX_URL, SUPABASE_SERVICE_ROLE_KEY.
 name: Catalogue Awin
 

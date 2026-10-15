@@ -46,7 +46,7 @@ export function suggestions(aPrivilegier: string[], style: Style, vestiaire: Ves
   });
 }
 
-// Idées tirées du dressing, sans catalogue (16 oct. 2026) : pour chaque pièce reconnue, une pièce qui l'accompagne
+// Idées tirées du dressing, sans catalogue (15 oct. 2026) : pour chaque pièce reconnue, une pièce qui l'accompagne
 // dans une couleur facile à porter avec (« Avec ton jean bleu foncé : une chemise blanche »).
 type PieceDressing = { id: string; categorie: Categorie | null; couleur: Couleur | null; description: string | null };
 export type IdeeDressing = Suggestion & { pieceId: string; avec: string };
