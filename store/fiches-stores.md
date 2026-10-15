@@ -6,7 +6,7 @@ Limites vérifiées le 15 oct. 2026 sur la [page Apple des champs de version](ht
 ## Ce qui bloque l'envoi à Apple (à régler avant de soumettre)
 
 1. **Abonnements** : créer les deux abonnements (9,99 €/mois, 59,99 €/an) dans App Store Connect et brancher RevenueCat. Apple refuse une app dont le bouton d'achat ne marche pas, et les abonnements doivent partir en relecture avec la première version.
-2. **Politique de confidentialité en ligne** : `legal/confidentialite.html` remplie (éditeur, contact, prestataires), publiée sur akalie.app, et son adresse mise dans `EXPO_PUBLIC_URL_CONFIDENTIALITE` (le mur de paiement affiche le lien). Les passages « à confirmer avec le juriste » restent à trancher.
+2. **Politique de confidentialité en ligne** : `site/confidentialite-app.html` remplie (éditeur, contact, prestataires), publiée sur akalie.app, et son adresse mise dans `EXPO_PUBLIC_URL_CONFIDENTIALITE` (le mur de paiement affiche le lien). Les passages « à confirmer avec le juriste » restent à trancher.
 3. **Adresse d'assistance** : Apple exige une page avec un vrai moyen de contact. Prévu : akalie.app/aide (e-mail contact@madaria.fr).
 4. **Inspirations vides pour Apple** : les articles de test (`source='test'`) ne sont visibles que des testeurs. Sans catalogue Awin, le relecteur verra un onglet vide, ce qui risque un refus pour app incomplète (règle 2.1, à confirmer). Il faut le catalogue Awin, ou masquer l'onglet tant qu'il est vide.
 5. **Captures d'écran** iPhone 6,9 pouces : 1320 × 2868 px (à confirmer sur la [page des formats](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)).

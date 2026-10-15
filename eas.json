@@ -9,7 +9,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ccqlylvpqugdixqojjxk.supabase.co",
         "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_kuAi0LFR9CNIIEbibYtTlw_MXF8OIXe",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_YIKyMMvNZMhsqpjzkjHNZxcxckw"
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_YIKyMMvNZMhsqpjzkjHNZxcxckw",
+        "EXPO_PUBLIC_URL_CONFIDENTIALITE": "https://akalie.app/confidentialite-app"
       }
     },
     "development": {
