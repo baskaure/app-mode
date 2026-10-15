@@ -53,7 +53,7 @@
     "go:tunnel": "expo start --go --tunnel",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
+    "web": "NODE_OPTIONS=--max-old-space-size=4096 expo start --web --localhost",
     "lint": "expo lint",
     "test:filtre": "node --test supabase/functions/essayage/regles.test.ts",
     "test:partage": "node --test src/lib/partage.test.ts",
