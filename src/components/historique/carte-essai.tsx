@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { ActionIcone, CarteVignette, Etincelle, ICONES } from '@/components/ui';
+import { ActionIcone, CarteVignette, ICONES, Icone } from '@/components/ui';
 import { Espace } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { EssaiHistorique } from '@/lib/historique';
@@ -28,7 +28,7 @@ export function CarteEssai({ essai, maintenant, aConfirmer, onOuvrir, onSupprime
       surPhoto={
         essai.avis === 'aime' && (
           <View style={[styles.coeur, { backgroundColor: theme.backgroundElement }]} accessible accessibilityLabel="J’aime">
-            <Etincelle taille={9} />
+            <Icone nom={ICONES.aimeActif} taille={14} couleur={theme.accent} />
           </View>
         )
       }

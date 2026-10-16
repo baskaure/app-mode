@@ -3,7 +3,6 @@ import type { Ref } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Etincelle } from '@/components/ui';
 import { Colors, Police } from '@/constants/theme';
 
 const AURA = require('@/assets/images/marque/aura-clair.png');
@@ -51,7 +50,6 @@ export function StoryAvantApres({ ref, largeur, photoSoi, resultat, onImageCharg
               )}
               {p.ia && (
                 <View style={[styles.badge, { top: 8 * k, left: 8 * k, paddingHorizontal: 8 * k, paddingVertical: 3 * k, gap: 5 * k }]}>
-                  <Etincelle taille={5 * k} couleur="#FFFFFF" />
                   <ThemedText style={[styles.texteBadge, { fontSize: 9.5 * k, lineHeight: 13 * k }]}>Créée par IA</ThemedText>
                 </View>
               )}

@@ -4,7 +4,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ChargementIA } from '@/components/essayage/chargement-ia';
 import { ThemedText } from '@/components/themed-text';
-import { BarreProgression, Carte, Etincelle } from '@/components/ui';
+import { BarreProgression, Carte } from '@/components/ui';
 import { Espace, Police } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { ETAPES_GENERATION, etapeEnCours, progression, tempsRestant } from '@/lib/attente';
@@ -55,9 +55,6 @@ export function AttenteEssayage({ messages }: { etape: string; messages: string[
 
       {message && (
         <Animated.View key={message} entering={FadeIn.duration(400)} style={styles.conseil}>
-          <View style={styles.etoile}>
-            <Etincelle taille={7} />
-          </View>
           <ThemedText style={styles.texteConseil}>{message}</ThemedText>
         </Animated.View>
       )}
@@ -118,6 +115,5 @@ const styles = StyleSheet.create({
     marginTop: -2,
   },
   conseil: { flexDirection: 'row', gap: Espace.m, alignItems: 'flex-start', minHeight: 48 },
-  etoile: { height: 24, justifyContent: 'center', paddingLeft: Espace.xxs },
   texteConseil: { flex: 1 },
 });

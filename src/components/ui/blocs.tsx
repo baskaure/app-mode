@@ -19,41 +19,24 @@ export function Carte({ children, style, accent = false }: { children: ReactNode
   );
 }
 
-// L'étincelle de la marque, dessinée (la police Onest n'a pas le caractère ✦).
-export function Etincelle({ taille = 8, couleur }: { taille?: number; couleur?: string }) {
+// Pas de losange rose devant les surtitres ni les listes (demande de l'utilisateur, 16 oct. 2026) :
+// le texte seul pour un surtitre, un petit rond discret pour une puce.
+export function Surtitre({ children, couleur }: { children: ReactNode; couleur?: string }) {
   const theme = useTheme();
   return (
-    <View
-      style={{
-        width: taille,
-        height: taille,
-        borderRadius: taille * 0.18,
-        backgroundColor: couleur ?? theme.accent,
-        transform: [{ rotate: '45deg' }],
-      }}
-    />
+    <ThemedText type="eyebrow" style={{ color: couleur ?? theme.accentTexte }}>
+      {children}
+    </ThemedText>
   );
 }
 
-// Un surtitre précédé de l'étincelle.
-export function SurtitreEtincelle({ children, couleur }: { children: ReactNode; couleur?: string }) {
-  const theme = useTheme();
-  return (
-    <View style={styles.surtitre}>
-      <Etincelle taille={7} couleur={couleur} />
-      <ThemedText type="eyebrow" style={{ color: couleur ?? theme.accentTexte }}>
-        {children}
-      </ThemedText>
-    </View>
-  );
-}
-
-// Une ligne de liste avec l'étincelle de la marque.
+// Une ligne de liste précédée d'un petit rond gris.
 export function Puce({ children }: { children: ReactNode }) {
+  const theme = useTheme();
   return (
     <View style={styles.puce}>
-      <View style={styles.etoile}>
-        <Etincelle taille={7} />
+      <View style={styles.repere}>
+        <View style={[styles.rond, { backgroundColor: theme.textSecondary }]} />
       </View>
       <ThemedText style={styles.textePuce}>{children}</ThemedText>
     </View>
@@ -179,7 +162,6 @@ export function Etiquette({ texte, surPhoto = false }: { texte: string; surPhoto
 export function BadgeIA() {
   return (
     <View style={styles.badgeIA} accessible accessibilityLabel="Image créée par IA">
-      <Etincelle taille={6} couleur="#FFFFFF" />
       <ThemedText style={styles.badgeIATexte}>Créée par IA</ThemedText>
     </View>
   );
@@ -188,8 +170,8 @@ export function BadgeIA() {
 const styles = StyleSheet.create({
   carte: { borderRadius: Rayon.grand, borderWidth: 1, padding: Espace.xl, gap: Espace.l, overflow: 'hidden' },
   puce: { flexDirection: 'row', gap: Espace.m, alignItems: 'flex-start' },
-  etoile: { height: 24, justifyContent: 'center', paddingLeft: Espace.xxs },
-  surtitre: { flexDirection: 'row', alignItems: 'center', gap: Espace.s },
+  repere: { height: 24, justifyContent: 'center', paddingLeft: Espace.xxs },
+  rond: { width: 5, height: 5, borderRadius: 2.5 },
   textePuce: { flex: 1 },
   liste: { gap: Espace.m },
   section: { gap: Espace.m },

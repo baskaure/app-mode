@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { CartePiece } from '@/components/dressing/carte-piece';
 import { ObjectifPieces } from '@/components/dressing/objectif-pieces';
-import { Chargement, Ecran, Grille, ICONES, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
+import { ThemedText } from '@/components/themed-text';
+import { CaseACocher, Chargement, Ecran, Grille, ICONES, MessageErreur, RangeeTuiles, TuileAction } from '@/components/ui';
+import { accordDressingDonne, donnerAccordDressing } from '@/lib/accord-dressing';
 import {
   ajouterPiece,
   analyserPiece,
@@ -22,6 +24,17 @@ export default function Dressing() {
   const [chargement, setChargement] = useState(true);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
+  // null tant que l'accord n'est pas lu : la case ne clignote pas au chargement.
+  const [accord, setAccord] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    void accordDressingDonne().then(setAccord);
+  }, []);
+
+  const accepter = () => {
+    setAccord(true);
+    void donnerAccordDressing().catch(() => {});
+  };
 
   const recharger = useCallback(async () => {
     try {
@@ -86,13 +99,21 @@ export default function Dressing() {
     <Ecran
       onglet
       eyebrow={pieces.length > 0 ? `${pieces.length} pièce${pieces.length > 1 ? 's' : ''}` : 'Dressing'}
-      titre="Ton dressing"
-      intro="Pose un vêtement à plat, à la lumière du jour, et prends-le en photo. Une IA (Anthropic, États-Unis) reconnaît son type et sa couleur pour te proposer ce qui va avec.">
+      titre="Ton dressing">
       <ObjectifPieces nombre={pieces.length} objectif={MINIMUM} />
 
+      {accord === false && (
+        <CaseACocher coche={false} onPress={accepter}>
+          <ThemedText type="small">
+            J’accepte que les photos de mes vêtements soient analysées par une IA (Anthropic, États-Unis, donc hors de
+            l’Union européenne) pour reconnaître chaque pièce. Je peux les supprimer quand je veux.
+          </ThemedText>
+        </CaseACocher>
+      )}
+
       <RangeeTuiles>
-        <TuileAction nom={ICONES.photo} label="Photo" desactive={envoi} onPress={() => void ajouter('camera')} />
-        <TuileAction nom={ICONES.galerie} label="Galerie" desactive={envoi} onPress={() => void ajouter('galerie')} />
+        <TuileAction nom={ICONES.photo} label="Photo" desactive={envoi || !accord} onPress={() => void ajouter('camera')} />
+        <TuileAction nom={ICONES.galerie} label="Galerie" desactive={envoi || !accord} onPress={() => void ajouter('galerie')} />
       </RangeeTuiles>
 
       {envoi && <Chargement texte="Envoi de la photo…" />}

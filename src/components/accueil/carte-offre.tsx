@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { SurtitreEtincelle } from '@/components/ui';
+import { Surtitre } from '@/components/ui';
 import { Espace, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { gererAbonnement, lireFormule } from '@/lib/abonnement';
@@ -37,7 +37,7 @@ export function CarteOffre() {
       }
       onPress={() => (plan ? void gererAbonnement() : router.push('/paywall'))}
       style={({ pressed }) => [styles.offre, { backgroundColor: theme.text }, pressed && { opacity: 0.85 }]}>
-      <SurtitreEtincelle couleur={theme.accentInverse}>{plan ? 'Ton abonnement' : 'Offre complète'}</SurtitreEtincelle>
+      <Surtitre couleur={theme.accentInverse}>{plan ? 'Ton abonnement' : 'Offre complète'}</Surtitre>
       <ThemedText type="titreCarte" style={{ color: theme.surTexte }}>
         {plan ? textePlan(plan) : 'Jusqu’à 30 essayages par mois'}
       </ThemedText>

@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { ListePuces, SurtitreEtincelle } from '@/components/ui';
+import { ListePuces, Surtitre } from '@/components/ui';
 import { Aura, Espace } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -22,7 +22,7 @@ export function EnteteOffre() {
             <View key={c} style={[styles.pastille, { backgroundColor: c, borderColor: theme.background }]} />
           ))}
         </View>
-        <SurtitreEtincelle>Offre complète</SurtitreEtincelle>
+        <Surtitre>Offre complète</Surtitre>
         <ThemedText type="title">Essaie-le sur toi avant de l’acheter</ThemedText>
       </View>
       <ListePuces elements={AVANTAGES} />

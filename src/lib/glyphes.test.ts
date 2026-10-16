@@ -1,6 +1,6 @@
 // Verrou de la police : tout texte affiché doit exister dans Onest (police de l'app, choisie le 14 oct. 2026).
 // Le 14 oct., « ✦ », « ♥ » et « ✕ » s'affichaient en carré vide sur le web : Onest ne les a pas.
-// Pour un symbole, dessiner une forme (Etincelle dans components/ui.tsx) plutôt qu'un caractère. npm test.
+// Pour un symbole, utiliser une icône (Icone, components/ui/actions.tsx) ou une forme dessinée, pas un caractère. npm test.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';

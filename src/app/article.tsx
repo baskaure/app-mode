@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { PhotoCadree } from '@/components/essayage/photo-cadree';
 import { ThemedText } from '@/components/themed-text';
-import { Bouton, Carte, Chargement, Ecran, LienDiscret, MessageErreur, SurtitreEtincelle } from '@/components/ui';
+import { Bouton, Carte, Chargement, Ecran, LienDiscret, MessageErreur, Surtitre } from '@/components/ui';
 import { Espace } from '@/constants/theme';
 import { ouvrirAchat } from '@/lib/achat';
 import { lireArticle } from '@/lib/catalogue';
@@ -70,7 +70,7 @@ export default function FicheArticle() {
       </View>
       {raison ? (
         <Carte accent style={styles.raison}>
-          <SurtitreEtincelle>Pourquoi pour toi</SurtitreEtincelle>
+          <Surtitre>Pourquoi pour toi</Surtitre>
           <ThemedText>{raison}</ThemedText>
         </Carte>
       ) : null}

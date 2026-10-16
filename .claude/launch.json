@@ -9,6 +9,15 @@
         "cd /home/aurelien/Documents/applications/AppMode/app-mode && if command -v node >/dev/null; then npx expo start --web --port 8081; else flatpak-spawn --host sh -c 'cd /home/aurelien/Documents/applications/AppMode/app-mode && npx expo start --web --port 8081'; fi"
       ],
       "port": 8081
+    },
+    {
+      "name": "app-mode-web-fixe",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-lc",
+        "cd /home/baskaure/Documents/sites/app-mode && if command -v node >/dev/null; then npx expo start --web --port 8081; else host-spawn sh -c 'cd /home/baskaure/Documents/sites/app-mode && npx expo start --web --port 8081'; fi"
+      ],
+      "port": 8081
     }
   ]
 }
