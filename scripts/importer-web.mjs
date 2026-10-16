@@ -71,3 +71,16 @@ const off = await fetch(`${base}/rest/v1/articles?source=eq.web&maj_at=lt.${enco
 });
 if (!off.ok) throw new Error(`Désactivation : HTTP ${off.status}`);
 console.log(`${lignes.length} articles web importés, ${erreurs} recherche(s) en échec.`);
+
+// Étiquetage par l'IA des nouveaux articles (Edge Function etiqueter-articles, 90 par passage) : nom court,
+// couleur, coupe, et désactivation des articles hors sujet. On s'arrête quand tout est fait ou que rien n'avance.
+for (let passage = 1; passage <= 15; passage++) {
+  const r = await fetch(`${base}/functions/v1/etiqueter-articles`, { method: 'POST', headers: entetes, signal: AbortSignal.timeout(150000) });
+  if (!r.ok) {
+    console.error(`Étiquetage : HTTP ${r.status} ${await r.text()}`);
+    break;
+  }
+  const bilan = await r.json();
+  console.log(`Étiquetage ${passage} : ${bilan.gardes} gardés, ${bilan.ecartes} écartés, ${bilan.echecs} en échec, ${bilan.restants} restants.`);
+  if (!bilan.restants || bilan.gardes + bilan.ecartes === 0) break;
+}

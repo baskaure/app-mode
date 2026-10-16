@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { Espace, Police, Rayon } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { prixAffiche, type Recommandation } from '@/lib/catalogue-regles';
+import { nomAffiche, prixAffiche, type Recommandation } from '@/lib/catalogue-regles';
 import type { Piece } from '@/lib/dressing';
 
 type Props = {
@@ -24,7 +24,7 @@ export function CarteArticle({ reco, piece, largeur, raison = true }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${article.marque ?? article.marchand}, ${article.nom}${prix ? `, ${prix}` : ''}`}
+      accessibilityLabel={`${article.marque ?? article.marchand}, ${nomAffiche(article)}${prix ? `, ${prix}` : ''}`}
       onPress={() => router.push({ pathname: '/article', params: { id: article.id, raison: reco.raison, piece: reco.pieceId ?? '' } })}
       style={({ pressed }) => [
         styles.carte,
@@ -45,10 +45,10 @@ export function CarteArticle({ reco, piece, largeur, raison = true }: Props) {
           {article.marque ?? article.marchand}
         </ThemedText>
         <ThemedText type="small" numberOfLines={2} style={styles.nom}>
-          {article.nom}
+          {nomAffiche(article)}
         </ThemedText>
         {prix && <ThemedText type="smallBold">{prix}</ThemedText>}
-        {raison && (
+        {raison && !!reco.raison && (
           <ThemedText type="small" numberOfLines={2} style={[styles.raison, { color: theme.accentTexte }]}>
             {reco.raison}
           </ThemedText>

@@ -6,6 +6,7 @@ import {
   avecTonDressing,
   couleursVontEnsemble,
   motsDeCoupe,
+  nomAffiche,
   pourTonStyle,
   prixAffiche,
   varier,
@@ -104,4 +105,18 @@ test('prix affiché à la française', () => {
   assert.equal(prixAffiche({ prix: 29.99, devise: 'EUR' }), '29,99 €');
   assert.equal(prixAffiche({ prix: 40, devise: 'EUR' }), '40 €');
   assert.equal(prixAffiche({ prix: null, devise: 'EUR' }), null);
+});
+
+test('coupe reconnue par l’IA, sans tenir compte des accents ; pas de raison pour le seul style', () => {
+  const evase = article({ styles: ['chic'], categorie: 'bas', nom: 'PANTALON FEMME TENDANCE', coupe: 'evase' });
+  const simple = article({ styles: ['chic'], nom: 'Chemise en satin' });
+  const r = pourTonStyle([simple, evase], 'chic', 'femme', ['pantalons évasés']);
+  assert.equal(r[0].article.id, evase.id);
+  assert.equal(r[0].raison, 'Coupe conseillée pour ta silhouette');
+  assert.equal(r.find((x) => x.article.id === simple.id)?.raison, '');
+});
+
+test('nom affiché : le nom court de l’IA, sinon le titre du marchand', () => {
+  assert.equal(nomAffiche({ nom: 'LIAOPUFUS Femme Blazer Slim Fit', nom_court: 'Blazer cintré noir' }), 'Blazer cintré noir');
+  assert.equal(nomAffiche({ nom: 'Jean droit', nom_court: null }), 'Jean droit');
 });

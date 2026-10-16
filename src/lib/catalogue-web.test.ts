@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { couleurDuTitre, nettoyerTitre, PRIX_MAX, requetesCatalogue, versArticle } from './catalogue-web.ts';
+import { couleurDuTitre, marchandAccepte, nettoyerTitre, PRIX_MAX, requetesCatalogue, versArticle } from './catalogue-web.ts';
 
 test('54 recherches génériques, sans donnée personnelle', () => {
   const r = requetesCatalogue();
@@ -68,4 +68,9 @@ test('titres nettoyés, prix au-dessus du plafond écartés', () => {
   assert.equal(versArticle(cher, q), null);
   const securite = { ...cher, title: 'Chaussures de sécurité légères', extracted_price: 40 };
   assert.equal(versArticle(securite, q), null);
+});
+
+test('vendeurs tiers et enseignes hors mode écartés, boutiques gardées', () => {
+  for (const m of ['Amazon.fr - Seller', 'AliExpress', 'Tostadora FR', 'Leroy Merlin France']) assert.equal(marchandAccepte(m), false, m);
+  for (const m of ['Amazon.fr', 'Zalando.fr', 'H&M FR', 'Sézane', 'Sellpy.fr']) assert.equal(marchandAccepte(m), true, m);
 });

@@ -25,7 +25,16 @@ export type Article = {
   couleur: Couleur | null;
   vestiaire: 'femme' | 'homme' | 'mixte';
   styles: string[];
+  /** Nom court donné par l'IA (« Blazer cintré noir ») ; absent tant que l'article n'est pas étiqueté. */
+  nom_court?: string | null;
+  /** Coupe reconnue par l'IA (droit, large, evase…). */
+  coupe?: string | null;
 };
+
+// Le nom affiché : le nom court de l'IA s'il existe, sinon le titre du marchand.
+export function nomAffiche(article: Pick<Article, 'nom' | 'nom_court'>): string {
+  return article.nom_court || article.nom;
+}
 
 // Une pièce du dressing une fois analysée (Edge Function analyser-piece). La description garde son possessif
 // (« ton jean droit bleu », « ta robe noire ») pour s'afficher telle quelle dans la raison.
@@ -93,9 +102,12 @@ export function motsDeCoupe(aPrivilegier: string[]): string[] {
   ];
 }
 
+const sansAccents = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+// La coupe conseillée se lit dans la coupe reconnue par l'IA, sinon dans le nom (« jean droit », « robe évasée »).
 function correspondCoupe(article: Article, mots: string[]): boolean {
-  const nom = article.nom.toLowerCase();
-  return mots.some((m) => nom.includes(m));
+  const texte = sansAccents(`${article.coupe ?? ''} ${article.nom_court ?? ''} ${article.nom}`);
+  return mots.some((m) => texte.includes(sansAccents(m)));
 }
 
 // Mélange les catégories pour une grille variée (pas 8 hauts d'affilée), sans changer l'ordre dans une catégorie.
@@ -125,7 +137,9 @@ export function pourTonStyle(
       const style_ = !!style && article.styles.includes(style);
       const coupe = correspondCoupe(article, mots);
       const score = (style_ ? 3 : 0) + (coupe ? 1 : 0);
-      const raison = coupe ? 'Coupe conseillée pour ta silhouette' : style_ ? 'Dans ton style' : 'À découvrir';
+      // Une raison seulement quand elle apprend quelque chose : « Dans ton style » sous chaque carte ne disait rien
+      // (retiré le 16 oct. 2026). La section s'appelle déjà « Dans ton style ».
+      const raison = coupe ? 'Coupe conseillée pour ta silhouette' : '';
       return { article, score, raison, pieceId: null };
     })
     .filter((r) => !style || r.score > 0)

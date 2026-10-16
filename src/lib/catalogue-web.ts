@@ -122,13 +122,24 @@ export function nettoyerTitre(titre: string): string {
     .trim();
 }
 
-// Résultat incomplet (pas d'image, de lien ou de titre en https) : écarté.
+// Vendeurs écartés (16 oct. 2026, d'après le 1er import) : places de marché et vendeurs tiers (titres à rallonge,
+// marques inconnues), impression à la demande, enseignes hors mode. Le tri fin (enfants, déguisements, hors sujet)
+// est fait ensuite par l'IA (Edge Function etiqueter-articles).
+const MARCHANDS_ECARTES =
+  /(-\s*seller\b|marketplace|aliexpress|temu|wish\.com|joom|ebay|tostadora|grafitee|europosters|leroy merlin|gamm vert)/i;
+
+export function marchandAccepte(marchand: string): boolean {
+  return !MARCHANDS_ECARTES.test(marchand);
+}
+
+// Résultat incomplet (pas d'image, de lien ou de titre en https) ou vendeur écarté : écarté.
 export function versArticle(r: ResultatShopping, q: Requete): LigneArticle | null {
   const nom = nettoyerTitre(texte(r.title)).slice(0, 200);
   const image = texte(r.thumbnail);
   const lien = texte(r.product_link);
   const id = texte(r.product_id) || lien;
   if (!nom || !id || !/^https:\/\//.test(image) || !/^https:\/\//.test(lien)) return null;
+  if (!marchandAccepte(texte(r.source))) return null;
   const prix =
     typeof r.extracted_price === 'number' && r.extracted_price >= 0 ? Math.round(r.extracted_price * 100) / 100 : null;
   if (prix !== null && prix > PRIX_MAX) return null;
@@ -152,4 +163,5 @@ export function versArticle(r: ResultatShopping, q: Requete): LigneArticle | nul
   };
 }
 
-export const PAR_RECHERCHE = 8;
+// 10 par recherche (8 avant le 16 oct.) : les vendeurs écartés laissent de la place, sans recherche de plus.
+export const PAR_RECHERCHE = 10;

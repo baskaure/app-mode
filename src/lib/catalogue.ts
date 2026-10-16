@@ -11,7 +11,7 @@ const LIMITE = 300;
 export async function listerArticles(vestiaire: Vestiaire | null): Promise<Article[]> {
   let requete = supabase
     .from('articles')
-    .select('id, source, marchand, marque, nom, prix, devise, image_url, lien, categorie, couleur, vestiaire, styles')
+    .select('id, source, marchand, marque, nom, nom_court, coupe, prix, devise, image_url, lien, categorie, couleur, vestiaire, styles')
     .order('maj_at', { ascending: false })
     .limit(LIMITE);
   if (vestiaire) requete = requete.in('vestiaire', [vestiaire, 'mixte']);
@@ -23,7 +23,7 @@ export async function listerArticles(vestiaire: Vestiaire | null): Promise<Artic
 export async function lireArticle(id: string): Promise<Article | null> {
   const { data, error } = await supabase
     .from('articles')
-    .select('id, source, marchand, marque, nom, prix, devise, image_url, lien, categorie, couleur, vestiaire, styles')
+    .select('id, source, marchand, marque, nom, nom_court, coupe, prix, devise, image_url, lien, categorie, couleur, vestiaire, styles')
     .eq('id', id)
     .maybeSingle();
   if (error) throw new Error(error.message);

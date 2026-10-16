@@ -8,7 +8,7 @@ import { Bouton, Carte, Chargement, Ecran, LienDiscret, MessageErreur, Surtitre 
 import { Espace } from '@/constants/theme';
 import { ouvrirAchat } from '@/lib/achat';
 import { lireArticle } from '@/lib/catalogue';
-import { prixAffiche, type Article } from '@/lib/catalogue-regles';
+import { nomAffiche, prixAffiche, type Article } from '@/lib/catalogue-regles';
 import { essaiDepuisArticle } from '@/lib/essais';
 import { noter } from '@/lib/mesure';
 
@@ -65,7 +65,7 @@ export default function FicheArticle() {
       <PhotoCadree uri={article.image_url} remplir />
       <View style={styles.titres}>
         <ThemedText type="eyebrow">{article.marque ?? article.marchand}</ThemedText>
-        <ThemedText type="subtitle">{article.nom}</ThemedText>
+        <ThemedText type="subtitle">{nomAffiche(article)}</ThemedText>
         {prix && <ThemedText type="titreCarte">{prix}</ThemedText>}
       </View>
       {raison ? (
