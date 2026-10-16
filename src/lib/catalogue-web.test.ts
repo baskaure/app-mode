@@ -40,6 +40,7 @@ test('résultat SerpApi → article ; incomplet ou non https → écarté', () =
   assert.equal(a?.couleur, 'blanc');
   assert.equal(a?.prix, 39.9);
   assert.deepEqual(a?.styles, ['boheme']);
+  assert.equal(a?.etiquete_at, null);
   assert.equal(versArticle({ title: 'x', product_id: '1', product_link: 'http://a', thumbnail: 'https://b' }, q), null);
   assert.equal(versArticle({ title: 'x', product_id: '1', product_link: 'https://a' }, q), null);
 });

@@ -106,6 +106,8 @@ export type LigneArticle = {
   vestiaire: Vestiaire;
   styles: Style[];
   actif: true;
+  /** Remis à null à chaque import : l'IA revoit l'article (sinon un article écarté reviendrait actif sans contrôle). */
+  etiquete_at: null;
 };
 
 const texte = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
@@ -160,6 +162,7 @@ export function versArticle(r: ResultatShopping, q: Requete): LigneArticle | nul
     vestiaire: q.vestiaire,
     styles: [q.style],
     actif: true,
+    etiquete_at: null,
   };
 }
 

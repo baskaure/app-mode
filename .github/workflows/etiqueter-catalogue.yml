@@ -1,0 +1,22 @@
+# Relance seulement l'étiquetage IA du catalogue (16 oct. 2026), sans nouvelle recherche SerpApi.
+# Utile après un changement de consigne : remettre etiquete_at à null sur les articles à revoir, puis lancer.
+# Secret GitHub : SUPABASE_SERVICE_ROLE_KEY (le même que l'import).
+name: Étiqueter le catalogue
+
+on:
+  workflow_dispatch:
+
+jobs:
+  etiqueter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      EXPO_PUBLIC_SUPABASE_URL: https://ccqlylvpqugdixqojjxk.supabase.co
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Étiqueter
+        run: node scripts/etiqueter-catalogue.mjs

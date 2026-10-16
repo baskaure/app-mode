@@ -20,8 +20,8 @@ export type Etiquette = {
 
 export const CONSIGNE = `Tu tries des articles de mode trouvés sur Google Shopping pour une app française d'essayage virtuel (adultes, 15 ans et plus).
 Pour chaque article (id, titre du marchand, marchand, catégorie supposée, vestiaire), réponds :
-- garder : false si ce n'est pas un vêtement ou des chaussures pour adulte portables au quotidien (enfant, bébé, déguisement, costume de scène, lingerie, maillot de bain, équipement de sécurité ou de sport technique, objet, affiche, accessoire maison), ou si le titre est trop vague pour savoir ce que c'est. Sinon true.
-- nom_court : le nom de l'article en français, 2 à 5 mots, sans la marque, sans « femme »/« homme », sans taille ni mot marketing (élégant, tendance, chic, slim fit…). Forme : type + détail principal + couleur. Exemples : « Blazer cintré noir », « Jean large bleu clair », « Robe longue fleurie », « Baskets basses blanches ».
+- garder : false SEULEMENT si ce n'est pas un vêtement ou des chaussures pour adulte portables au quotidien : article pour enfant ou bébé, déguisement, costume de scène, lingerie, maillot de bain, équipement de sécurité ou de sport technique, lot de plusieurs pièces, objet, affiche, accessoire maison. Un titre court ou peu détaillé (« Pantalon classique », « Robe pull », « Authentic Vans ») se garde : true.
+- nom_court : le nom de l'article en français, 2 à 5 mots. Garde : le type de pièce, une matière ou un détail visible, la couleur. Retire : la marque, le nom du modèle ou de la collection (« Aubrey », « Jordia », « Izeway », « Uno »), « femme »/« homme », la taille, les mots marketing (élégant, tendance, chic, slim fit…). Exemples : « Blazer cintré noir », « Jean large bleu clair », « Robe longue fleurie », « Baskets basses blanches », « Pantalon classique », « Top ».
 - categorie : haut, bas, robe, veste, chaussures ou accessoire (corrige la catégorie supposée si elle est fausse).
 - couleur : la couleur principale parmi la liste, « motif » si imprimé, « inconnue » si le titre ne la donne pas.
 - coupe : droit, large, slim, evase, oversize, cintre, ample, court ou long si le titre l'indique, sinon « aucune ».
