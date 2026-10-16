@@ -56,14 +56,16 @@ Deno.serve(async (req) => {
   let gardes = 0;
   let ecartes = 0;
   let echecs = 0;
+  let erreur: string | null = null;
   const maintenant = new Date().toISOString();
   for (let i = 0; i < aFaire.length; i += PAR_APPEL) {
     const lot = aFaire.slice(i, i + PAR_APPEL);
     let etiquettes: Etiquette[] = [];
     try {
       etiquettes = await etiqueter(client, lot);
-    } catch {
+    } catch (e) {
       echecs += lot.length;
+      erreur ??= e instanceof Error ? e.message.slice(0, 300) : String(e);
       continue;
     }
     for (const e of etiquettes) {
@@ -84,5 +86,5 @@ Deno.serve(async (req) => {
     .select('id', { count: 'exact', head: true })
     .is('etiquete_at', null)
     .eq('actif', true);
-  return reponse(200, { gardes, ecartes, echecs, restants: count ?? null });
+  return reponse(200, { gardes, ecartes, echecs, restants: count ?? null, erreur });
 });
