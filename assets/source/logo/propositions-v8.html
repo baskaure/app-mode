@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Akalie, logo : avec un cintre (v8)</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ECE8E4; font-family: Onest, sans-serif; color: #0B0B0F; padding: 28px; width: 1120px; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  p.sous { font-size: 13px; color: #555; margin-bottom: 18px; }
+  .grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .carte { background: #fff; border-radius: 18px; padding: 16px; }
+  .paire { display: flex; gap: 12px; margin-bottom: 10px; }
+  .grand { width: 140px; height: 140px; border-radius: 32px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .petits { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .m { width: 46px; height: 46px; border-radius: 11px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .s { width: 26px; height: 26px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .num { font: 700 18px Onest; color: #FF3D8B; margin-right: 4px; }
+  .txt { font-size: 12.5px; color: #555; line-height: 1.35; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<h1>Le « a » avec un cintre : 6 essais, en noir et en clair</h1>
+<p class="sous">Même dégradé que les planches précédentes. Pour chaque essai : version noire irisée, version crème, puis les deux en taille réelle et en tout petit.</p>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="22" y1="16" x2="80" y2="84">
+    <stop offset="0" stop-color="#FFE2D2"/><stop offset=".38" stop-color="#F9A9CF"/><stop offset=".72" stop-color="#D3B8FF"/><stop offset="1" stop-color="#B9A6FF"/></linearGradient>
+  <linearGradient id="vif" gradientUnits="userSpaceOnUse" x1="22" y1="16" x2="80" y2="84">
+    <stop offset="0" stop-color="#FF6FA8"/><stop offset=".55" stop-color="#E0479E"/><stop offset="1" stop-color="#8B5CFF"/></linearGradient>
+  <rect id="noir" width="100" height="100" fill="#0B0B0F"/><rect id="creme" width="100" height="100" fill="#FFF7F2"/>
+</defs></svg>
+
+<div class="grille" id="grille"></div>
+
+<script>
+// C = couleur (remplacée par le dégradé noir ou crème)
+const essais = [
+  ['1', 'La hampe devient le crochet', 'Le haut de la hampe se recourbe en crochet de cintre, au-dessus de la boucle. On lit « a », puis on voit le cintre.',
+   `<g transform="translate(4 2)"><circle cx="42" cy="61" r="17" fill="none" stroke="C" stroke-width="11"/>
+    <path d="M59 82 V40 C59 26 47 22 41 29" fill="none" stroke="C" stroke-width="11" stroke-linecap="round"/></g>`],
+  ['2', 'Le a suspendu', 'Le a pend à un petit crochet de cintre, comme un vêtement sur la tringle.',
+   `<path d="M50 34 V30 C50 26.5 55.5 25.5 55.5 20.5 C55.5 16.5 52.8 14.5 50 14.5 C47.2 14.5 44.8 16.5 44.8 19.3" fill="none" stroke="C" stroke-width="4.6" stroke-linecap="round"/>
+    <g transform="translate(5 4)"><circle cx="43" cy="61" r="15" fill="none" stroke="C" stroke-width="12"/>
+    <rect x="52" y="40" width="12" height="42" rx="6" fill="C"/></g>`],
+  ['3', 'Le cintre forme le a', 'Le triangle du cintre fait la boucle, la hampe ferme la lettre à droite. Plus graphique, plus abstrait.',
+   `<path d="M42 33 V29 C42 25.5 47 24.5 47 20 C47 16.5 44.5 14.8 42 14.8 C39.5 14.8 37.3 16.5 37.3 19" fill="none" stroke="C" stroke-width="4.6" stroke-linecap="round"/>
+    <path d="M42 35 L18 72 C17 74 18 76 20.5 76 H64" fill="none" stroke="C" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M42 35 L64 60" stroke="C" stroke-width="10" stroke-linecap="round"/>
+    <rect x="62" y="38" width="11" height="44" rx="5.5" fill="C"/>`],
+  ['4', 'Un a dans le cintre', 'Un cintre entier, avec le a posé dans le triangle. Le plus explicite.',
+   `<path d="M50 30 V26 C50 22.5 55.5 21.5 55.5 16.5 C55.5 12.5 52.8 10.5 50 10.5 C47.2 10.5 44.8 12.5 44.8 15.3" fill="none" stroke="C" stroke-width="4.6" stroke-linecap="round"/>
+    <path d="M50 30 L15 72 C13.5 74 14.5 77 17.5 77 H82.5 C85.5 77 86.5 74 85 72 Z" fill="none" stroke="C" stroke-width="5.5" stroke-linejoin="round"/>
+    <circle cx="46" cy="63" r="7.2" fill="none" stroke="C" stroke-width="5"/><rect x="51.6" y="54" width="5" height="17" rx="2.5" fill="C"/>`],
+  ['5', 'Penché + crochet', 'Le a penché (le 7 de la planche d\'avant) avec un petit crochet de cintre à la place de l\'étoile.',
+   `<g transform="translate(50 50) skewX(-12) translate(-50 -50) translate(1 -2)"><circle cx="45" cy="60" r="16.5" fill="none" stroke="C" stroke-width="14"/>
+    <rect x="55.5" y="37" width="14" height="47" rx="7" fill="C"/></g>
+    <path d="M77 30 V26.5 C77 23.5 81.5 22.6 81.5 18.5 C81.5 15.2 79.3 13.6 77 13.6 C74.7 13.6 72.7 15.2 72.7 17.5" fill="none" stroke="C" stroke-width="4" stroke-linecap="round"/>`],
+  ['6', 'Crochet penché', 'Le 1 en version penchée : la hampe-crochet avec du mouvement.',
+   `<g transform="translate(50 50) skewX(-10) translate(-50 -50) translate(6 2)"><circle cx="42" cy="61" r="17" fill="none" stroke="C" stroke-width="11"/>
+    <path d="M59 82 V40 C59 26 47 22 41 29" fill="none" stroke="C" stroke-width="11" stroke-linecap="round"/></g>`],
+];
+const grille = document.getElementById('grille');
+for (const [n, titre, texte, dessin] of essais) {
+  const sombre = `<svg viewBox="0 0 100 100"><use href="#noir"/>${dessin.replaceAll('"C"', '"url(#g)"')}</svg>`;
+  const clair = `<svg viewBox="0 0 100 100"><use href="#creme"/>${dessin.replaceAll('"C"', '"url(#vif)"')}</svg>`;
+  grille.insertAdjacentHTML('beforeend', `<div class="carte"><div class="paire"><div class="grand">${sombre}</div><div class="grand">${clair}</div></div>
+    <div class="petits"><span class="num">${n}</span><div class="m">${sombre}</div><div class="s">${sombre}</div><div class="m">${clair}</div><div class="s">${clair}</div></div>
+    <div class="txt"><b>${titre}</b><br>${texte}</div></div>`);
+}
+</script>
+</body>
+</html>

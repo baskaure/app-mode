@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Akalie, logo : piste noire irisée (v4)</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --creme:#FFF7F2; --encre:#0B0B0F; --rose:#FF3D8B; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ECE8E4; font-family: Onest, sans-serif; color: var(--encre); padding: 28px; width: 1060px; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  p.sous { font-size: 13px; color: #555; margin-bottom: 18px; }
+  .piste { display: grid; grid-template-columns: 30px 190px 64px 32px 1fr; gap: 20px; align-items: center;
+           background: #fff; border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+  .num { font: 700 22px Onest; color: var(--rose); }
+  .i190 { width: 190px; height: 190px; border-radius: 43px; overflow: hidden; }
+  .i64 { width: 64px; height: 64px; border-radius: 15px; overflow: hidden; }
+  .i32 { width: 32px; height: 32px; border-radius: 8px; overflow: hidden; }
+  .ecrans { display: grid; gap: 10px; }
+  .ecran { border-radius: 16px; padding: 12px 14px; display: grid; grid-template-columns: repeat(5, 52px); gap: 14px; width: max-content; }
+  .ecran.clair { background: linear-gradient(160deg,#F4E9E1,#D9D3EC); }
+  .ecran.sombre { background: linear-gradient(160deg,#3B4766,#1C2033); }
+  .ecran > div { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; }
+  .nom { grid-column: 2 / -1; font-size: 13px; color: #555; margin-top: -6px; }
+  .mots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #fff; border-radius: 18px; padding: 18px; }
+  .mot { height: 140px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+  .mot svg { width: 330px; height: 110px; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<h1>Piste « noire irisée » : 5 variantes</h1>
+<p class="sous">Fond noir, le « a » actuel rempli d'un dégradé pastel irisé, l'étoile en haut à droite. Chaque variante : en grand, en taille réelle, en tout petit, puis sur un écran d'accueil clair et sombre.</p>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="irise" gradientUnits="userSpaceOnUse" x1="22" y1="30" x2="76" y2="80">
+    <stop offset="0" stop-color="#FFE2D2"/><stop offset=".38" stop-color="#F9A9CF"/><stop offset=".72" stop-color="#D3B8FF"/><stop offset="1" stop-color="#B9A6FF"/></linearGradient>
+  <linearGradient id="holo" gradientUnits="userSpaceOnUse" x1="20" y1="76" x2="78" y2="30">
+    <stop offset="0" stop-color="#FF9CC8"/><stop offset=".3" stop-color="#FFD8C2"/><stop offset=".55" stop-color="#F3C9FF"/><stop offset=".8" stop-color="#B9C8FF"/><stop offset="1" stop-color="#C4F0FF"/></linearGradient>
+  <linearGradient id="etoileG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7DB5"/><stop offset="1" stop-color="#C9A8FF"/></linearGradient>
+  <radialGradient id="reflet" cx="38%" cy="30%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <filter id="flou" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+  <filter id="flouLeger" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>
+  <path id="etoile" d="M0-9C1-3 3-1 9 0C3 1 1 3 0 9C-1 3-3 1-9 0C-3-1-1-3 0-9Z"/>
+  <!-- Le « a » de l'icône actuelle : un anneau + une hampe -->
+  <g id="lettre"><circle cx="43" cy="55" r="20.5" fill="none" stroke-width="10"/><rect x="63.5" y="30" width="10" height="49" rx="5"/></g>
+
+  <!-- 1. Fidèle à l'image : dégradé irisé, reflet, étoile dégradée, petite encoche en haut de la hampe -->
+  <symbol id="v1" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0F"/>
+    <g stroke="url(#irise)" fill="url(#irise)"><use href="#lettre"/></g>
+    <g stroke="url(#reflet)" fill="url(#reflet)"><use href="#lettre"/></g>
+    <circle cx="74" cy="30" r="5.2" fill="#0B0B0F"/>
+    <use href="#etoile" transform="translate(79 23) scale(1.05)" fill="url(#etoileG)"/></symbol>
+  <!-- 2. Étoile découpée dans la hampe -->
+  <symbol id="v2" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0F"/>
+    <g stroke="url(#irise)" fill="url(#irise)"><use href="#lettre"/></g>
+    <g stroke="url(#reflet)" fill="url(#reflet)"><use href="#lettre"/></g>
+    <use href="#etoile" transform="translate(68.5 35.5) scale(.62)" fill="#0B0B0F"/></symbol>
+  <!-- 3. Holographique : plus de couleurs, étoile blanche -->
+  <symbol id="v3" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0F"/>
+    <g stroke="url(#holo)" fill="url(#holo)"><use href="#lettre"/></g>
+    <g stroke="url(#reflet)" fill="url(#reflet)"><use href="#lettre"/></g>
+    <circle cx="74" cy="30" r="5.2" fill="#0B0B0F"/>
+    <use href="#etoile" transform="translate(79 23) scale(1.05)" fill="#FFF7F2"/></symbol>
+  <!-- 4. Halo : la lettre rayonne sur le noir -->
+  <symbol id="v4" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0F"/>
+    <g stroke="url(#irise)" fill="url(#irise)" filter="url(#flou)" opacity=".75"><use href="#lettre"/></g>
+    <g stroke="url(#irise)" fill="url(#irise)"><use href="#lettre"/></g>
+    <g stroke="url(#reflet)" fill="url(#reflet)"><use href="#lettre"/></g>
+        <use href="#etoile" transform="translate(79 23) scale(1.05)" fill="url(#etoileG)" filter="url(#flouLeger)" opacity=".8"/>
+    <use href="#etoile" transform="translate(79 23) scale(1.05)" fill="url(#etoileG)"/></symbol>
+  <!-- 5. Version claire (pour fond clair, site, documents) -->
+  <symbol id="v5" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FFF7F2"/>
+    <g stroke="#0B0B0F" fill="#0B0B0F"><use href="#lettre"/></g>
+    <circle cx="74" cy="30" r="5.2" fill="#FFF7F2"/>
+    <use href="#etoile" transform="translate(79 23) scale(1.05)" fill="url(#etoileG)"/></symbol>
+
+  <!-- Icônes voisines, pour juger le contraste -->
+  <symbol id="n1" viewBox="0 0 100 100"><rect width="100" height="100" fill="#E60023"/><circle cx="50" cy="50" r="26" fill="#fff"/></symbol>
+  <symbol id="n2" viewBox="0 0 100 100"><rect width="100" height="100" fill="#111"/><path d="M40 30 V62 A9 9 0 1 1 31 53 M40 30 C44 40 52 42 58 42" stroke="#fff" stroke-width="7" fill="none"/></symbol>
+  <symbol id="n3" viewBox="0 0 100 100"><rect width="100" height="100" fill="#09B1BA"/><path d="M30 34 L50 70 L70 34" stroke="#fff" stroke-width="9" fill="none"/></symbol>
+  <symbol id="n4" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/><rect x="24" y="24" width="52" height="52" rx="14" fill="none" stroke="#C13584" stroke-width="7"/><circle cx="50" cy="50" r="11" fill="none" stroke="#C13584" stroke-width="7"/></symbol>
+</defs></svg>
+
+<template id="ligne">
+  <div class="piste">
+    <div class="num"></div>
+    <div class="i190"><svg><use/></svg></div>
+    <div class="i64"><svg><use/></svg></div>
+    <div class="i32"><svg><use/></svg></div>
+    <div class="ecrans">
+      <div class="ecran clair"><div><svg><use href="#n1"/></svg></div><div><svg><use href="#n4"/></svg></div><div><svg><use/></svg></div><div><svg><use href="#n3"/></svg></div><div><svg><use href="#n2"/></svg></div></div>
+      <div class="ecran sombre"><div><svg><use href="#n1"/></svg></div><div><svg><use href="#n4"/></svg></div><div><svg><use/></svg></div><div><svg><use href="#n3"/></svg></div><div><svg><use href="#n2"/></svg></div></div>
+    </div>
+    <div class="nom"></div>
+  </div>
+</template>
+<div id="pistes"></div>
+
+<div class="mots">
+  <div class="mot" style="background:var(--creme)"><svg viewBox="0 0 330 110"><text x="18" y="80" font-family="Onest" font-weight="700" font-size="80" letter-spacing="-2" fill="#0B0B0F">akal<tspan>ı</tspan>e</text><use href="#etoile" transform="translate(174 25) scale(1.15)" fill="url(#etoileG)"/></svg></div>
+  <div class="mot" style="background:var(--encre)"><svg viewBox="0 0 330 110"><text x="18" y="80" font-family="Onest" font-weight="700" font-size="80" letter-spacing="-2" fill="#FFF7F2">akal<tspan>ı</tspan>e</text><use href="#etoile" transform="translate(174 25) scale(1.15)" fill="url(#etoileG)"/></svg></div>
+</div>
+<p class="sous" style="margin-top:10px">Le nom : la typo actuelle (Onest), avec l'étoile irisée à la place du point du i. Elle reprend le détail de l'icône.</p>
+
+<script>
+const pistes = [
+  ['1', 'v1', '« Fidèle » : la proposition de ton image. Dégradé pêche, rose et lilas, avec un léger reflet, et l\'étoile dégradée qui mord le haut de la hampe.'],
+  ['2', 'v2', '« Étoile découpée » : l\'étoile est creusée dans le haut de la hampe au lieu d\'être posée à côté. Plus compacte, plus « logo ».'],
+  ['3', 'v3', '« Holographique » : plus de couleurs (rose, pêche, lilas, bleu ciel), comme un reflet nacré, et une étoile blanche. Plus pop.'],
+  ['4', 'v4', '« Halo » : la lettre rayonne sur le noir, comme un néon doux. Celle qui accroche le plus l\'œil sur l\'écran.'],
+  ['5', 'v5', '« Claire » : la même chose sur fond crème. Pas pour l\'icône de l\'app, mais pour le site, les documents et les fonds clairs.'],
+];
+const t = document.getElementById('ligne');
+for (const [n, id, texte] of pistes) {
+  const c = t.content.cloneNode(true);
+  c.querySelector('.num').textContent = n;
+  c.querySelectorAll('use:not([href])').forEach((u) => u.setAttribute('href', '#' + id));
+  c.querySelector('.nom').textContent = texte;
+  document.getElementById('pistes').append(c);
+}
+</script>
+</body>
+</html>

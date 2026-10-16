@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Akalie, logo : sans étoile (v6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@500;700;800&family=DM+Sans:opsz,wght@9..40,800&family=Fraunces:opsz,wght@9..144,800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ECE8E4; font-family: Onest, sans-serif; color: #0B0B0F; padding: 28px; width: 1120px; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  p.sous { font-size: 13px; color: #555; margin-bottom: 18px; }
+  .grille { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .carte { background: #fff; border-radius: 18px; padding: 16px; }
+  .haut { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 10px; }
+  .i150 { width: 150px; height: 150px; border-radius: 34px; overflow: hidden; }
+  .col { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .i54 { width: 54px; height: 54px; border-radius: 12px; overflow: hidden; }
+  .i28 { width: 28px; height: 28px; border-radius: 7px; overflow: hidden; }
+  .num { font: 700 18px Onest; color: #FF3D8B; }
+  .txt { font-size: 12.5px; color: #555; line-height: 1.35; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<h1>Le « a » sans étoile : 8 formes</h1>
+<p class="sous">Fond noir, dégradé irisé pêche, rose et lilas. La lettre seule, centrée.</p>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="22" y1="24" x2="80" y2="80">
+    <stop offset="0" stop-color="#FFE2D2"/><stop offset=".38" stop-color="#F9A9CF"/><stop offset=".72" stop-color="#D3B8FF"/><stop offset="1" stop-color="#B9A6FF"/></linearGradient>
+  <rect id="fond" width="100" height="100" fill="#0B0B0F"/>
+</defs></svg>
+
+<div class="grille" id="grille"></div>
+
+<script>
+const formes = [
+  ['1', 'Géométrique soudé', 'Le a actuel, boucle collée à la hampe.',
+   `<g transform="translate(6 -6.5)"><circle cx="44" cy="57" r="19" fill="none" stroke="url(#g)" stroke-width="11"/>
+    <rect x="58" y="32.5" width="11" height="48" rx="5.5" fill="url(#g)"/></g>`],
+  ['2', 'Avec une queue', 'La hampe finit par une petite courbe, comme à la main.',
+   `<g transform="translate(2 -6.5)"><circle cx="43" cy="57" r="19" fill="none" stroke="url(#g)" stroke-width="11"/>
+    <path d="M62.5 38 V70 Q62.5 80 72 80" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round"/></g>`],
+  ['3', 'Lourd et compact', 'Trait épais, un seul bloc. Le plus solide en petit.',
+   `<g transform="translate(4 -6)"><circle cx="45" cy="56" r="17.5" fill="none" stroke="url(#g)" stroke-width="15"/>
+    <rect x="56.5" y="31" width="15" height="50" rx="7.5" fill="url(#g)"/></g>`],
+  ['4', 'La lettre de la typo', 'Le a d\'Onest, la typo du nom, en très gras.',
+   `<text x="50" y="74" text-anchor="middle" font-family="Onest" font-weight="800" font-size="100" fill="url(#g)">a</text>`],
+  ['5', 'a « à deux étages »', 'Le a classique, impossible à confondre.',
+   `<text x="50" y="74" text-anchor="middle" font-family="DM Sans" font-weight="800" font-size="100" fill="url(#g)">a</text>`],
+  ['6', 'A empattements', 'Plus « magazine », toujours en dégradé.',
+   `<text x="50" y="73" text-anchor="middle" font-family="Fraunces" font-weight="800" font-size="98" fill="url(#g)">a</text>`],
+  ['7', 'Penché', 'Le 3 incliné vers l\'avant : du mouvement, comme une silhouette qui avance.',
+   `<g transform="translate(50 50) skewX(-12) translate(-50 -50) translate(4 -6)"><circle cx="45" cy="56" r="17.5" fill="none" stroke="url(#g)" stroke-width="15"/>
+    <rect x="56.5" y="31" width="15" height="50" rx="7.5" fill="url(#g)"/></g>`],
+  ['8', 'Fin et élégant', 'Le a géométrique en trait fin : plus léger, plus « maison de couture ».',
+   `<g transform="translate(5.5 -6.5)"><circle cx="44" cy="57" r="20.5" fill="none" stroke="url(#g)" stroke-width="7"/>
+    <rect x="61" y="33" width="7" height="47.5" rx="3.5" fill="url(#g)"/></g>`],
+];
+const g = document.getElementById('grille');
+for (const [n, titre, texte, dessin] of formes) {
+  const svg = `<svg viewBox="0 0 100 100"><use href="#fond"/>${dessin}</svg>`;
+  g.insertAdjacentHTML('beforeend', `<div class="carte"><div class="haut"><div class="i150">${svg}</div>
+    <div class="col"><span class="num">${n}</span><div class="i54">${svg}</div><div class="i28">${svg}</div></div></div>
+    <div class="txt"><b>${titre}</b><br>${texte}</div></div>`);
+}
+</script>
+</body>
+</html>

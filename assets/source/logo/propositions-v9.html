@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Akalie, logo : avec un cintre (v9)</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ECE8E4; font-family: Onest, sans-serif; color: #0B0B0F; padding: 28px; width: 1120px; }
+  h1 { font-size: 20px; margin-bottom: 6px; }
+  p.sous { font-size: 13px; color: #555; margin-bottom: 18px; }
+  .grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .carte { background: #fff; border-radius: 18px; padding: 16px; }
+  .paire { display: flex; gap: 12px; margin-bottom: 10px; }
+  .grand { width: 140px; height: 140px; border-radius: 32px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .petits { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .m { width: 46px; height: 46px; border-radius: 11px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .s { width: 26px; height: 26px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 1px #0001; }
+  .num { font: 700 18px Onest; color: #FF3D8B; margin-right: 4px; }
+  .txt { font-size: 12.5px; color: #555; line-height: 1.35; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<h1>Juste un cintre : 6 essais, en noir et en clair</h1>
+<p class="sous">Même dégradé que les planches précédentes. Pour chaque essai : version noire irisée, version crème, puis les deux en taille réelle et en tout petit.</p>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="22" y1="16" x2="80" y2="84">
+    <stop offset="0" stop-color="#FFE2D2"/><stop offset=".38" stop-color="#F9A9CF"/><stop offset=".72" stop-color="#D3B8FF"/><stop offset="1" stop-color="#B9A6FF"/></linearGradient>
+  <linearGradient id="vif" gradientUnits="userSpaceOnUse" x1="22" y1="16" x2="80" y2="84">
+    <stop offset="0" stop-color="#FF6FA8"/><stop offset=".55" stop-color="#E0479E"/><stop offset="1" stop-color="#8B5CFF"/></linearGradient>
+  <rect id="noir" width="100" height="100" fill="#0B0B0F"/><rect id="creme" width="100" height="100" fill="#FFF7F2"/>
+</defs></svg>
+
+<div class="grille" id="grille"></div>
+
+<script>
+// C = couleur (remplacée par le dégradé noir ou crème)
+const essais = [
+  ['1', 'Cintre fil', 'Le cintre classique en un trait : crochet et triangle. Simple et lisible partout.',
+   `<path d="M50 34 V29.5 C50 26 56 25 56 19.5 C56 15.3 53.2 13.2 50 13.2 C46.8 13.2 44.3 15.3 44.3 18.3" fill="none" stroke="C" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M50 34 L16 68 C14 70 15 74 18.5 74 H81.5 C85 74 86 70 84 68 Z" fill="none" stroke="C" stroke-width="7" stroke-linejoin="round"/>`],
+  ['2', 'Cintre plein', 'Le triangle rempli, comme une silhouette. Le plus fort en tout petit.',
+   `<path d="M50 34 V29.5 C50 26 56 25 56 19.5 C56 15.3 53.2 13.2 50 13.2 C46.8 13.2 44.3 15.3 44.3 18.3" fill="none" stroke="C" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M50 33 L15 67 C12.5 69.5 14 75 18.5 75 H81.5 C86 75 87.5 69.5 85 67 Z" fill="C"/>`],
+  ['3', 'Cintre en bois', 'Les épaules arrondies et la barre du cintre de boutique. Plus haut de gamme.',
+   `<path d="M50 34 V29.5 C50 26 56 25 56 19.5 C56 15.3 53.2 13.2 50 13.2 C46.8 13.2 44.3 15.3 44.3 18.3" fill="none" stroke="C" stroke-width="5" stroke-linecap="round"/>
+    <path d="M50 35 C40 35 24 44 14 56 C12 58.5 13.5 61 16.5 61 H83.5 C86.5 61 88 58.5 86 56 C76 44 60 35 50 35 Z" fill="C"/>
+    <path d="M22 61 V69 H78 V61" fill="none" stroke="C" stroke-width="5" stroke-linejoin="round"/>`],
+  ['4', 'Un seul trait', 'Le cintre dessiné d\'un seul fil continu, du crochet jusqu\'à la barre. Façon dessin de styliste.',
+   `<path d="M44.3 18.3 C44.3 15.3 46.8 13.2 50 13.2 C53.2 13.2 56 15.3 56 19.5 C56 25 50 26 50 29.5 V34 L17 66 C14.5 68.5 15.5 73 19 73 H58 C66 73 70 69 67 64" fill="none" stroke="C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`],
+  ['5', 'Cintre + point rose', 'Le cintre fil, avec un point rose au bout du crochet : le seul détail de couleur vive.',
+   `<path d="M50 34 V29.5 C50 26 56 25 56 19.5 C56 15.3 53.2 13.2 50 13.2 C46.8 13.2 44.3 15.3 44.3 18.3" fill="none" stroke="C" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M50 34 L16 68 C14 70 15 74 18.5 74 H81.5 C85 74 86 70 84 68 Z" fill="none" stroke="C" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="44.3" cy="18.3" r="4.6" fill="#FF3D8B"/>`],
+  ['6', 'Cintre penché', 'Le cintre fil légèrement incliné, comme saisi sur la tringle. Plus vivant.',
+   `<g transform="rotate(-12 50 50)"><path d="M50 34 V29.5 C50 26 56 25 56 19.5 C56 15.3 53.2 13.2 50 13.2 C46.8 13.2 44.3 15.3 44.3 18.3" fill="none" stroke="C" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M50 34 L16 68 C14 70 15 74 18.5 74 H81.5 C85 74 86 70 84 68 Z" fill="none" stroke="C" stroke-width="7" stroke-linejoin="round"/></g>`],
+];
+const grille = document.getElementById('grille');
+for (const [n, titre, texte, dessin] of essais) {
+  const sombre = `<svg viewBox="0 0 100 100"><use href="#noir"/>${dessin.replaceAll('"C"', '"url(#g)"')}</svg>`;
+  const clair = `<svg viewBox="0 0 100 100"><use href="#creme"/>${dessin.replaceAll('"C"', '"url(#vif)"')}</svg>`;
+  grille.insertAdjacentHTML('beforeend', `<div class="carte"><div class="paire"><div class="grand">${sombre}</div><div class="grand">${clair}</div></div>
+    <div class="petits"><span class="num">${n}</span><div class="m">${sombre}</div><div class="s">${sombre}</div><div class="m">${clair}</div><div class="s">${clair}</div></div>
+    <div class="txt"><b>${titre}</b><br>${texte}</div></div>`);
+}
+</script>
+</body>
+</html>

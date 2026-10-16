@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Akalie, logo : propositions v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Italiana&family=Fraunces:ital,opsz,wght@1,9..144,300..700&family=Onest:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --creme:#FFF7F2; --encre:#0B0B0F; --rose:#FF3D8B; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ECE8E4; font-family: Onest, sans-serif; color: var(--encre); padding: 28px; }
+  h1 { font-size: 20px; margin-bottom: 18px; }
+  .piste { display: grid; grid-template-columns: 30px 190px 64px 1fr 1fr; gap: 18px; align-items: center;
+           background: #fff; border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+  .num { font: 700 22px Onest; color: var(--rose); }
+  .icone { width: 180px; height: 180px; border-radius: 40px; overflow: hidden; }
+  .petite { width: 56px; height: 56px; border-radius: 13px; overflow: hidden; }
+  .mot { height: 120px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+  .mot.clair { background: var(--creme); }
+  .mot.sombre { background: var(--encre); color: var(--creme); }
+  .nom { grid-column: 2 / -1; font-size: 13px; color: #555; margin-top: -6px; }
+  svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<h1>Akalie : 5 nouvelles pistes (couleurs gardées : crème, encre, rose, aura pastel)</h1>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="aura" cx="35%" cy="25%" r="90%">
+      <stop offset="0" stop-color="#FFD9C7"/><stop offset=".45" stop-color="#F6CFE4"/><stop offset="1" stop-color="#D9CCFF"/>
+    </radialGradient>
+    <symbol id="etoile" viewBox="-10 -10 20 20"><path d="M0-10 C1-3 3-1 10 0 C3 1 1 3 0 10 C-1 3 -3 1 -10 0 C-3 -1 -1 -3 0-10Z" fill="#FF3D8B"/></symbol>
+  </defs>
+</svg>
+
+<!-- 1. Didone : le code des magazines de mode -->
+<div class="piste">
+  <div class="num">1</div>
+  <div class="icone"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <text x="49" y="74" text-anchor="middle" font-family="Bodoni Moda" font-style="italic" font-weight="500" font-size="78" fill="#0B0B0F">a</text>
+    <circle cx="74" cy="31" r="3.4" fill="#FF3D8B"/></svg></div>
+  <div class="petite"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <text x="49" y="74" text-anchor="middle" font-family="Bodoni Moda" font-style="italic" font-weight="500" font-size="78" fill="#0B0B0F">a</text>
+    <circle cx="74" cy="31" r="3.4" fill="#FF3D8B"/></svg></div>
+  <div class="mot clair"><span style="font:italic 500 64px 'Bodoni Moda'">akalie<span style="color:var(--rose)">.</span></span></div>
+  <div class="mot sombre"><span style="font:italic 500 64px 'Bodoni Moda'">akalie<span style="color:var(--rose)">.</span></span></div>
+  <div class="nom">« Couverture de magazine » : un a italique à fort contraste (la famille de typo de Vogue ou Harper's Bazaar), un point rose comme un sequin. Le plus « mode » des cinq.</div>
+</div>
+
+<!-- 2. Étiquette : l'étiquette cousue au col -->
+<div class="piste">
+  <div class="num">2</div>
+  <div class="icone"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <g transform="rotate(-8 50 50)">
+      <rect x="10" y="35" width="80" height="30" rx="2.5" fill="#0B0B0F"/>
+      <rect x="13.5" y="38.5" width="73" height="23" rx="1.5" fill="none" stroke="#FFF7F2" stroke-width="0.9" stroke-dasharray="2.4 1.6" opacity=".7"/>
+      <text x="50" y="55.5" text-anchor="middle" font-family="Cormorant Garamond" font-weight="600" font-size="12.5" letter-spacing="2.2" fill="#FFF7F2">AKALIE</text>
+      <circle cx="84" cy="41" r="1.6" fill="#FF3D8B"/>
+    </g></svg></div>
+  <div class="petite"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <g transform="rotate(-8 50 50)"><rect x="12" y="30" width="76" height="40" rx="3" fill="#0B0B0F"/>
+      <text x="50" y="62" text-anchor="middle" font-family="Cormorant Garamond" font-weight="600" font-size="34" fill="#FFF7F2">A</text></g></svg></div>
+  <div class="mot clair"><span style="font:600 46px 'Cormorant Garamond';letter-spacing:.32em">AKALIE</span></div>
+  <div class="mot sombre"><span style="font:600 46px 'Cormorant Garamond';letter-spacing:.32em">AKALIE</span></div>
+  <div class="nom">« Étiquette cousue » : l'étiquette noire qu'on trouve dans le col d'un vêtement, avec ses points de couture. Tout le monde reconnaît ce code, il fait marque de vêtements.</div>
+</div>
+
+<!-- 3. Cabine : l'arche de la cabine d'essayage -->
+<div class="piste">
+  <div class="num">3</div>
+  <div class="icone"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <path d="M28 86 V46 A22 22 0 0 1 72 46 V86" fill="none" stroke="#0B0B0F" stroke-width="4.2" stroke-linecap="round"/>
+    <path d="M35 37 Q38 43 35 49 T35 61 T35 73" fill="none" stroke="#FF3D8B" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="52" y="78" text-anchor="middle" font-family="Bodoni Moda" font-style="italic" font-weight="500" font-size="44" fill="#0B0B0F">a</text></svg></div>
+  <div class="petite"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <path d="M26 88 V46 A24 24 0 0 1 74 46 V88" fill="none" stroke="#0B0B0F" stroke-width="7" stroke-linecap="round"/>
+    <text x="51" y="80" text-anchor="middle" font-family="Bodoni Moda" font-style="italic" font-weight="600" font-size="50" fill="#0B0B0F">a</text></svg></div>
+  <div class="mot clair"><span style="font:italic 400 60px 'Fraunces'">akalie</span></div>
+  <div class="mot sombre"><span style="font:italic 400 60px 'Fraunces'">akalie</span></div>
+  <div class="nom">« Cabine » : l'arche d'une cabine d'essayage (ou d'un miroir en pied), le rideau tiré en rose. Raconte directement « essayer avant d'acheter ».</div>
+</div>
+
+<!-- 4. Miroir : le a et son reflet -->
+<div class="piste">
+  <div class="num">4</div>
+  <div class="icone"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <text x="33" y="69" text-anchor="middle" font-family="Italiana" font-size="54" fill="#0B0B0F">a</text>
+    <g transform="translate(100 0) scale(-1 1)"><text x="33" y="69" text-anchor="middle" font-family="Italiana" font-size="54" fill="#0B0B0F" opacity=".32">a</text></g>
+    <line x1="50" y1="22" x2="50" y2="80" stroke="#FF3D8B" stroke-width="1.6"/></svg></div>
+  <div class="petite"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <text x="31" y="71" text-anchor="middle" font-family="Italiana" font-size="60" fill="#0B0B0F">a</text>
+    <g transform="translate(100 0) scale(-1 1)"><text x="31" y="71" text-anchor="middle" font-family="Italiana" font-size="60" fill="#0B0B0F" opacity=".32">a</text></g>
+    <line x1="50" y1="18" x2="50" y2="82" stroke="#FF3D8B" stroke-width="2.5"/></svg></div>
+  <div class="mot clair"><span style="font:400 64px 'Italiana';letter-spacing:.12em">AKALIE</span></div>
+  <div class="mot sombre"><span style="font:400 64px 'Italiana';letter-spacing:.12em">AKALIE</span></div>
+  <div class="nom">« Reflet » : le a et son reflet dans un miroir, séparés par un trait rose. Toi, et toi avec le vêtement. Une typo fine et haute, façon maison de couture.</div>
+</div>
+
+<!-- 5. Fil : le a tracé d'un seul fil -->
+<div class="piste">
+  <div class="num">5</div>
+  <div class="icone"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <path d="M64 40 C56 30 32 32 30 54 C28 74 50 80 60 68 C64 63 65 57 65 50 L65 70 C65 78 70 81 76 77 C82 73 84 64 88 60"
+          fill="none" stroke="#0B0B0F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(88 60) rotate(-40)"><ellipse cx="0" cy="-9" rx="2.2" ry="10" fill="#FF3D8B"/><ellipse cx="0" cy="-15" rx=".8" ry="2.4" fill="#FFD9C7"/></g></svg></div>
+  <div class="petite"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="url(#aura)"/>
+    <path d="M64 40 C56 30 32 32 30 54 C28 74 50 80 60 68 C64 63 65 57 65 50 L65 70 C65 78 70 81 76 77"
+          fill="none" stroke="#0B0B0F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="mot clair"><span style="font:italic 500 62px 'Fraunces'">akalie</span></div>
+  <div class="mot sombre"><span style="font:italic 500 62px 'Fraunces'">akalie</span></div>
+  <div class="nom">« Fil » : le a dessiné d'un seul fil, qui finit sur une aiguille rose. Le côté couture et sur-mesure, plus chaleureux que les autres.</div>
+</div>
+</body>
+</html>
