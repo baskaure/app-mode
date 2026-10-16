@@ -1,10 +1,10 @@
 // Visuels de la page d'attente : un mannequin créé par IA, un vêtement, puis le vrai essayage
-// (même modèle et même consigne que l'app). Clé lue dans .env.kie.local (ignoré par git) : KIE_API_KEY=...
+// (même modèle et même consigne que l'app). Clé lue dans ~/.config/akalie/kie.env (hors du projet, jamais commitée) : KIE_API_KEY=...
 // Lancer depuis la racine : node scripts/visuels-page-attente.mjs   → images dans site/visuels/
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
-const cle = readFileSync('.env.kie.local', 'utf8').match(/^KIE_API_KEY=(.+)$/m)?.[1]?.trim();
-if (!cle) throw new Error('KIE_API_KEY absente de .env.kie.local');
+const cle = readFileSync(`${process.env.HOME}/.config/akalie/kie.env`, 'utf8').match(/^KIE_API_KEY=(.+)$/m)?.[1]?.trim();
+if (!cle) throw new Error('KIE_API_KEY absente de ~/.config/akalie/kie.env');
 
 const KIE = 'https://api.kie.ai/api/v1/jobs';
 const ENTETES = { Authorization: `Bearer ${cle}`, 'Content-Type': 'application/json' };
