@@ -1,0 +1,23 @@
+# Réveil quotidien du projet Supabase (formule gratuite : mise en pause après 7 jours sans activité).
+# Une seule lecture REST avec la clé publique : la RLS renvoie une liste vide, mais la base a travaillé.
+# Utile tant que l'app a peu d'utilisateurs (vérification Apple, test fermé Google Play).
+name: Réveil Supabase
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  reveil:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Lecture REST
+        env:
+          URL: https://ccqlylvpqugdixqojjxk.supabase.co
+          CLE: sb_publishable_kuAi0LFR9CNIIEbibYtTlw_MXF8OIXe
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "apikey: $CLE" "$URL/rest/v1/articles?select=id&limit=1")
+          echo "Réponse : $code"
+          test "$code" = 200
