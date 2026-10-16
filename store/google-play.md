@@ -1,6 +1,8 @@
 # Akalie sur Google Play : plan de lancement (16 oct. 2026)
 
-Compte **personnel** choisi le 16 oct. 2026. Règles vérifiées ce jour-là sur l'aide Google :
+**Mis à jour le 16 oct. au soir : changement de plan.** Personne autour de nous n'a d'Android, donc pas 12 testeurs. Choix : iPhone d'abord, Android plus tard avec un **compte organisation** (EI), qui n'est pas soumis aux 12 testeurs. Demande de D-U-N-S envoyée le 16 oct. via l'outil gratuit d'Apple (nom légal « Aurelien Branco », 269 av. Jean Jaurès 69007 Lyon, contact@madaria.fr) ; réponse de Dun & Bradstreet par e-mail. Nom affiché sur Google Play : « Akalie ». À confirmer : que Google accepte une EI comme organisation. Le reste de ce fichier décrit l'ancien plan (compte personnel) et sert encore pour les questionnaires et la fiche.
+
+Compte **personnel** choisi le 16 oct. 2026 (abandonné le soir même, voir plus haut). Règles vérifiées ce jour-là sur l'aide Google :
 - 12 testeurs minimum, inscrits **sans interruption pendant 14 jours**, en **test fermé**, puis demande d'accès à la production ; Google répond en 7 jours ou moins en général ([aide](https://support.google.com/googleplay/android-developer/answer/14151465)).
 - Le titulaire du compte doit prouver qu'il a accès à **un vrai téléphone Android** (Android 10 ou plus, non rooté), via l'app Play Console, avant de publier ; moins d'une minute, un téléphone emprunté suffit ([aide](https://support.google.com/googleplay/android-developer/answer/14316361)).
 - Inscription : 25 $ une seule fois ([aide](https://support.google.com/googleplay/android-developer/answer/6112435)).
